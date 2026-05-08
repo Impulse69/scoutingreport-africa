@@ -205,7 +205,7 @@ export function PlatformDashboard() {
   return (
     <div className="max-w-5xl mx-auto bg-[#111] border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden relative">
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
-      <div className="bg-[#0B0B0B] rounded-xl border border-white/5 min-h-[500px] p-6 flex flex-col md:flex-row gap-6">
+      <div className="bg-[#0B0B0B] rounded-xl border border-white/5 p-6 flex flex-col md:flex-row gap-6">
         <div className="w-full md:w-64 space-y-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -315,13 +315,82 @@ export function PlatformDashboard() {
             ))}
           </div>
 
-          <div className="bg-[#1A1A1A] border border-white/5 rounded-xl p-6 h-64 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-orange-500/10 to-transparent mix-blend-screen" />
-            <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-              <path d="M0 100 Q 20 80, 40 90 T 80 40 T 100 20 L 100 100 Z" fill="url(#gradient)" className="text-orange-500/10" />
-              <path d="M0 100 Q 20 80, 40 90 T 80 40 T 100 20" fill="none" stroke="#F97316" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-            </svg>
+          <div className="bg-[#1A1A1A] border border-white/5 rounded-xl p-6 relative overflow-hidden">
+            {/* Chart header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+                  League performance trend
+                </p>
+                <p className="mt-1 text-xs text-zinc-400">
+                  xG rolling avg · last 12 weeks
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-mono text-lg font-bold tabular-nums text-orange-500">
+                  +24.6%
+                </p>
+                <p className="font-mono text-[10px] text-zinc-500">vs prior period</p>
+              </div>
+            </div>
+
+            {/* Chart body */}
+            <div className="relative h-48">
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-orange-500/10 to-transparent mix-blend-screen" />
+              <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <path
+                  d="M0 100 Q 20 80, 40 90 T 80 40 T 100 20 L 100 100 Z"
+                  fill="rgba(249,115,22,0.08)"
+                />
+                <path
+                  d="M0 100 Q 20 80, 40 90 T 80 40 T 100 20"
+                  fill="none"
+                  stroke="#F97316"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+              {/* Y-axis ticks */}
+              <div className="absolute -left-1 top-0 flex h-full flex-col justify-between font-mono text-[9px] tabular-nums text-zinc-600">
+                <span>2.4</span>
+                <span>1.6</span>
+                <span>0.8</span>
+                <span>0.0</span>
+              </div>
+            </div>
+
+            {/* X-axis ticks */}
+            <div className="mt-2 flex justify-between font-mono text-[9px] text-zinc-600 px-1">
+              <span>W1</span>
+              <span>W3</span>
+              <span>W5</span>
+              <span>W7</span>
+              <span>W9</span>
+              <span>W11</span>
+              <span>W12</span>
+            </div>
+          </div>
+
+          {/* Bottom KPI strip — fills the rail, removes empty space */}
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: "Form", val: "W W D L W", tone: "text-emerald-400" },
+              { label: "Clean sheets", val: "8 / 14", tone: "text-cyan-400" },
+              { label: "Goal diff", val: "+27", tone: "text-orange-400" },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-[#1A1A1A] border border-white/5 rounded-xl p-3"
+              >
+                <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+                  {s.label}
+                </div>
+                <div className={`mt-1 font-mono text-sm font-bold tabular-nums ${s.tone}`}>
+                  {s.val}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
