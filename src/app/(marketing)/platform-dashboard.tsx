@@ -230,7 +230,7 @@ export function PlatformDashboard() {
               </div>
             </div>
 
-            <div className="max-h-80 space-y-1 overflow-y-auto pr-1">
+            <div className="space-y-1 pr-1">
               {visibleTeams.map((team) => (
                 <Link
                   key={team.id}
