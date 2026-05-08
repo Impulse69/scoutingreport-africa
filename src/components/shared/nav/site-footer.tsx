@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const t = await getTranslations("nav");
+
   return (
     <footer className="border-t mt-auto">
       <div className="container mx-auto flex flex-col gap-4 px-4 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
@@ -11,17 +14,17 @@ export function SiteFooter() {
           </p>
         </div>
         <nav className="flex flex-wrap gap-4">
-          <Link href="/about" className="hover:text-foreground">
-            About
+          <Link href="/leagues" className="hover:text-foreground">
+            {t("leagues")}
           </Link>
-          <Link href="/players" className="hover:text-foreground">
-            Players
+          <Link href="/scouting" className="hover:text-foreground">
+            {t("scouting")}
           </Link>
-          <Link href="/compare" className="hover:text-foreground">
-            Compare
+          <Link href="/fpl" className="hover:text-foreground">
+            {t("fpl")}
           </Link>
-          <Link href="/sign-in" className="hover:text-foreground">
-            Scouts sign in
+          <Link href="/auth/sign-in" className="hover:text-foreground">
+            {t("scoutsSignIn")}
           </Link>
         </nav>
       </div>

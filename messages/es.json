@@ -1,0 +1,185 @@
+{
+  "nav": {
+    "leagues": "Ligas",
+    "predictions": "Predicciones",
+    "scouting": "Scouting",
+    "fpl": "FPL",
+    "login": "Iniciar sesión",
+    "getStarted": "Empezar",
+    "dashboard": "Panel",
+    "scoutsSignIn": "Acceso para scouts"
+  },
+  "metadata": {
+    "siteName": "ScoutingReport Africa",
+    "description": "La plataforma de scouting para el fútbol africano. Informes humanos sobre jugadores desde grandes ligas hasta academias, creados por scouts sobre el terreno."
+  },
+  "hero": {
+    "lead": "Los datos detrás de",
+    "accent": "cada decisión",
+    "tail": "futbolística!",
+    "subhead": "Plataforma integral de análisis futbolístico y scouting para equipos, agencias y medios. Obtén ventaja con datos en tiempo real e insights avanzados.",
+    "primaryCta": "Empezar gratis",
+    "demoCta": "Reservar demo"
+  },
+  "stats": {
+    "players": "Jugadores",
+    "leagues": "Ligas",
+    "matches": "Partidos",
+    "uptime": "Disponibilidad"
+  },
+  "pricing": {
+    "title": "Planes",
+    "title2": "de suscripción",
+    "subtitle": "Elige el plan perfecto para tus necesidades de scouting.",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "savings": "-20%",
+    "mostPopular": "Más popular",
+    "custom": "A medida",
+    "intervals": {
+      "forever": "/para siempre",
+      "monthly": "/mes",
+      "yearly": "/mes, facturado anualmente"
+    },
+    "plans": {
+      "starter": {
+        "name": "Inicial",
+        "features": {
+          "basicSearch": "Búsqueda básica de jugadores",
+          "topLeagues": "Top 5 ligas europeas",
+          "standardStats": "Estadísticas estándar de partido",
+          "communitySupport": "Soporte comunitario"
+        },
+        "cta": "Empieza gratis"
+      },
+      "pro": {
+        "name": "Pro",
+        "features": {
+          "advancedMetrics": "Métricas avanzadas y xG",
+          "globalLeagues": "Todas las ligas globales",
+          "heatmaps": "Mapas de calor tácticos",
+          "videoHighlights": "Integración de videos destacados",
+          "prioritySupport": "Soporte prioritario por email"
+        },
+        "cta": "Iniciar prueba de 14 días"
+      },
+      "enterprise": {
+        "name": "Empresa",
+        "features": {
+          "apiAccess": "Acceso completo a la API",
+          "rawFeeds": "Feeds de datos sin procesar",
+          "customIntegration": "Integración personalizada",
+          "accountManager": "Gestor de cuenta dedicado",
+          "sla": "SLA y soporte telefónico 24/7"
+        },
+        "cta": "Contactar ventas"
+      }
+    }
+  },
+  "features": {
+    "title": "Amplio.",
+    "titleAccent": "No confíes en otros.",
+    "subtitle": "Todo lo que necesitas para analizar, scoutizar y descubrir talento futbolístico en todo el mundo.",
+    "cards": {
+      "playerStats": {
+        "title": "Estadísticas detalladas de jugadores",
+        "desc": "Datos granulares sobre pases, tiros, acciones defensivas y mucho más."
+      },
+      "tactical": {
+        "title": "Análisis táctico avanzado",
+        "desc": "Mapas de calor, redes de pases y desglose de formaciones."
+      },
+      "matchReports": {
+        "title": "Informes completos de partido",
+        "desc": "Insights automatizados generados al instante después de cada partido."
+      },
+      "injuries": {
+        "title": "Actualizaciones de lesiones en tiempo real",
+        "desc": "Sigue la disponibilidad y condición física en todas las ligas."
+      },
+      "transfer": {
+        "title": "Insights del mercado de fichajes",
+        "desc": "Sigue variaciones de valor y probabilidades de traspaso en tiempo real."
+      },
+      "contracts": {
+        "title": "Detalles contractuales",
+        "desc": "Base completa de contratos de jugadores y representación de agencias."
+      },
+      "visualizations": {
+        "title": "Visualizaciones interactivas",
+        "desc": "Crea gráficos personalizados para presentar a tu directiva."
+      }
+    }
+  },
+  "platform": {
+    "searchPlaceholder": "Busca cualquier equipo de fútbol...",
+    "searchLabel": "Buscar equipos de fútbol",
+    "topTeams": "Equipos principales",
+    "searchResults": "Resultados globales de equipos",
+    "curatedCount": "{shown} visibles",
+    "resultCount": "{count} encontrados",
+    "searching": "Buscando equipos de fútbol globales...",
+    "minCharacters": "Escribe al menos 2 caracteres para buscar en todas las ligas.",
+    "searchError": "La búsqueda de equipos no está disponible temporalmente.",
+    "noResults": "Ningún equipo coincide con \"{query}\".",
+    "stats": {
+      "matchesTracked": "Partidos seguidos",
+      "playersInDb": "Jugadores en BD",
+      "dataAccuracy": "Precisión de datos",
+      "stable": "Estable"
+    }
+  },
+  "language": {
+    "label": "Elegir idioma",
+    "tip": "Elige de la lista — añadiremos más con el tiempo.",
+    "change": "Cambiar idioma",
+    "footerTip": "Consejo: tu navegador también puede traducir cualquier página cuando lo necesites."
+  },
+  "userMenu": {
+    "signedIn": "Sesión iniciada",
+    "watchlists": "Mis listas",
+    "scoutDashboard": "Panel de scout",
+    "adminDashboard": "Panel de administrador",
+    "signOut": "Cerrar sesión"
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Cambiar a modo claro",
+    "dark": "Cambiar a modo oscuro"
+  },
+  "sidebars": {
+    "admin": {
+      "label": "Admin",
+      "dashboard": "Panel",
+      "reports": "Informes (moderar)",
+      "players": "Jugadores",
+      "users": "Usuarios",
+      "competitions": "Competiciones",
+      "countries": "Países"
+    },
+    "scout": {
+      "label": "Scout",
+      "dashboard": "Panel",
+      "newPlayer": "Nuevo jugador",
+      "newReport": "Nuevo informe"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "eyebrow": "Acceso autorizado",
+      "title": "Inicia sesión en tu mesa de scouting",
+      "subtitle": "Continúa con tus credenciales o usa una cuenta de Google vinculada a ScoutingReport Africa.",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tienes cuenta?",
+      "createOne": "Crear una"
+    },
+    "signUp": {
+      "eyebrow": "Crea tu acceso",
+      "title": "Únete a la mesa de scouting",
+      "subtitle": "Configura tu cuenta con email y contraseña, o continúa con Google. Scouts y analistas reciben permisos elevados por invitación.",
+      "submit": "Crear cuenta",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "signInLink": "Iniciar sesión"
+    }
+  }
+}

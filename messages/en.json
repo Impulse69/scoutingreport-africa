@@ -1,0 +1,185 @@
+{
+  "nav": {
+    "leagues": "Leagues",
+    "predictions": "Predictions",
+    "scouting": "Scouting",
+    "fpl": "FPL",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "dashboard": "Dashboard",
+    "scoutsSignIn": "Scouts sign in"
+  },
+  "metadata": {
+    "siteName": "ScoutingReport Africa",
+    "description": "The scouting platform for African football. Human-scouted reports on players from the Premier League to the academies — built by scouts on the ground."
+  },
+  "hero": {
+    "lead": "The data behind",
+    "accent": "every football",
+    "tail": "decision!",
+    "subhead": "Comprehensive football analytics and scouting platform for teams, agencies, and media. Get the edge with real-time data and advanced insights.",
+    "primaryCta": "Start for free",
+    "demoCta": "Book a demo"
+  },
+  "stats": {
+    "players": "Players",
+    "leagues": "Leagues",
+    "matches": "Matches",
+    "uptime": "Uptime"
+  },
+  "pricing": {
+    "title": "Subscription",
+    "title2": "Plans",
+    "subtitle": "Choose the perfect plan for your scouting needs.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savings": "-20%",
+    "mostPopular": "Most Popular",
+    "custom": "Custom",
+    "intervals": {
+      "forever": "/forever",
+      "monthly": "/mo",
+      "yearly": "/mo, billed yearly"
+    },
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "features": {
+          "basicSearch": "Basic player search",
+          "topLeagues": "Top 5 European Leagues",
+          "standardStats": "Standard match stats",
+          "communitySupport": "Community support"
+        },
+        "cta": "Get started free"
+      },
+      "pro": {
+        "name": "Pro",
+        "features": {
+          "advancedMetrics": "Advanced metrics & xG",
+          "globalLeagues": "All Global Leagues",
+          "heatmaps": "Tactical heatmaps",
+          "videoHighlights": "Video highlights integration",
+          "prioritySupport": "Priority email support"
+        },
+        "cta": "Start 14-Day Trial"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "features": {
+          "apiAccess": "Full API Access",
+          "rawFeeds": "Raw data feeds",
+          "customIntegration": "Custom integration",
+          "accountManager": "Dedicated account manager",
+          "sla": "SLA & 24/7 Phone support"
+        },
+        "cta": "Contact Sales"
+      }
+    }
+  },
+  "features": {
+    "title": "Extensive.",
+    "titleAccent": "Trust no others.",
+    "subtitle": "Everything you need to analyze, scout, and discover football talent globally.",
+    "cards": {
+      "playerStats": {
+        "title": "Detailed player stats",
+        "desc": "Granular data on passing, shooting, defensive actions and more."
+      },
+      "tactical": {
+        "title": "Advanced tactical analysis",
+        "desc": "Heatmaps, passing networks, and formation breakdowns."
+      },
+      "matchReports": {
+        "title": "Comprehensive match reports",
+        "desc": "Automated insights instantly generated after every game."
+      },
+      "injuries": {
+        "title": "Real-time injury updates",
+        "desc": "Track availability and physical condition across leagues."
+      },
+      "transfer": {
+        "title": "Transfer market insights",
+        "desc": "Track value fluctuations and transfer probabilities in real-time."
+      },
+      "contracts": {
+        "title": "Contract details",
+        "desc": "Comprehensive database of player contracts and agency representation."
+      },
+      "visualizations": {
+        "title": "Interactive visualizations",
+        "desc": "Create custom charts and graphs to present to your board."
+      }
+    }
+  },
+  "platform": {
+    "searchPlaceholder": "Search any football team...",
+    "searchLabel": "Search football teams",
+    "topTeams": "Top teams",
+    "searchResults": "Global team results",
+    "curatedCount": "{shown} shown",
+    "resultCount": "{count} found",
+    "searching": "Searching global football teams...",
+    "minCharacters": "Type at least 2 characters to search every league.",
+    "searchError": "Team search is temporarily unavailable.",
+    "noResults": "No teams match \"{query}\".",
+    "stats": {
+      "matchesTracked": "Matches tracked",
+      "playersInDb": "Players in DB",
+      "dataAccuracy": "Data accuracy",
+      "stable": "Stable"
+    }
+  },
+  "language": {
+    "label": "Choose language",
+    "tip": "Pick from the list — more added over time.",
+    "change": "Change language",
+    "footerTip": "Tip: your browser can also translate any page on demand."
+  },
+  "userMenu": {
+    "signedIn": "Signed in",
+    "watchlists": "My watchlists",
+    "scoutDashboard": "Scout dashboard",
+    "adminDashboard": "Admin dashboard",
+    "signOut": "Sign out"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Switch to light mode",
+    "dark": "Switch to dark mode"
+  },
+  "sidebars": {
+    "admin": {
+      "label": "Admin",
+      "dashboard": "Dashboard",
+      "reports": "Reports (moderate)",
+      "players": "Players",
+      "users": "Users",
+      "competitions": "Competitions",
+      "countries": "Countries"
+    },
+    "scout": {
+      "label": "Scout",
+      "dashboard": "Dashboard",
+      "newPlayer": "New player",
+      "newReport": "New report"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "eyebrow": "Authorized access",
+      "title": "Sign in to your scouting desk",
+      "subtitle": "Continue with your account credentials or use a Google account linked to ScoutingReport Africa.",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "createOne": "Create one"
+    },
+    "signUp": {
+      "eyebrow": "Create your access",
+      "title": "Join the scouting desk",
+      "subtitle": "Set up your account with email and password, or continue with Google. Scouts and analysts get elevated permissions on invite.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "signInLink": "Sign in"
+    }
+  }
+}

@@ -128,3 +128,34 @@
     @apply font-sans;
   }
 }
+
+/* Hero overlays — fade-in/fade-out cycle for the cycling stat cards.
+   Lives in globals.css instead of styled-jsx because Turbopack chokes on
+   <style jsx> blocks in client components (silent compile hang). */
+.hero-fade {
+  animation: hero-cycle 4500ms ease-in-out;
+  will-change: opacity, transform;
+}
+@keyframes hero-cycle {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  88% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+/* Site-wide 80% scale — placed outside @layer so it outranks preflight. */
+html {
+  font-size: 12.8px;
+}

@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { buttonVariants } from "@/components/ui/button";
+import { LanguagePicker } from "./language-picker";
 import { ModeToggle } from "./mode-toggle";
 import { UserMenu } from "./user-menu";
 import { getCurrentUser } from "@/lib/core/auth-helpers";
 
 export async function SiteHeader() {
+  const t = await getTranslations("nav");
   const user = await getCurrentUser();
   const displayName = user?.email?.split('@')[0] ?? null; // Fallback or use user.name if available
 
@@ -23,34 +26,35 @@ export async function SiteHeader() {
           </Link>
           <nav className="hidden items-center gap-4 text-sm md:flex">
             <Link
-              href="/players"
+              href="/leagues"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Players
+              {t("leagues")}
             </Link>
             <Link
-              href="/compare"
+              href="/scouting"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Compare
+              {t("scouting")}
             </Link>
             <Link
-              href="/about"
+              href="/fpl"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              About
+              {t("fpl")}
             </Link>
-            {(user?.role === "scout" || user?.role === "admin") && (
+            {user ? (
               <Link
-                href="/scout/dashboard"
+                href="/dashboard"
                 className="font-medium text-orange-600 transition-colors hover:text-orange-500"
               >
-                Dashboard
+                {t("dashboard")}
               </Link>
-            )}
+            ) : null}
           </nav>
         </div>
         <div className="flex items-center gap-2">
+          <LanguagePicker />
           <ModeToggle />
           {user ? (
             <UserMenu
@@ -60,7 +64,7 @@ export async function SiteHeader() {
             />
           ) : (
             <Link href="/auth/sign-in" className={buttonVariants({ size: "sm" })}>
-              Sign in
+              {t("login")}
             </Link>
           )}
         </div>

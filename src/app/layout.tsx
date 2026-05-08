@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "@/components/shared/theme-provider";
+import { TranslationSweeper } from "@/components/shared/i18n/translation-sweeper";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { getLocaleDirection } from "@/i18n/locales";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,45 +19,72 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// Resolution order:
+//   1. NEXT_PUBLIC_SITE_URL — explicit override (set on Vercel prod env vars)
+//   2. VERCEL_PROJECT_PRODUCTION_URL — auto-injected by Vercel on the prod deploy
+//   3. VERCEL_URL — auto-injected on every Vercel deploy (preview/branch URLs)
+//   4. Hardcoded production canonical — covers any env where the above are missing
+//   5. localhost — dev fallback
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : null) ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+  (process.env.VERCEL_ENV === "production"
+    ? "https://scoutingreportafrica.com"
+    : null) ||
+  "http://localhost:3000";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "ScoutingReport Africa",
-    template: "%s · ScoutingReport Africa",
-  },
-  description:
-    "The scouting platform for African football. Human-scouted reports on players from the Premier League to the academies — built by scouts on the ground.",
-  openGraph: {
-    type: "website",
-    siteName: "ScoutingReport Africa",
-    url: siteUrl,
-  },
-  twitter: { card: "summary_large_image" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("metadata");
 
-export default function RootLayout({
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: t("siteName"),
+      template: `%s · ${t("siteName")}`,
+    },
+    description: t("description"),
+    openGraph: {
+      type: "website",
+      siteName: t("siteName"),
+      url: siteUrl,
+      description: t("description"),
+    },
+    twitter: { card: "summary_large_image", description: t("description") },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const dir = getLocaleDirection(locale);
+
   return (
     <html
-      lang="en"
+      lang={locale}
+      dir={dir}
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased font-sans`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider delay={200}>
-            {children}
-            <Toaster richColors closeButton />
-          </TooltipProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <TranslationSweeper />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TooltipProvider delay={200}>
+              {children}
+              <Toaster richColors closeButton />
+            </TooltipProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

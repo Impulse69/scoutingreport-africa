@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,7 @@ export type UserMenuProps = {
 
 export function UserMenu({ email, displayName, role }: UserMenuProps) {
   const router = useRouter();
+  const t = useTranslations("userMenu");
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -50,7 +52,7 @@ export function UserMenu({ email, displayName, role }: UserMenuProps) {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {displayName ?? "Signed in"}
+                {displayName ?? t("signedIn")}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
                 {email}
@@ -62,21 +64,14 @@ export function UserMenu({ email, displayName, role }: UserMenuProps) {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/watchlists" />}>
-          My watchlists
+        <DropdownMenuItem render={<Link href="/dashboard" />}>
+          Dashboard
         </DropdownMenuItem>
-        {(role === "scout" || role === "admin") && (
-          <DropdownMenuItem render={<Link href="/scout/dashboard" />}>
-            Scout dashboard
-          </DropdownMenuItem>
-        )}
-        {role === "admin" && (
-          <DropdownMenuItem render={<Link href="/admin/dashboard" />}>
-            Admin dashboard
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem render={<Link href="/watchlists" />}>
+          {t("watchlists")}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>Sign out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>{t("signOut")}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
