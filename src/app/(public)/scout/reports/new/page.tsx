@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Shield, CheckCircle2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/core/supabase/server";
 import { ScoutReportForm } from "@/components/features/reports/scout-report-form";
 import { PlayerPicker } from "@/components/features/reports/player-picker";
 
-export const metadata = { title: "New report" };
+export const metadata = { title: "New Scout Report · ScoutingReport Africa" };
 
 export default async function NewReportPage({
   searchParams,
@@ -18,23 +18,28 @@ export default async function NewReportPage({
   // No player chosen yet — show the picker so the scout can find the subject.
   if (!playerId) {
     return (
-      <div className="container mx-auto max-w-3xl px-6 py-10 space-y-6">
+      <div className="container mx-auto max-w-3xl px-6 py-10 space-y-6 font-['Inter']">
         <Link
           href="/scout"
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] text-zinc-500 transition-colors hover:text-white"
+          className="inline-flex items-center gap-1.5 font-['Public_Sans'] font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white transition-colors"
         >
-          <ArrowLeft className="h-3 w-3" />
-          Back to scout workspace
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to Scout Department
         </Link>
-        <header>
-          <h1 className="font-mono text-3xl font-bold tracking-tight text-white">
-            Pick a player
+        <header className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
+            <span>Phase 01 · Subject Identification</span>
+          </div>
+          <h1 className="font-['Public_Sans'] text-3xl font-black uppercase text-white tracking-tight">
+            Pick a Scouted Prospect
           </h1>
-          <p className="mt-1.5 font-mono text-xs text-zinc-500">
-            Search the published roster to start a new report.
+          <p className="text-xs text-slate-400">
+            Select a registered player from the continental database to launch a standardized evaluation dossier.
           </p>
         </header>
-        <PlayerPicker />
+        <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 shadow-xl">
+          <PlayerPicker />
+        </div>
       </div>
     );
   }
@@ -54,26 +59,53 @@ export default async function NewReportPage({
   } · ${(player.current_club as string) ?? "Free agent"}`;
 
   return (
-    <div className="container mx-auto max-w-4xl px-6 py-10 space-y-6">
+    <div className="container mx-auto max-w-5xl px-6 py-10 space-y-8 font-['Inter']">
       <Link
         href="/scout"
-        className="inline-flex items-center gap-1.5 font-mono text-[11px] text-zinc-500 transition-colors hover:text-white"
+        className="inline-flex items-center gap-1.5 font-['Public_Sans'] font-bold text-xs uppercase tracking-wider text-slate-400 hover:text-white transition-colors"
       >
-        <ArrowLeft className="h-3 w-3" />
-        Back to scout workspace
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back to Scout Department
       </Link>
-      <header>
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
-          New report
-        </p>
-        <h1 className="mt-2 font-mono text-3xl font-bold tracking-tight text-white">
-          {(player.full_name as string)}
-        </h1>
+
+      {/* Stitch Step Progress Indicator */}
+      <div className="space-y-2">
+        <div className="h-1.5 w-full bg-[#1E232D] relative overflow-hidden rounded-none">
+          <div className="absolute left-0 top-0 h-full w-1/2 bg-gradient-to-r from-[#9C3F00] to-[#CC5500]" />
+        </div>
+        <div className="flex justify-between text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-tight text-slate-500">
+          <span className="text-slate-400">01 Basic Info</span>
+          <span className="text-[#FFB693] font-black">02 Match Context</span>
+          <span>03 Technical Analysis</span>
+          <span>04 Final Grade</span>
+        </div>
+      </div>
+
+      <header className="flex items-center justify-between border-b border-[rgba(224,192,178,0.12)] pb-4">
+        <div>
+          <span className="font-['Public_Sans'] text-[10px] font-extrabold uppercase tracking-widest text-[#FFB693]">
+            New Evaluation Dossier
+          </span>
+          <h1 className="font-['Public_Sans'] text-2xl sm:text-3xl font-black text-white uppercase mt-1">
+            {(player.full_name as string)}
+          </h1>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {label}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 rounded-[4px] border border-[rgba(224,192,178,0.15)] bg-[#12151C] px-3 py-1.5 text-xs text-slate-300">
+          <Shield className="h-4 w-4 text-[#CC5500]" />
+          <span className="font-mono text-[11px] font-bold">Standardized CAF Form</span>
+        </div>
       </header>
-      <ScoutReportForm
-        initial={{ player_id: player.id as string }}
-        playerLabel={label}
-      />
+
+      <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 sm:p-8 shadow-2xl">
+        <ScoutReportForm
+          initial={{ player_id: player.id as string }}
+          playerLabel={label}
+        />
+      </div>
     </div>
   );
 }

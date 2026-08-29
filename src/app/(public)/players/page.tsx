@@ -11,7 +11,8 @@ import {
   Star,
   Activity,
   SlidersHorizontal,
-  Flame
+  Flame,
+  UserCheck
 } from "lucide-react";
 import { listPublishedPlayers } from "@/lib/features/players/queries";
 import { PageHeader } from "@/components/shared/page-header";
@@ -19,7 +20,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { POSITIONS, CAF_COUNTRIES } from "@/lib/shared/constants";
 
 export const metadata: Metadata = {
-  title: "African Football Talent Catalogue",
+  title: "African Football Talent Catalogue · ScoutingReport Africa",
   description:
     "Search scouted African footballers by position, age, nationality, physical metrics, and verified ratings.",
 };
@@ -39,6 +40,40 @@ function countryName(code: string | null): string {
   return CAF_COUNTRIES.find((c) => c.code === code)?.name ?? code;
 }
 
+function matchesPosition(playerPos: string | null, filterPos: string | undefined): boolean {
+  if (!filterPos) return true;
+  if (!playerPos) return false;
+
+  const target = filterPos.trim().toUpperCase();
+  const player = playerPos.trim().toUpperCase();
+
+  if (player === target) return true;
+
+  const parts = target.split(",").map((s) => s.trim());
+  if (parts.includes(player)) return true;
+
+  // Group alias matching
+  if (target === "FW" || target === "FWD" || target === "ATT") {
+    return ["ST", "SS", "LW", "RW", "FWD", "FW"].includes(player);
+  }
+  if (target === "MID" || target === "MF") {
+    return ["DM", "CM", "AM", "LM", "RM", "MID", "MF"].includes(player);
+  }
+  if (target === "DEF" || target === "DF") {
+    return ["CB", "LB", "RB", "LWB", "RWB", "DEF", "DF"].includes(player);
+  }
+  if (target === "GK") {
+    return player === "GK";
+  }
+
+  const playerSpec = POSITIONS.find((p) => p.code === player);
+  if (playerSpec && playerSpec.group.toUpperCase() === target) {
+    return true;
+  }
+
+  return false;
+}
+
 export default async function PlayersPage({
   searchParams,
 }: {
@@ -49,38 +84,39 @@ export default async function PlayersPage({
 
   const q = (sp.q ?? "").trim().toLowerCase();
   const filtered = players.filter((p) => {
-    if (sp.pos && p.primaryPositionCode !== sp.pos) return false;
+    if (sp.pos && !matchesPosition(p.primaryPositionCode, sp.pos)) return false;
     if (sp.nat && p.nationalityCode !== sp.nat) return false;
     if (q && !p.fullName.toLowerCase().includes(q) && !countryName(p.nationalityCode).toLowerCase().includes(q)) return false;
     return true;
   });
 
   return (
-    <div className="container mx-auto px-4 lg:px-8 py-10 max-w-7xl space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-7xl space-y-8 font-['Inter']">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-white/10">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider mb-2">
-            <Users className="h-3.5 w-3.5" /> Intelligence Catalogue
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[rgba(224,192,178,0.12)]">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
+            <Users className="h-3.5 w-3.5 text-[#CC5500]" />
+            <span>Kinetic Archive Talent Database</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h1 className="font-['Public_Sans'] text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
             Scouted African Talents
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-            Verified player dossiers across all 54 CAF national associations, domestic divisions, and diaspora landing leagues.
+          <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
+            Standardized player evaluations across all 54 CAF national associations, domestic premier leagues, and European landing divisions.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/scout/reports/new"
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all"
+            className="px-4 py-2.5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"
           >
             Submit Report
           </Link>
           <Link
             href="/watchlists"
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold text-xs uppercase tracking-wider transition-all"
+            className="px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
           >
             My Watchlists
           </Link>
@@ -88,16 +124,16 @@ export default async function PlayersPage({
       </div>
 
       {/* Filter Control Bar */}
-      <div className="rounded-3xl border border-white/10 bg-[#0c1218]/90 p-4 sm:p-6 space-y-4 shadow-xl">
+      <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-4 sm:p-6 space-y-4 shadow-xl">
         <form method="GET" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
           {/* Text Input */}
           <div className="lg:col-span-5 relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#CC5500]" />
             <input
               name="q"
               defaultValue={sp.q ?? ""}
               placeholder="Search by player name or keyword…"
-              className="w-full h-11 pl-10 pr-4 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              className="w-full h-11 pl-10 pr-4 rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#CC5500]/60 font-['Inter']"
             />
           </div>
 
@@ -106,14 +142,22 @@ export default async function PlayersPage({
             <select
               name="pos"
               defaultValue={sp.pos ?? ""}
-              className="w-full h-11 px-3.5 rounded-xl border border-white/10 bg-[#121921] text-xs text-white focus:outline-none focus:border-emerald-500/50"
+              className="w-full h-11 px-3.5 rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-xs text-white focus:outline-none focus:border-[#CC5500]/60 font-['Public_Sans'] font-medium"
             >
               <option value="">All Tactical Positions</option>
-              {POSITIONS.map((p) => (
-                <option key={p.code} value={p.code}>
-                  {p.name} ({p.code})
-                </option>
-              ))}
+              <optgroup label="Broad Groups">
+                <option value="FWD">All Attackers (FWD)</option>
+                <option value="MID">All Midfielders (MID)</option>
+                <option value="DEF">All Defenders (DEF)</option>
+                <option value="GK">Goalkeepers (GK)</option>
+              </optgroup>
+              <optgroup label="Specific Roles">
+                {POSITIONS.map((p) => (
+                  <option key={p.code} value={p.code}>
+                    {p.name} ({p.code})
+                  </option>
+                ))}
+              </optgroup>
             </select>
           </div>
 
@@ -122,7 +166,7 @@ export default async function PlayersPage({
             <select
               name="nat"
               defaultValue={sp.nat ?? ""}
-              className="w-full h-11 px-3.5 rounded-xl border border-white/10 bg-[#121921] text-xs text-white focus:outline-none focus:border-emerald-500/50"
+              className="w-full h-11 px-3.5 rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-xs text-white focus:outline-none focus:border-[#CC5500]/60 font-['Public_Sans'] font-medium"
             >
               <option value="">All CAF Nationalities (54)</option>
               {CAF_COUNTRIES.map((c) => (
@@ -137,7 +181,7 @@ export default async function PlayersPage({
           <div className="lg:col-span-1 flex items-center gap-2">
             <button
               type="submit"
-              className="w-full h-11 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+              className="w-full h-11 rounded-[4px] bg-[#CC5500]/20 hover:bg-[#CC5500]/30 text-[#FFB693] border border-[#CC5500]/40 font-['Public_Sans'] text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
               <span>Filter</span>
@@ -146,16 +190,20 @@ export default async function PlayersPage({
         </form>
 
         {/* Quick Position Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/5">
-          <span className="text-[11px] uppercase font-bold text-slate-400 mr-1">Position Shortcuts:</span>
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[rgba(224,192,178,0.08)]">
+          <span className="text-[10px] font-['Public_Sans'] uppercase font-bold text-slate-400 mr-1 tracking-wider">
+            Shortcuts:
+          </span>
           {[
             { label: "All", pos: "" },
-            { label: "Strikers (FW)", pos: "FW" },
-            { label: "Wingers (LW/RW)", pos: "RW" },
+            { label: "Attackers (FWD)", pos: "FWD" },
+            { label: "Strikers (ST)", pos: "ST" },
+            { label: "Wingers (LW/RW)", pos: "LW,RW" },
+            { label: "Midfielders (MID)", pos: "MID" },
             { label: "Central Mids (CM)", pos: "CM" },
-            { label: "Defensive Mids (DM)", pos: "DM" },
+            { label: "Defenders (DEF)", pos: "DEF" },
             { label: "Center Backs (CB)", pos: "CB" },
-            { label: "Full Backs (RB/LB)", pos: "RB" },
+            { label: "Full Backs (LB/RB)", pos: "LB,RB,LWB,RWB" },
             { label: "Goalkeepers (GK)", pos: "GK" },
           ].map((item) => {
             const isActive = (sp.pos ?? "") === item.pos;
@@ -168,10 +216,10 @@ export default async function PlayersPage({
               <Link
                 key={item.label}
                 href={`/players?${queryParams.toString()}`}
-                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3 py-1 rounded-[4px] font-['Public_Sans'] text-xs font-bold transition-all ${
                   isActive
-                    ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/40"
-                    : "bg-[#121921] hover:bg-white/10 text-slate-300 border border-white/5"
+                    ? "bg-[#CC5500] text-white"
+                    : "bg-[#0C0E12] hover:bg-[#171B23] text-slate-300 border border-[rgba(224,192,178,0.1)]"
                 }`}
               >
                 {item.label}
@@ -189,7 +237,7 @@ export default async function PlayersPage({
         {(sp.q || sp.pos || sp.nat) && (
           <Link
             href="/players"
-            className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1"
+            className="text-[#FFB693] hover:text-white font-['Public_Sans'] font-bold flex items-center gap-1"
           >
             Clear Active Filters ✕
           </Link>
@@ -218,11 +266,11 @@ export default async function PlayersPage({
               <Link
                 key={p.id}
                 href={`/players/${p.slug}`}
-                className="group rounded-3xl border border-white/10 bg-[#0c1218] p-5 hover:border-emerald-500/40 hover:bg-[#111a22] transition-all flex flex-col justify-between shadow-lg relative overflow-hidden"
+                className="group rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 hover:border-[#CC5500]/60 hover:bg-[#171B23] transition-all flex flex-col justify-between shadow-lg relative overflow-hidden"
               >
                 <div className="flex items-start gap-4">
                   {/* Photo / Avatar */}
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-inner">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[4px] border border-[rgba(224,192,178,0.15)] bg-[#0C0E12]">
                     {p.photoUrl ? (
                       <Image
                         src={p.photoUrl}
@@ -232,7 +280,7 @@ export default async function PlayersPage({
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center font-mono text-base font-black text-emerald-400/80 bg-gradient-to-br from-[#121921] to-[#0c1218]">
+                      <div className="flex h-full w-full items-center justify-center font-['Public_Sans'] text-base font-black text-[#FFB693] bg-[#0C0E12]">
                         {p.fullName
                           .split(" ")
                           .map((s) => s[0])
@@ -247,12 +295,12 @@ export default async function PlayersPage({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm">{flag}</span>
-                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+                      <span className="text-[10px] font-['Public_Sans'] font-black uppercase px-2 py-0.5 rounded-[3px] bg-[#CC5500]/20 text-[#FFB693] border border-[#CC5500]/30">
                         {p.primaryPositionCode ?? "PL"}
                       </span>
                     </div>
 
-                    <h2 className="font-bold text-base text-white group-hover:text-emerald-300 transition-colors truncate">
+                    <h2 className="font-['Public_Sans'] font-black text-base text-white group-hover:text-[#FFB693] transition-colors truncate">
                       {p.fullName}
                     </h2>
 
@@ -263,15 +311,15 @@ export default async function PlayersPage({
                 </div>
 
                 {/* Bottom Meta */}
-                <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                <div className="mt-5 pt-3 border-t border-[rgba(224,192,178,0.08)] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 text-slate-400">
                     <span className="truncate">{country}</span>
                     <span>·</span>
                     <span className="text-[11px] text-slate-400 font-medium">{pos}</span>
                   </div>
 
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    View Dossier <ArrowRight className="h-3.5 w-3.5" />
+                  <span className="text-xs font-['Public_Sans'] font-bold text-[#FFB693] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View Dossier <ArrowRight className="h-3.5 w-3.5 text-[#CC5500]" />
                   </span>
                 </div>
               </Link>

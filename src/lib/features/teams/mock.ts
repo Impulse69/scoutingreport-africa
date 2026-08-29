@@ -218,6 +218,45 @@ const TEAM_INDEX: TeamSearchHit[] = [
   { slug: "flamengo", name: "Flamengo", league: "Brasileirão", country: "Brazil", hasPage: false },
   { slug: "boca-juniors", name: "Boca Juniors", league: "Liga Profesional", country: "Argentina", hasPage: false },
   { slug: "river-plate", name: "River Plate", league: "Liga Profesional", country: "Argentina", hasPage: false },
+
+  // African clubs — the core scouting territory for this platform, and the
+  // clubs the /leagues page links to. Registering them here gives each a real
+  // "not seeded yet" page instead of a 404 until match-data ingest covers them.
+  { slug: "al-ahly", name: "Al Ahly", league: "Egyptian Premier League", country: "Egypt", hasPage: false },
+  { slug: "zamalek", name: "Zamalek SC", league: "Egyptian Premier League", country: "Egypt", hasPage: false },
+  { slug: "pyramids", name: "Pyramids FC", league: "Egyptian Premier League", country: "Egypt", hasPage: false },
+  { slug: "future-fc", name: "Future FC", league: "Egyptian Premier League", country: "Egypt", hasPage: false },
+  { slug: "esperance", name: "Esperance de Tunis", league: "Tunisian Ligue 1", country: "Tunisia", hasPage: false },
+  { slug: "tp-mazembe", name: "TP Mazembe", league: "Linafoot", country: "DR Congo", hasPage: false },
+  { slug: "wydad", name: "Wydad AC", league: "Botola Pro 1", country: "Morocco", hasPage: false },
+  { slug: "raja", name: "Raja CA", league: "Botola Pro 1", country: "Morocco", hasPage: false },
+  { slug: "as-far", name: "AS FAR", league: "Botola Pro 1", country: "Morocco", hasPage: false },
+  { slug: "fus-rabat", name: "Fath Union Sport", league: "Botola Pro 1", country: "Morocco", hasPage: false },
+  { slug: "rs-berkane", name: "RS Berkane", league: "Botola Pro 1", country: "Morocco", hasPage: false },
+  { slug: "usm-alger", name: "USM Alger", league: "Ligue Professionnelle 1", country: "Algeria", hasPage: false },
+  { slug: "mamelodi-sundowns", name: "Mamelodi Sundowns", league: "South African Premier Division", country: "South Africa", hasPage: false },
+  { slug: "orlando-pirates", name: "Orlando Pirates", league: "South African Premier Division", country: "South Africa", hasPage: false },
+  { slug: "kaizer-chiefs", name: "Kaizer Chiefs", league: "South African Premier Division", country: "South Africa", hasPage: false },
+  { slug: "stellenbosch", name: "Stellenbosch FC", league: "South African Premier Division", country: "South Africa", hasPage: false },
+  { slug: "enyimba", name: "Enyimba FC", league: "Nigeria Premier Football League", country: "Nigeria", hasPage: false },
+  { slug: "remo-stars", name: "Remo Stars", league: "Nigeria Premier Football League", country: "Nigeria", hasPage: false },
+  { slug: "rivers-united", name: "Rivers United", league: "Nigeria Premier Football League", country: "Nigeria", hasPage: false },
+  { slug: "rangers-intl", name: "Rangers International", league: "Nigeria Premier Football League", country: "Nigeria", hasPage: false },
+  { slug: "asante-kotoko", name: "Asante Kotoko", league: "Ghana Premier League", country: "Ghana", hasPage: false },
+  { slug: "hearts-of-oak", name: "Hearts of Oak", league: "Ghana Premier League", country: "Ghana", hasPage: false },
+  { slug: "medeama", name: "Medeama SC", league: "Ghana Premier League", country: "Ghana", hasPage: false },
+
+  // European landing clubs referenced as pathway destinations.
+  { slug: "krc-genk", name: "KRC Genk", league: "Pro League", country: "Belgium", hasPage: false },
+  { slug: "club-brugge", name: "Club Brugge", league: "Pro League", country: "Belgium", hasPage: false },
+  { slug: "union-sg", name: "Royale Union SG", league: "Pro League", country: "Belgium", hasPage: false },
+  { slug: "gent", name: "Gent", league: "Pro League", country: "Belgium", hasPage: false },
+  { slug: "as-monaco", name: "AS Monaco", league: "Ligue 1", country: "France", hasPage: false },
+  { slug: "lille", name: "Lille OSC", league: "Ligue 1", country: "France", hasPage: false },
+  { slug: "rennes", name: "Stade Rennais", league: "Ligue 1", country: "France", hasPage: false },
+  { slug: "metz", name: "Metz", league: "Ligue 1", country: "France", hasPage: false },
+  { slug: "sporting", name: "Sporting CP", league: "Liga Portugal", country: "Portugal", hasPage: false },
+  { slug: "braga", name: "SC Braga", league: "Liga Portugal", country: "Portugal", hasPage: false },
 ];
 
 export function getTeamRefBySlug(slug: string): TeamSearchHit | null {

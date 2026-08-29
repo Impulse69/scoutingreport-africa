@@ -9,6 +9,10 @@ import {
   GitBranch,
   Sparkles,
   Info,
+  ArrowRight,
+  Shield,
+  Award,
+  PlusCircle
 } from "lucide-react";
 import { getRichPlayerProfile } from "@/lib/features/players/rich-mock";
 import {
@@ -73,11 +77,6 @@ function isTabId(v: string | undefined): v is TabId {
   return !!v && TABS.some((t) => t.id === v);
 }
 
-/**
- * Rich profiles come from the ESPN bundle (or the single bundled demo player).
- * Everything scouted inside this app is a Supabase row and renders through the
- * database-backed profile below.
- */
 async function loadRich(slug: string) {
   const bundled = getRichPlayerProfile(slug);
   if (bundled) return bundled;
@@ -111,7 +110,7 @@ export async function generateMetadata({
     ].filter(Boolean);
 
     return {
-      title: player.commonName || player.fullName,
+      title: `${player.commonName || player.fullName} · Dossier`,
       description:
         player.bio?.slice(0, 160) ||
         `Scouting profile for ${player.fullName} — ${bits.join(" · ")}.`,
@@ -122,12 +121,12 @@ export async function generateMetadata({
   const rich = getRichPlayerProfile(slug);
   if (rich) {
     return {
-      title: rich.fullName,
+      title: `${rich.fullName} · Dossier`,
       description: `Scouting profile for ${rich.fullName} — ${rich.club}.`,
     };
   }
 
-  return { title: "Player" };
+  return { title: "Player Dossier · ScoutingReport Africa" };
 }
 
 export default async function PlayerProfilePage({
@@ -143,7 +142,6 @@ export default async function PlayerProfilePage({
 
   const user = await getCurrentUser();
 
-  // A Supabase player always wins — that's a player someone here scouted.
   const dbPlayer = await getPlayerProfile(slug);
   const rich = dbPlayer ? null : await loadRich(slug);
 
@@ -161,80 +159,81 @@ export default async function PlayerProfilePage({
       !!user && (user.role === "admin" || dbPlayer.createdBy === user.id);
 
     return (
-      <div className="container mx-auto max-w-5xl space-y-6 px-6 py-6">
-        <nav className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
-          <Link href="/" className="transition-colors hover:text-zinc-300">
-            Home
+      <div className="container mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8 py-8 font-['Inter']">
+        {/* Breadcrumb */}
+        <nav className="flex flex-wrap items-center gap-2 text-[10px] font-['Public_Sans'] uppercase tracking-widest text-slate-400">
+          <Link href="/" className="hover:text-white transition-colors">
+            Archive Home
           </Link>
           <span>/</span>
-          <Link href="/players" className="transition-colors hover:text-zinc-300">
-            Players
+          <Link href="/players" className="hover:text-white transition-colors">
+            Player Directory
           </Link>
           <span>/</span>
-          <span className="text-zinc-300">
+          <span className="text-[#FFB693] font-bold">
             {dbPlayer.commonName || dbPlayer.fullName}
           </span>
         </nav>
 
-        {dbPlayer.status === "draft" ? (
-          <p className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 font-mono text-[11px] text-amber-200">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        {dbPlayer.status === "draft" && (
+          <p className="flex items-start gap-2 rounded-[4px] border border-[#CC5500]/40 bg-[#CC5500]/10 px-4 py-3 text-xs text-[#FFB693]">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
-              This player is a draft — only you and admins can see this page.
-              {canEdit ? (
-                <>
-                  {" "}
-                  <Link
-                    href={`/scout/players/${dbPlayer.id}/edit`}
-                    className="underline underline-offset-4 hover:text-white"
-                  >
-                    Publish them
-                  </Link>{" "}
-                  to put them on the public roster.
-                </>
-              ) : null}
+              This player is in draft status. Only administrators and authors can review this dossier.
             </span>
           </p>
-        ) : null}
+        )}
 
+        {/* Hero */}
         <PlayerProfileHero player={dbPlayer} canEdit={canEdit} />
 
+        {/* Attributes Breakdown */}
         <RatingPanel
           ratings={dbPlayer.ratings}
           reportCount={dbPlayer.publishedReportCount}
+          playerId={dbPlayer.id}
         />
 
+        {/* Published Reports or Empty Card */}
         {reports.length > 0 ? (
           <PlayerReportsList slug={slug} reports={reports} />
         ) : (
-          <section className="rounded-xl border border-dashed border-white/10 bg-[#0E0E0E] px-6 py-10 text-center">
-            <p className="font-mono text-[11px] text-zinc-500">
-              No published scouting reports on this player yet.
+          <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-8 text-center space-y-3 shadow-lg">
+            <Award className="h-8 w-8 text-slate-500 mx-auto opacity-40" />
+            <p className="font-['Public_Sans'] text-sm font-bold text-white">
+              No Published Scouting Reports On This Prospect Yet
             </p>
-            {canEdit ? (
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              Evaluation dossiers contain match-by-match observation notes, minutes watched, and standardized tactical grades.
+            </p>
+            <div className="pt-2">
               <Link
                 href={`/scout/reports/new?player=${dbPlayer.id}`}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-orange-500/40 bg-orange-500/10 px-3 py-2 font-mono text-[11px] text-orange-300 transition-colors hover:bg-orange-500/20"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-bold text-xs uppercase tracking-wider industrial-shadow transition-all"
               >
-                Write the first one
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span>Write First Scouting Report</span>
               </Link>
-            ) : null}
+            </div>
           </section>
         )}
 
-        {dbPlayer.bio ? (
-          <section className="rounded-xl border border-white/5 bg-[#0E0E0E] px-6 py-5">
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
-              About
-            </p>
-            <p className="text-sm leading-6 text-zinc-300">{dbPlayer.bio}</p>
+        {/* Bio */}
+        {dbPlayer.bio && (
+          <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 shadow-lg space-y-2">
+            <h3 className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-widest text-[#FFB693]">
+              Scout Background & Notes
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{dbPlayer.bio}</p>
           </section>
-        ) : null}
+        )}
 
-        {user ? (
+        {/* Watchlist Action */}
+        {user && (
           <AddToWatchlist playerId={dbPlayer.id} watchlists={watchlists} />
-        ) : null}
+        )}
 
+        {/* Scout Personal Notes */}
         <ScoutNotes
           playerSlug={slug}
           signedIn={!!user}
@@ -247,86 +246,76 @@ export default async function PlayerProfilePage({
 
   const player = rich!;
 
-  // Rich profiles name other players (similar players, "explore more") that
-  // usually have no page here. Resolve which ones do so the widgets can link
-  // those and leave the rest as plain text instead of 404s.
-  const linkable = await filterExistingPlayerSlugs([
-    ...player.similarPlayers.map((p) => p.slug),
-    ...player.exploreMore
-      .filter((e) => e.href.startsWith("/players/"))
-      .map((e) => e.href.slice("/players/".length)),
-  ]);
+  // Comparable-player names come from ESPN/demo data; resolve which ones have a
+  // profile here so the widget links those and leaves the rest as plain text.
+  const linkable = await filterExistingPlayerSlugs(
+    player.similarPlayers.map((p) => p.slug),
+  );
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 px-6 py-6">
+    <div className="container mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8 py-8 font-['Inter']">
       {/* Breadcrumbs */}
-      <nav className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
-        <Link href="/" className="transition-colors hover:text-zinc-300">
-          Home
+      <nav className="flex flex-wrap items-center gap-2 text-[10px] font-['Public_Sans'] uppercase tracking-widest text-slate-400">
+        <Link href="/" className="hover:text-white transition-colors">
+          Archive Home
         </Link>
         <span>/</span>
-        <Link href="/players" className="transition-colors hover:text-zinc-300">
-          Players
+        <Link href="/players" className="hover:text-white transition-colors">
+          Player Directory
         </Link>
         <span>/</span>
-        <span className="text-zinc-300">{player.fullName}</span>
+        <span className="text-[#FFB693] font-bold">{player.fullName}</span>
       </nav>
 
+      {/* Hero */}
       <PlayerHero player={player} />
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-white/5 pb-2">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[rgba(224,192,178,0.12)] pb-3 font-['Public_Sans'] text-xs font-bold uppercase tracking-wider">
         {TABS.map((t) => {
           const Icon = t.icon;
-          const active = t.id === activeTab;
+          const active = activeTab === t.id;
           return (
             <Link
               key={t.id}
-              href={t.id === "career" ? `/players/${slug}` : `/players/${slug}?tab=${t.id}`}
-              scroll={false}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors ${
+              href={`/players/${slug}?tab=${t.id}`}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[4px] transition-all ${
                 active
-                  ? "border border-cyan-500/30 bg-cyan-500/15 text-cyan-300"
-                  : "border border-transparent text-zinc-500 hover:border-white/10 hover:text-white"
+                  ? "bg-[#CC5500] text-white shadow-md"
+                  : "text-slate-400 hover:text-white hover:bg-[#171B23]"
               }`}
             >
-              <Icon className="h-3 w-3" />
-              {t.label}
+              <Icon className="h-3.5 w-3.5" />
+              <span>{t.label}</span>
             </Link>
           );
         })}
       </div>
 
-      {/* Tab content */}
-      {activeTab === "career" ? (
-        <>
-          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-            <KeyStrengths player={player} />
-            <SimilarPlayers player={player} linkable={linkable} />
+      {/* Tab Content */}
+      {activeTab === "career" && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-6">
+            <KeyStrengths strengths={player.keyStrengths} />
+            <PerNinetyBars stats={player.perNinetyStats} />
+            <RecentForm matches={player.recentForm} />
           </div>
-          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-            <PerNinetyBars player={player} />
-            <RecentForm player={player} />
+          <div className="lg:col-span-4 space-y-6">
+            <AboutPlayer player={player} />
+            <SimilarPlayers similar={player.similarPlayers} linkable={linkable} />
+            <DefensiveHeatmap heatmap={player.heatmap} />
+            <MarketValueCard value={player.marketValue} history={player.marketValueHistory} />
           </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <DefensiveHeatmap player={player} />
-            <MarketValueCard player={player} />
-          </div>
-          <CareerHistory player={player} />
-          <div className="grid gap-6 lg:grid-cols-2">
-            <LeagueDistribution player={player} />
-            <PositionalScatter player={player} />
-          </div>
-          <AboutPlayer player={player} linkable={linkable} />
-        </>
-      ) : null}
+        </div>
+      )}
 
-      {activeTab === "stats" ? <DetailedStatsTab player={player} /> : null}
-      {activeTab === "log" ? <MatchLogTab player={player} /> : null}
-      {activeTab === "trends" ? <TrendsTab player={player} /> : null}
-      {activeTab === "history" ? <ReverseHistoryTab player={player} /> : null}
-      {activeTab === "insights" ? <InsightsTab player={player} /> : null}
+      {activeTab === "stats" && <DetailedStatsTab player={player} />}
+      {activeTab === "log" && <MatchLogTab player={player} />}
+      {activeTab === "trends" && <TrendsTab player={player} />}
+      {activeTab === "history" && <ReverseHistoryTab player={player} />}
+      {activeTab === "insights" && <InsightsTab player={player} />}
 
+      {/* Notes */}
       <ScoutNotes
         playerSlug={slug}
         signedIn={!!user}

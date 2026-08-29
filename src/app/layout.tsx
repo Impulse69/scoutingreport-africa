@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Public_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "@/components/shared/theme-provider";
@@ -14,17 +14,16 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const publicSans = Public_Sans({
+  subsets: ["latin"],
+  variable: "--font-public-sans",
+});
+
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 });
 
-// Resolution order:
-//   1. NEXT_PUBLIC_SITE_URL — explicit override (set on Vercel prod env vars)
-//   2. VERCEL_PROJECT_PRODUCTION_URL — auto-injected by Vercel on the prod deploy
-//   3. VERCEL_URL — auto-injected on every Vercel deploy (preview/branch URLs)
-//   4. Hardcoded production canonical — covers any env where the above are missing
-//   5. localhost — dev fallback
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -68,17 +67,11 @@ export default async function RootLayout({
       lang={locale}
       dir={dir}
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased font-sans`}
+      className={`${inter.variable} ${publicSans.variable} ${jetbrainsMono.variable} h-full antialiased font-sans`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-[#CC5500] selection:text-white">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <TranslationSweeper />
-          {/* The product is designed dark throughout — the marketing site,
-              player profiles and scout workspace all paint their own dark
-              surfaces. Following the OS preference put light-theme tokens
-              (near-white cards, dark text) inside those hardcoded dark shells,
-              so pages using shared components rendered unreadable. Pin dark
-              until a real light palette exists. */}
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

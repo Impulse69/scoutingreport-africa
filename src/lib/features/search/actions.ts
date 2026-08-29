@@ -1,6 +1,8 @@
 "use server";
 
 import { searchTeams, type TeamSearchHit } from "@/lib/features/teams/mock";
+import { listPublishedPlayers } from "@/lib/features/players/queries";
+import { CAF_COUNTRIES } from "@/lib/shared/constants";
 
 export type GlobalSearchPlayer = {
   id: string;
@@ -15,6 +17,16 @@ export type GlobalSearchPlayer = {
 export type GlobalSearchResult = {
   players: GlobalSearchPlayer[];
   teams: TeamSearchHit[];
+};
+
+export type OmniSearchResult = {
+  id: string;
+  title: string;
+  subtitle: string;
+  url: string;
+  type: "player" | "club" | "competition";
+  flagEmoji?: string;
+  badge?: string;
 };
 
 type EspnContent = {
@@ -98,10 +110,6 @@ async function searchEspnPlayers(query: string): Promise<GlobalSearchPlayer[]> {
   }
 }
 
-/**
- * Global search across players (live ESPN — every active footballer worldwide)
- * and teams (curated index). Falls back to a small demo set if ESPN is down.
- */
 export async function globalSearch(query: string): Promise<GlobalSearchResult> {
   const q = query.trim();
   if (q.length < 2) return { players: [], teams: [] };
@@ -127,4 +135,65 @@ export async function globalSearch(query: string): Promise<GlobalSearchResult> {
   }
 
   return { players, teams: teamResults };
+}
+
+export async function searchGlobalOmni(query: string): Promise<OmniSearchResult[]> {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+
+  const [allDbPlayers, espnRes, teams] = await Promise.all([
+    listPublishedPlayers(100).catch(() => []),
+    searchEspnPlayers(q).catch(() => []),
+    Promise.resolve(searchTeams(q, 4)),
+  ]);
+
+  const results: OmniSearchResult[] = [];
+
+  // Filter DB Players
+  const matchedDb = allDbPlayers.filter(
+    (p) =>
+      p.fullName.toLowerCase().includes(q) ||
+      (p.currentClub && p.currentClub.toLowerCase().includes(q)) ||
+      (p.nationalityCode && p.nationalityCode.toLowerCase().includes(q)),
+  ).slice(0, 6);
+
+  for (const p of matchedDb) {
+    const flag = CAF_COUNTRIES.find((c) => c.code === p.nationalityCode)?.flagEmoji;
+    results.push({
+      id: `db-${p.id}`,
+      title: p.fullName,
+      subtitle: `${p.currentClub ?? "Free agent"} · ${p.primaryPositionCode ?? "Prospect"}`,
+      url: `/players/${p.slug}`,
+      type: "player",
+      flagEmoji: flag,
+      badge: "Verified Scout Dossier",
+    });
+  }
+
+  // Live ESPN players
+  for (const ep of espnRes) {
+    if (!results.some((r) => r.title.toLowerCase() === ep.name.toLowerCase())) {
+      results.push({
+        id: `espn-${ep.id}`,
+        title: ep.name,
+        subtitle: `${ep.team ?? "Club"} · ${ep.position ?? "Player"} · ${ep.league ?? ""}`,
+        url: `/players/${ep.slug}`,
+        type: "player",
+      });
+    }
+  }
+
+  // Teams / Clubs
+  for (const t of teams) {
+    results.push({
+      id: `team-${t.slug}`,
+      title: t.name,
+      subtitle: `${t.league} · ${t.country}`,
+      url: `/teams/${t.slug}`,
+      type: "club",
+      badge: "Club Hub",
+    });
+  }
+
+  return results.slice(0, 12);
 }

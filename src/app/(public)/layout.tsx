@@ -12,7 +12,7 @@ export default async function PublicLayout({
 }) {
   const [me, players] = await Promise.all([
     getCurrentUser(),
-    listPublishedPlayers(6),
+    listPublishedPlayers(6).catch(() => []),
   ]);
 
   const initialAuth = me
@@ -39,7 +39,7 @@ export default async function PublicLayout({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#080B0E] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="flex min-h-screen flex-col bg-[#0C0E12] text-slate-100 selection:bg-[#CC5500] selection:text-white">
       <MarketingNav initialAuth={initialAuth} featured={featured} />
       <main className="flex-1">{children}</main>
       <DarkFooter />

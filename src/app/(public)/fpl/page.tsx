@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Sparkles, CalendarDays, LineChart, ShieldCheck, Flame, Star, ArrowRight, TrendingUp, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "African Stars Fantasy & FPL Differential Intelligence",
+  title: "African Stars Fantasy & FPL Differential Intelligence · ScoutingReport Africa",
   description: "Fantasy Premier League intelligence for tracking African stars, fixture swings, xGI spikes, and differential captaincy options.",
 };
 
@@ -58,134 +58,142 @@ const AFRICAN_DIFFERENTIALS = [
     fixtures: ["AVL (H)", "BRE (A)", "MUN (H)"],
     status: "Box Entry Value",
     flag: "🇸🇳",
-    slug: "pape-matar-sarr",
+    slug: "lamine-camara",
   },
 ];
 
-export default function FplPage() {
+export default function FPLHubPage() {
   return (
-    <div className="container mx-auto px-4 lg:px-8 py-10 max-w-7xl space-y-10">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-7xl space-y-10 font-['Inter']">
       {/* Header */}
-      <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-[#0c161d] via-[#0e1921] to-[#0a1116] p-8 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-wider">
-            <Sparkles className="h-3.5 w-3.5" /> Fantasy & FPL Differential Hub
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[rgba(224,192,178,0.12)]">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
+            <Zap className="h-3.5 w-3.5 text-[#CC5500]" />
+            <span>FPL African Differentials & Underlying Telemetry</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h1 className="font-['Public_Sans'] text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
             African Fantasy Intelligence
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Uncover high-upside differentials, expected goal involvement (xGI) surges, and fixture difficulty matrices for African stars across top leagues.
+          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
+            Track low-ownership African differentials (&lt; 15%), underlying xG + xA spikes, fixture ticker swings, and AFCON form trends.
           </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/players"
+            className="px-4 py-2.5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"
+          >
+            Database Profiles
+          </Link>
+          <Link
+            href="/watchlists"
+            className="px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
+          >
+            FPL Shortlist
+          </Link>
         </div>
       </div>
 
-      {/* Differential Picks Showcase */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Flame className="h-4 w-4 text-amber-400" />
-            <h2 className="text-xl font-black text-white">
-              Featured African Differentials (&lt; 15% Ownership)
-            </h2>
-          </div>
-          <span className="text-xs font-mono text-slate-400">Gameweek Analytics</span>
+      {/* Gameweek Strategy Banner */}
+      <div className="rounded-[6px] border border-[rgba(224,192,178,0.15)] bg-[#12151C] p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+        <div className="space-y-2 max-w-2xl">
+          <span className="rounded-[3px] bg-[#CC5500]/20 px-2 py-0.5 text-[10px] font-['Public_Sans'] font-black uppercase tracking-wider text-[#FFB693] border border-[#CC5500]/30">
+            Gameweek Tactical Briefing
+          </span>
+          <h2 className="font-['Public_Sans'] text-xl sm:text-2xl font-black text-white uppercase">
+            High Differential Potential: West African Wingers
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Upcoming fixture swings favor dynamic transitional attackers. Kudus and Jackson maintain top-tier xGI numbers while under-owned in over 85% of active squads.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {AFRICAN_DIFFERENTIALS.map((player) => (
+        <div className="flex items-center gap-4 shrink-0">
+          <div className="rounded-[4px] bg-[#0C0E12] border border-[rgba(224,192,178,0.1)] px-4 py-2 text-center">
+            <div className="text-[10px] font-['Public_Sans'] font-bold uppercase text-slate-400">Average xGI</div>
+            <div className="font-mono text-xl font-black text-[#FFB693]">0.52 / 90</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Differentials Grid */}
+      <div className="space-y-6">
+        <h2 className="font-['Public_Sans'] text-xl font-black uppercase text-white tracking-tight">
+          Spotlight Differentials (&lt; 15% Ownership)
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {AFRICAN_DIFFERENTIALS.map((diff) => (
             <div
-              key={player.name}
-              className="rounded-3xl border border-white/10 bg-[#0c1218] p-5 flex flex-col justify-between space-y-4 hover:border-cyan-500/30 transition-all shadow-lg"
+              key={diff.name}
+              className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 hover:border-[#CC5500]/50 hover:bg-[#171B23] transition-all flex flex-col justify-between space-y-4 shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-lg">{player.flag}</span>
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/20">
-                    {player.status}
+              <div className="space-y-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">{diff.flag}</span>
+                      <span className="text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-wider text-slate-400">
+                        {diff.club}
+                      </span>
+                    </div>
+                    <h3 className="font-['Public_Sans'] text-base font-black text-white mt-0.5">
+                      {diff.name}
+                    </h3>
+                  </div>
+
+                  <span className="rounded-[3px] bg-[#CC5500]/20 px-2 py-0.5 text-[10px] font-mono font-bold text-[#FFB693] border border-[#CC5500]/30">
+                    {diff.position}
                   </span>
                 </div>
 
-                <h3 className="font-bold text-base text-white truncate">{player.name}</h3>
-                <p className="text-xs text-slate-400">
-                  {player.club} · <span className="font-semibold text-slate-200">{player.position}</span>
-                </p>
-
-                <div className="mt-4 grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-[#131d25] border border-white/5 text-center">
-                  <div>
-                    <span className="text-[9px] uppercase font-bold text-slate-400 block">Price</span>
-                    <span className="font-mono text-xs font-black text-white">{player.price}</span>
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[rgba(224,192,178,0.06)] font-mono text-xs">
+                  <div className="rounded-[4px] bg-[#0C0E12] p-2 border border-[rgba(224,192,178,0.06)]">
+                    <div className="text-[9px] font-['Public_Sans'] uppercase text-slate-400 font-bold">Price</div>
+                    <div className="font-bold text-white">{diff.price}</div>
                   </div>
-                  <div>
-                    <span className="text-[9px] uppercase font-bold text-slate-400 block">Owned</span>
-                    <span className="font-mono text-xs font-black text-amber-400">{player.ownership}</span>
+                  <div className="rounded-[4px] bg-[#0C0E12] p-2 border border-[rgba(224,192,178,0.06)]">
+                    <div className="text-[9px] font-['Public_Sans'] uppercase text-slate-400 font-bold">Owned</div>
+                    <div className="font-bold text-[#FFB693]">{diff.ownership}</div>
                   </div>
-                  <div>
-                    <span className="text-[9px] uppercase font-bold text-slate-400 block">xGI/90</span>
-                    <span className="font-mono text-xs font-black text-emerald-400">{player.xGI90}</span>
+                  <div className="rounded-[4px] bg-[#0C0E12] p-2 border border-[rgba(224,192,178,0.06)]">
+                    <div className="text-[9px] font-['Public_Sans'] uppercase text-slate-400 font-bold">xGI/90</div>
+                    <div className="font-bold text-white">{diff.xGI90}</div>
+                  </div>
+                  <div className="rounded-[4px] bg-[#0C0E12] p-2 border border-[rgba(224,192,178,0.06)]">
+                    <div className="text-[9px] font-['Public_Sans'] uppercase text-slate-400 font-bold">Form</div>
+                    <div className="font-bold text-[#FFB693]">{diff.form}</div>
                   </div>
                 </div>
 
-                <div className="mt-3">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Upcoming Fixtures:</span>
-                  <div className="flex items-center gap-1.5">
-                    {player.fixtures.map((fix) => (
+                <div className="space-y-1 pt-2">
+                  <div className="text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest text-slate-400">
+                    Upcoming 3 Fixtures
+                  </div>
+                  <div className="flex gap-1.5 font-mono text-[11px]">
+                    {diff.fixtures.map((f, i) => (
                       <span
-                        key={fix}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/20"
+                        key={i}
+                        className="flex-1 py-1 rounded-[3px] bg-[#0C0E12] border border-[rgba(224,192,178,0.08)] text-center text-slate-200 font-bold"
                       >
-                        {fix}
+                        {f}
                       </span>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/5">
-                <Link
-                  href={`/players/${player.slug}`}
-                  className="w-full py-2 rounded-xl bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 text-slate-200 text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
-                >
-                  View Full Scout Profile <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
+              <Link
+                href={`/players/${diff.slug}`}
+                className="flex items-center justify-between pt-3 border-t border-[rgba(224,192,178,0.08)] text-xs font-['Public_Sans'] font-bold text-[#FFB693] hover:text-white transition-colors"
+              >
+                <span>Full Scout Dossier</span>
+                <ArrowRight className="h-3.5 w-3.5 text-[#CC5500]" />
+              </Link>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Decision Tools Framework */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-3xl bg-[#0c1218] border border-white/10 space-y-3">
-          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <CalendarDays className="h-5 w-5" />
-          </div>
-          <h3 className="text-base font-bold text-white">Fixture Swing Lens</h3>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Isolate positive 5-gameweek fixture swings for African assets and plan transfers ahead of the general curve.
-          </p>
-        </div>
-
-        <div className="p-6 rounded-3xl bg-[#0c1218] border border-white/10 space-y-3">
-          <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
-            <LineChart className="h-5 w-5" />
-          </div>
-          <h3 className="text-base font-bold text-white">Underlying Shot Volume</h3>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Identify forwards creating high non-penalty xG and midfielders dominating set-piece duty before points haul.
-          </p>
-        </div>
-
-        <div className="p-6 rounded-3xl bg-[#0c1218] border border-white/10 space-y-3">
-          <div className="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
-          <h3 className="text-base font-bold text-white">AFCON & Rotation Risk</h3>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Monitor continental tournament call-ups, international travel loads, and recovery schedules.
-          </p>
         </div>
       </div>
     </div>

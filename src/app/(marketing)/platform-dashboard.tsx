@@ -13,7 +13,10 @@ import {
   Shield,
   Star,
   Activity,
-  CheckCircle2
+  CheckCircle2,
+  Sliders,
+  Layers,
+  Crosshair
 } from "lucide-react";
 
 type Prospect = {
@@ -98,7 +101,7 @@ const FEATURED_PROSPECTS: Prospect[] = [
     rating: 8.2,
     marketValue: "€40,000,000",
     attributes: { pace: 88, dribbling: 84, shooting: 81, passing: 76, physical: 83, defense: 45 },
-    strengths: ["Blindside Movement", "Box Entry Timing", "Counter-attack Catalyst"],
+    strengths: ["Blind-side Channel Runs", "Ball-Carrying Under Pressure", "High-Volume Box Entries"],
   },
   {
     slug: "simon-adingra",
@@ -106,52 +109,62 @@ const FEATURED_PROSPECTS: Prospect[] = [
     age: 23,
     club: "Brighton & Hove Albion",
     league: "Premier League",
-    nation: "Ivory Coast",
+    nation: "Côte d'Ivoire",
     flag: "🇨🇮",
     position: "Winger (LW/RW)",
     role: "Direct 1v1 Specialist",
     rating: 8.1,
     marketValue: "€30,000,000",
     attributes: { pace: 91, dribbling: 89, shooting: 78, passing: 77, physical: 72, defense: 48 },
-    strengths: ["Two-footed Delivery", "Rapid Deceleration", "High-pressing Value"],
+    strengths: ["Bilateral Crossing", "Sudden Deceleration", "Decisive AFCON Pedigree"],
   },
 ];
 
 export function PlatformDashboard() {
-  const [selectedSlug, setSelectedSlug] = useState<string>("victor-boniface");
-  const [activeCategory, setActiveCategory] = useState<"all" | "FWD" | "MID" | "DEF">("all");
-
-  const current = FEATURED_PROSPECTS.find((p) => p.slug === selectedSlug) ?? FEATURED_PROSPECTS[0];
+  const [selectedProspect, setSelectedProspect] = useState<Prospect>(FEATURED_PROSPECTS[0]);
+  const [filterPos, setFilterPos] = useState<"ALL" | "ATT" | "MID">("ALL");
 
   const filtered = FEATURED_PROSPECTS.filter((p) => {
-    if (activeCategory === "FWD") return p.position.includes("Forward") || p.position.includes("Winger");
-    if (activeCategory === "MID") return p.position.includes("Midfielder");
-    if (activeCategory === "DEF") return p.position.includes("Defender");
+    if (filterPos === "ATT") return p.position.includes("Forward") || p.position.includes("Winger");
+    if (filterPos === "MID") return p.position.includes("Midfielder");
     return true;
   });
 
   return (
-    <div className="w-full">
-      {/* Category Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-2 bg-[#0c1218] p-1.5 rounded-2xl border border-white/10">
+    <div className="rounded-[6px] border border-[rgba(224,192,178,0.15)] bg-[#0C0E12] overflow-hidden shadow-2xl">
+      {/* Top Cockpit Header */}
+      <div className="flex flex-wrap items-center justify-between border-b border-[rgba(224,192,178,0.12)] bg-[#12151C] px-6 py-4 gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-3 w-3 rounded-full bg-[#CC5500]" />
+          <div>
+            <h3 className="font-['Public_Sans'] text-sm font-extrabold uppercase tracking-wider text-white">
+              Kinetic Evaluation Matrix
+            </h3>
+            <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+              Live Positional Benchmark & Technical Split (2025/2026 Season)
+            </p>
+          </div>
+        </div>
+
+        {/* Position Filter Tabs */}
+        <div className="flex items-center gap-1.5 rounded-[6px] bg-[#0C0E12] p-1 border border-[rgba(224,192,178,0.1)] font-['Public_Sans'] text-xs font-bold uppercase">
           <button
             type="button"
-            onClick={() => setActiveCategory("all")}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              activeCategory === "all"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+            onClick={() => setFilterPos("ALL")}
+            className={`rounded-[4px] px-3 py-1 transition-all ${
+              filterPos === "ALL"
+                ? "bg-[#CC5500] text-white"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            All Positions
+            All Roles
           </button>
           <button
             type="button"
-            onClick={() => setActiveCategory("FWD")}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              activeCategory === "FWD"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+            onClick={() => setFilterPos("ATT")}
+            className={`rounded-[4px] px-3 py-1 transition-all ${
+              filterPos === "ATT"
+                ? "bg-[#CC5500] text-white"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -159,153 +172,160 @@ export function PlatformDashboard() {
           </button>
           <button
             type="button"
-            onClick={() => setActiveCategory("MID")}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              activeCategory === "MID"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+            onClick={() => setFilterPos("MID")}
+            className={`rounded-[4px] px-3 py-1 transition-all ${
+              filterPos === "MID"
+                ? "bg-[#CC5500] text-white"
                 : "text-slate-400 hover:text-white"
             }`}
           >
             Midfielders
           </button>
         </div>
-
-        <Link
-          href="/players"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300"
-        >
-          View 200+ scouted players in database <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
       </div>
 
-      {/* Main Showcase Panel */}
-      <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left Prospects List */}
-        <div className="lg:col-span-5 space-y-2.5">
-          {filtered.map((p) => {
-            const isSelected = p.slug === selectedSlug;
-            return (
-              <button
-                key={p.slug}
-                type="button"
-                onClick={() => setSelectedSlug(p.slug)}
-                className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between ${
-                  isSelected
-                    ? "bg-[#121c22] border-emerald-500/40 shadow-lg shadow-emerald-500/10"
-                    : "bg-[#0c1218]/90 border-white/10 hover:border-white/20 hover:bg-[#10171e]"
-                }`}
-              >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-lg font-black border border-white/10 shadow-inner">
-                    {p.flag}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-white truncate">{p.name}</span>
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/5">
-                        {p.nation}
+      {/* Main Split Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Column: Prospect Selector List */}
+        <div className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-[rgba(224,192,178,0.12)] bg-[#12151C]/60 p-4 space-y-2">
+          <div className="px-2 py-1 text-[10px] font-['Public_Sans'] font-black uppercase tracking-widest text-[#FFB693]">
+            Select Scouted Prospect
+          </div>
+
+          <div className="space-y-1.5 max-h-[460px] overflow-y-auto pr-1">
+            {filtered.map((p) => {
+              const active = selectedProspect.slug === p.slug;
+              return (
+                <button
+                  key={p.slug}
+                  type="button"
+                  onClick={() => setSelectedProspect(p)}
+                  className={`w-full text-left rounded-[6px] p-3.5 transition-all border ${
+                    active
+                      ? "border-[#CC5500]/60 bg-[#171B23] shadow-md"
+                      : "border-transparent bg-[#0C0E12] hover:bg-[#151820]"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-lg">{p.flag}</span>
+                      <div>
+                        <div className="font-['Public_Sans'] text-sm font-extrabold text-white">
+                          {p.name}
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-medium">
+                          {p.club} · {p.league}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 justify-end font-mono text-xs font-black text-[#FFB693]">
+                        <Star className="h-3 w-3 fill-[#CC5500] text-[#CC5500]" />
+                        <span>{p.rating.toFixed(1)}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-slate-500">
+                        {p.marketValue}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 truncate mt-0.5">
-                      {p.club} · {p.position}
-                    </p>
                   </div>
-                </div>
-
-                <div className="flex flex-col items-end shrink-0 ml-3">
-                  <div className="flex items-center gap-1 text-emerald-400 font-mono font-black text-sm">
-                    <Star className="h-3 w-3 fill-emerald-400" />
-                    <span>{p.rating}</span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 font-mono">{p.marketValue}</span>
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Right Deep Intelligence Breakdown */}
-        <div className="lg:col-span-7 rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-[#0e161c] to-[#0a1014] p-6 lg:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 blur-3xl rounded-full pointer-events-none" />
-
-          {/* Top Header */}
-          <div className="relative z-10">
-            <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-white/10">
+        {/* Right Column: Selected Prospect Tactical Breakdown */}
+        <div className="lg:col-span-7 p-6 sm:p-8 bg-[#0C0E12] flex flex-col justify-between space-y-6">
+          {/* Top Profile Strip */}
+          <div className="space-y-3 pb-5 border-b border-[rgba(224,192,178,0.1)]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{current.flag}</span>
-                  <h4 className="text-2xl font-black text-white tracking-tight">{current.name}</h4>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-black uppercase">
-                    Verified Scout Profile
+                  <span className="text-lg">{selectedProspect.flag}</span>
+                  <span className="rounded-[4px] bg-[#CC5500]/20 px-2 py-0.5 text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest text-[#FFB693] border border-[#CC5500]/30">
+                    {selectedProspect.position}
                   </span>
+                  <span className="text-xs text-slate-400 font-mono">Age {selectedProspect.age}</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
-                  {current.role} · <span className="text-slate-200">{current.club}</span> ({current.league})
+                <h4 className="font-['Public_Sans'] text-2xl font-black text-white mt-1">
+                  {selectedProspect.name}
+                </h4>
+                <p className="text-xs text-slate-400 font-medium">
+                  {selectedProspect.role} · {selectedProspect.club} ({selectedProspect.league})
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-[10px] uppercase font-bold text-slate-400">Scout Score</p>
-                  <p className="text-2xl font-mono font-black text-emerald-400">{current.rating} / 10</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tactical Strengths */}
-            <div className="my-6">
-              <p className="text-[11px] uppercase font-bold tracking-wider text-amber-400 mb-2.5 flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5" /> Key Tactical Superpowers
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {current.strengths.map((str) => (
-                  <span
-                    key={str}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-200"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-amber-400" /> {str}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Radar / Stat Bars */}
-            <div className="space-y-3.5 my-6">
-              <p className="text-[11px] uppercase font-bold tracking-wider text-emerald-400 flex items-center gap-1.5">
-                <Activity className="h-3.5 w-3.5" /> Benchmark Percentiles (vs Position Cohort)
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {Object.entries(current.attributes).map(([attr, val]) => (
-                  <div
-                    key={attr}
-                    className="p-3 rounded-2xl bg-[#131d24] border border-white/5 space-y-1.5"
-                  >
-                    <div className="flex justify-between text-[11px]">
-                      <span className="uppercase font-bold text-slate-400">{attr}</span>
-                      <span className="font-mono font-bold text-emerald-400">{val}%</span>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500"
-                        style={{ width: `${val}%` }}
-                      />
-                    </div>
+              <div className="flex flex-col items-end">
+                <div className="rounded-[6px] border border-[#CC5500]/40 bg-[#CC5500]/10 px-3.5 py-1.5 text-center">
+                  <div className="text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest text-[#FFB693]">
+                    Scout Grade
                   </div>
-                ))}
+                  <div className="font-mono text-xl font-black text-white">
+                    {selectedProspect.rating.toFixed(1)} / 10
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Action */}
-          <div className="relative z-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-slate-400">
-              Estimated Market Valuation: <span className="font-bold text-white">{current.marketValue}</span>
+          {/* Benchmark Percentile Bars */}
+          <div className="space-y-3">
+            <div className="text-[10px] font-['Public_Sans'] font-black uppercase tracking-widest text-slate-400">
+              Positional Percentile vs Continental Benchmark
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5">
+              {[
+                { label: "Pace & Acceleration", val: selectedProspect.attributes.pace },
+                { label: "1v1 Dribbling & Ball Carry", val: selectedProspect.attributes.dribbling },
+                { label: "Finishing & Ball Striking", val: selectedProspect.attributes.shooting },
+                { label: "Key Passes & Chance Creation", val: selectedProspect.attributes.passing },
+                { label: "Physical Duels & Stamina", val: selectedProspect.attributes.physical },
+                { label: "Defensive Engagement", val: selectedProspect.attributes.defense },
+              ].map((attr) => (
+                <div key={attr.label} className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-300 font-medium">{attr.label}</span>
+                    <span className="font-mono font-bold text-[#FFB693]">{attr.val}%</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-none bg-[#1E232D] overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#9C3F00] to-[#CC5500]"
+                      style={{ width: `${attr.val}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Key Scouted Strengths */}
+          <div className="space-y-2 pt-4 border-t border-[rgba(224,192,178,0.1)]">
+            <div className="text-[10px] font-['Public_Sans'] font-black uppercase tracking-widest text-slate-400">
+              Verified Tactical Superpowers
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {selectedProspect.strengths.map((str) => (
+                <span
+                  key={str}
+                  className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.12)] px-2.5 py-1 text-xs text-slate-200 font-medium"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5 text-[#CC5500]" />
+                  <span>{str}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA Link */}
+          <div className="pt-2">
             <Link
-              href={`/players/${current.slug}`}
-              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
+              href={`/players/${selectedProspect.slug}`}
+              className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-[6px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"
             >
-              Open Full Scout Dossier <ArrowRight className="h-4 w-4" />
+              <span>Inspect Full Dossier ({selectedProspect.name})</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

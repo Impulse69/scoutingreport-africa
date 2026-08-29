@@ -1,411 +1,380 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
-  ArrowRight,
-  Users,
-  Target,
   Compass,
-  Activity,
-  ScrollText,
-  TrendingUp,
-  Sparkles,
-  Shield,
+  Trophy,
+  Users,
   Search,
-  CheckCircle2,
-  LayoutDashboard,
-  Flame,
-  Globe2,
+  ArrowRight,
+  Shield,
+  Sparkles,
   Layers,
-  BarChart3,
-  Award
+  Activity,
+  Flame,
+  Globe,
+  SlidersHorizontal,
+  Star,
+  CheckCircle2,
+  Lock,
+  FileSpreadsheet,
+  Database
 } from "lucide-react";
-import { MarketingNav } from "@/components/shared/nav/marketing-nav";
-import { DarkFooter } from "@/components/shared/nav/dark-footer";
-import { PricingPlans } from "./pricing-plans";
-import { NewsletterForm } from "./newsletter-form";
 import { PlatformDashboard } from "./platform-dashboard";
-import { getCurrentUser } from "@/lib/core/auth-helpers";
-import { listPublishedPlayers } from "@/lib/features/players/queries";
-import { listTopTeams } from "@/lib/features/teams/mock";
-import { POSITIONS } from "@/lib/shared/constants";
+import { PricingPlans } from "./pricing-plans";
 
-export default async function LandingPage() {
-  const [me, players] = await Promise.all([
-    getCurrentUser(),
-    listPublishedPlayers(6),
-  ]);
+const CAF_ZONES = [
+  {
+    name: "WAFU Zone A & B (West Africa)",
+    countries: "Nigeria, Senegal, Ghana, Côte d'Ivoire, Mali, Guinea",
+    desc: "Unmatched athletic intensity, 1v1 transitional speed, and dynamic technical ball-carriers.",
+    talents: "Boniface, Kudus, Lamine Camara, Jackson, Adingra",
+    color: "from-[#CC5500]/20 to-[#9C3F00]/10",
+  },
+  {
+    name: "UNAF (North Africa)",
+    countries: "Morocco, Egypt, Algeria, Tunisia",
+    desc: "Tactical positional discipline, press resistance, tight-space control, and continental giants.",
+    talents: "Brahim Díaz, Ounahi, Marmoush, Ziyech",
+    color: "from-[#8C4E2E]/20 to-[#CC5500]/10",
+  },
+  {
+    name: "COSAFA (Southern Africa)",
+    countries: "South Africa, Zambia, Angola, Zimbabwe, Mozambique",
+    desc: "Technical possession fluidity, rapid attacking rotations, and tactical pressing structures.",
+    talents: "Mokoena, Daka, Luvumbo, Mudau",
+    color: "from-[#CC5500]/20 to-[#9C3F00]/10",
+  },
+  {
+    name: "CECAFA (East & Central)",
+    countries: "Kenya, Uganda, Tanzania, Sudan, Ethiopia",
+    desc: "High physical stamina, defensive work rate, and rapidly expanding academy infrastructure.",
+    talents: "Olunga, Samatta, Miya",
+    color: "from-[#8C4E2E]/20 to-[#CC5500]/10",
+  },
+  {
+    name: "UNIFFAC & Global Diaspora",
+    countries: "Cameroon, DR Congo, Gabon, France, UK, Belgium",
+    desc: "Dual-national elite prospects developed in top academies with multi-lingual recruitment pipelines.",
+    talents: "Baleba, Mbeumo, Wissa, Anguissa",
+    color: "from-[#CC5500]/20 to-[#9C3F00]/10",
+  },
+];
 
-  const featured = {
-    players: players.map((p) => ({
-      slug: p.slug,
-      name: p.fullName,
-      tail:
-        POSITIONS.find((pos) => pos.code === p.primaryPositionCode)?.code ??
-        undefined,
-    })),
-    teams: listTopTeams(6).map((t) => ({
-      slug: t.slug,
-      name: t.name,
-      tail: t.country,
-    })),
-  };
+const ANALYTICAL_PILLARS = [
+  {
+    icon: Activity,
+    num: "01",
+    title: "Live Match Telemetry & xG",
+    description: "Per-90 standardized data across domestic African leagues, continental cups, and European landing divisions.",
+  },
+  {
+    icon: Shield,
+    num: "02",
+    title: "Verified Human Scout Dossiers",
+    description: "On-ground scouting reports graded on tactical structure, decision speed, off-ball movement, and psychological resilience.",
+  },
+  {
+    icon: SlidersHorizontal,
+    num: "03",
+    title: "Tactical Role & Ceiling Fit",
+    description: "Advanced role matching evaluating how a prospect transitions to European high-pressing systems.",
+  },
+  {
+    icon: Trophy,
+    num: "04",
+    title: "Recruitment Pipeline Tools",
+    description: "Multi-tiered watchlists, scout note sharing, market valuation tracking, and direct report exporting.",
+  },
+];
 
-  const initialAuth = me
-    ? {
-        email: me.email ?? null,
-        displayName: me.email?.split("@")[0] ?? null,
-        role: me.role,
-      }
-    : null;
-
+export default function MarketingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#080B0E] text-slate-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
-      <MarketingNav initialAuth={initialAuth} featured={featured} />
+    <div className="flex flex-col min-h-screen bg-[#0C0E12] text-slate-100 selection:bg-[#CC5500] selection:text-white font-['Inter']">
+      {/* ─── 1. HERO SECTION ────────────────────────────────────────── */}
+      <section className="relative pt-16 pb-20 overflow-hidden border-b border-[rgba(224,192,178,0.12)]">
+        {/* Subtle Architectural Grid Lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#171b23_1px,transparent_1px),linear-gradient(to_bottom,#171b23_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
 
-      {/* Hero Section */}
-      <section className="relative pt-16 md:pt-24 pb-20 overflow-hidden border-b border-white/5">
-        {/* Background Ambient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full pointer-events-none" />
-        <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          {/* Eyebrow Chip */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[11px] font-['Public_Sans'] font-extrabold uppercase tracking-widest mb-6">
+            <span className="flex h-2 w-2 rounded-full bg-[#CC5500]" />
+            <span>Industrial Football Intelligence · 54 CAF Associations Covered</span>
+          </div>
 
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            {/* Top Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider shadow-inner">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-              <span>Next-Gen African Football Intelligence</span>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left Headline & Thesis */}
+            <div className="lg:col-span-7 space-y-6">
+              <h1 className="font-['Public_Sans'] text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.08] uppercase">
+                The Kinetic Archive of{" "}
+                <span className="text-[#CC5500]">
+                  African Football
+                </span>{" "}
+                Talent
+              </h1>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.08]">
-              Unearth Africa’s <br className="hidden sm:inline" />
-              <span className="gradient-text-emerald">Generational Talents</span> & Prodigies.
-            </h1>
+              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
+                Industrial precision recruitment intelligence for elite sports executives. We track, evaluate, and benchmark African prospects across grassroots academies, domestic leagues, and continental tournaments.
+              </p>
 
-            {/* Subhead */}
-            <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Bespoke scouting dossiers, tactical radar profiling, and real-time database tracking across 54 CAF associations and global landing leagues.
-            </p>
-
-            {/* Hero Quick Search Bar */}
-            <div className="pt-2 max-w-xl mx-auto">
-              <form action="/players" method="GET" className="relative flex items-center group">
-                <Search className="absolute left-4 h-5 w-5 text-emerald-400 pointer-events-none" />
-                <input
-                  type="text"
-                  name="q"
-                  placeholder="Search player, position, or CAF nation (e.g. Boniface, Striker, Senegal)…"
-                  className="w-full h-14 pl-12 pr-32 rounded-2xl bg-[#0e161c]/90 border border-emerald-500/30 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 shadow-xl transition-all"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-2 h-10 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 text-xs font-black uppercase tracking-wider shadow-md transition-all flex items-center gap-1.5"
-                >
-                  <span>Explore</span> <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              </form>
-
-              {/* Quick Filter Tags */}
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-slate-400">
-                <span className="text-[11px] uppercase font-bold text-slate-400">Trending:</span>
-                {[
-                  { label: "Victor Boniface", href: "/players/victor-boniface" },
-                  { label: "Mohammed Kudus", href: "/players/mohammed-kudus" },
-                  { label: "Lamine Camara", href: "/players/lamine-camara" },
-                  { label: "Attacking Prodigies", href: "/players?pos=FW" },
-                ].map((tag) => (
-                  <Link
-                    key={tag.label}
-                    href={tag.href}
-                    className="px-2.5 py-0.5 rounded-lg bg-white/5 hover:bg-emerald-500/15 hover:text-emerald-300 border border-white/5 transition-all text-[11px]"
+              {/* Hero Search Bar */}
+              <div className="rounded-[6px] border border-[rgba(224,192,178,0.15)] bg-[#12151C] p-2 max-w-xl shadow-xl">
+                <form action="/players" method="GET" className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#CC5500]" />
+                    <input
+                      type="text"
+                      name="q"
+                      placeholder="Search talent (e.g. Victor Boniface, Ghana, Striker)..."
+                      className="w-full h-11 pl-10 pr-4 rounded-[4px] bg-[#0C0E12] text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#CC5500]/60 font-['Inter']"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="h-11 px-5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all shrink-0"
                   >
-                    {tag.label}
+                    Search
+                  </button>
+                </form>
+                <div className="flex items-center gap-2 px-3 pt-2 text-[10px] font-mono text-slate-400">
+                  <span className="font-bold uppercase text-[#FFB693]">Popular:</span>
+                  <Link href="/players?q=Boniface" className="hover:text-white underline decoration-slate-600">
+                    Boniface
                   </Link>
-                ))}
+                  <span>·</span>
+                  <Link href="/players?q=Kudus" className="hover:text-white underline decoration-slate-600">
+                    Kudus
+                  </Link>
+                  <span>·</span>
+                  <Link href="/players?q=Lamine" className="hover:text-white underline decoration-slate-600">
+                    Lamine Camara
+                  </Link>
+                  <span>·</span>
+                  <Link href="/players?pos=FWD" className="hover:text-white underline decoration-slate-600">
+                    Strikers
+                  </Link>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <Link
+                  href="/players"
+                  className="px-6 py-3 rounded-[6px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-widest industrial-shadow transition-all flex items-center gap-2"
+                >
+                  <span>Explore Player Dossiers</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+
+                <Link
+                  href="/scout"
+                  className="px-6 py-3 rounded-[6px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-widest transition-all"
+                >
+                  Scout Department Portal
+                </Link>
               </div>
             </div>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              {me ? (
-                <Link
-                  href="/dashboard"
-                  className="w-full sm:w-auto h-12 px-8 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all"
-                >
-                  <LayoutDashboard className="h-4 w-4" /> Open Command Hub
-                </Link>
-              ) : (
-                <Link
-                  href="/auth/sign-up"
-                  className="w-full sm:w-auto h-12 px-8 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all"
-                >
-                  <Sparkles className="h-4 w-4" /> Get Free Scout Access
-                </Link>
-              )}
-              <Link
-                href="/players"
-                className="w-full sm:w-auto h-12 px-8 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider border border-white/10 flex items-center justify-center gap-2 transition-all"
-              >
-                <Users className="h-4 w-4 text-emerald-400" /> Browse 200+ Players
-              </Link>
-            </div>
-          </div>
-        </div>
+            {/* Right KPI Architecture Panel */}
+            <div className="lg:col-span-5">
+              <div className="rounded-[6px] border border-[rgba(224,192,178,0.15)] bg-[#12151C] p-6 space-y-5 shadow-2xl">
+                <div className="flex items-center justify-between border-b border-[rgba(224,192,178,0.1)] pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2.5 w-2.5 rounded-full bg-[#CC5500]" />
+                    <span className="font-['Public_Sans'] text-xs font-black uppercase tracking-wider text-white">
+                      Live Telemetry Cockpit
+                    </span>
+                  </div>
+                  <span className="font-mono text-[10px] text-[#FFB693] uppercase font-bold">
+                    SYNCED · 2025/26
+                  </span>
+                </div>
 
-        {/* Live Scout Ticker */}
-        <div className="mt-14 border-y border-white/5 bg-[#0b1015]/80 py-3 overflow-hidden backdrop-blur-md">
-          <div className="container mx-auto px-4 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 shrink-0 pr-6 border-r border-white/10">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-mono uppercase font-bold text-[10px] tracking-widest text-emerald-400">
-                LIVE SCOUT DOSSIERS
-              </span>
-            </div>
-            <div className="flex items-center gap-8 overflow-x-auto no-scrollbar py-1 text-slate-300 font-medium text-xs">
-              <Link href="/players/victor-boniface" className="flex items-center gap-2 hover:text-emerald-400 transition-colors shrink-0">
-                <span>🇳🇬 Victor Boniface</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">8.6</span>
-              </Link>
-              <span className="text-slate-700">•</span>
-              <Link href="/players/mohammed-kudus" className="flex items-center gap-2 hover:text-emerald-400 transition-colors shrink-0">
-                <span>🇬🇭 Mohammed Kudus</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">8.7</span>
-              </Link>
-              <span className="text-slate-700">•</span>
-              <Link href="/players/lamine-camara" className="flex items-center gap-2 hover:text-emerald-400 transition-colors shrink-0">
-                <span>🇸🇳 Lamine Camara</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">8.3</span>
-              </Link>
-              <span className="text-slate-700">•</span>
-              <Link href="/players/nicolas-jackson" className="flex items-center gap-2 hover:text-emerald-400 transition-colors shrink-0">
-                <span>🇸🇳 Nicolas Jackson</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">8.2</span>
-              </Link>
-              <span className="text-slate-700">•</span>
-              <Link href="/players/simon-adingra" className="flex items-center gap-2 hover:text-emerald-400 transition-colors shrink-0">
-                <span>🇨🇮 Simon Adingra</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">8.1</span>
-              </Link>
+                {/* 4 Metric Blocks */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-[4px] bg-[#0C0E12] p-4 border border-[rgba(224,192,178,0.08)]">
+                    <div className="font-mono text-2xl font-black text-white">2,400+</div>
+                    <div className="text-[10px] font-['Public_Sans'] font-bold uppercase text-slate-400 mt-1">
+                      Scouted Dossiers
+                    </div>
+                  </div>
+
+                  <div className="rounded-[4px] bg-[#0C0E12] p-4 border border-[rgba(224,192,178,0.08)]">
+                    <div className="font-mono text-2xl font-black text-[#FFB693]">54</div>
+                    <div className="text-[10px] font-['Public_Sans'] font-bold uppercase text-slate-400 mt-1">
+                      CAF Associations
+                    </div>
+                  </div>
+
+                  <div className="rounded-[4px] bg-[#0C0E12] p-4 border border-[rgba(224,192,178,0.08)]">
+                    <div className="font-mono text-2xl font-black text-white">100%</div>
+                    <div className="text-[10px] font-['Public_Sans'] font-bold uppercase text-slate-400 mt-1">
+                      Human Verified
+                    </div>
+                  </div>
+
+                  <div className="rounded-[4px] bg-[#0C0E12] p-4 border border-[rgba(224,192,178,0.08)]">
+                    <div className="font-mono text-2xl font-black text-[#CC5500]">€180M+</div>
+                    <div className="text-[10px] font-['Public_Sans'] font-bold uppercase text-slate-400 mt-1">
+                      Tracked Transfer Value
+                    </div>
+                  </div>
+                </div>
+
+                {/* Featured Dossier Teaser */}
+                <div className="rounded-[4px] bg-[#171B23] p-4 border border-[rgba(224,192,178,0.1)] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">🇳🇬</span>
+                    <div>
+                      <div className="font-['Public_Sans'] text-xs font-bold text-white">
+                        Spotlight: Victor Boniface
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        Leverkusen · 8.6 Scout Grade · 92 Physicality
+                      </div>
+                    </div>
+                  </div>
+                  <Link
+                    href="/players/victor-boniface"
+                    className="text-xs font-['Public_Sans'] font-bold text-[#FFB693] hover:text-white"
+                  >
+                    View →
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive Platform Showcase */}
-      <section className="py-20 bg-[#080B0E] relative">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12 space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider">
-              <Flame className="h-3.5 w-3.5 text-amber-400" /> Interactive Intelligence Engine
+      {/* ─── 2. INTERACTIVE PLATFORM MATRIX ─────────────────────────── */}
+      <section className="py-20 bg-[#090B0E] border-b border-[rgba(224,192,178,0.12)]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl space-y-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[rgba(224,192,178,0.1)]">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest mb-2">
+                <Activity className="h-3 w-3 text-[#CC5500]" />
+                <span>Interactive Positional Benchmarks</span>
+              </div>
+              <h2 className="font-['Public_Sans'] text-3xl font-black text-white uppercase tracking-tight">
+                Deep Talent Evaluation Matrix
+              </h2>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Deep Talent Evaluation Matrix
-            </h2>
-            <p className="text-sm text-slate-400">
-              Explore tactical percentile ranks, statistical radars, and human-scouted evaluation notes for top African stars and emerging wunderkinds.
-            </p>
+            <Link
+              href="/players"
+              className="text-xs font-['Public_Sans'] font-bold text-[#FFB693] hover:text-white uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <span>View All 2,400+ Profiles in Database</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
 
           <PlatformDashboard />
         </div>
       </section>
 
-      {/* CAF Regional Scouting Zones */}
-      <section className="py-20 border-t border-white/5 bg-[#0b1015] relative">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-14 space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-bold uppercase tracking-wider">
-              <Globe2 className="h-3.5 w-3.5" /> Continental Coverage
+      {/* ─── 3. 5 CAF REGIONAL SCOUTING ZONES ───────────────────────── */}
+      <section className="py-20 bg-[#0C0E12] border-b border-[rgba(224,192,178,0.12)]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl space-y-12">
+          <div className="space-y-3 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
+              <Globe className="h-3 w-3 text-[#CC5500]" />
+              <span>Continental Coverage Architecture</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Scouting Across All 5 CAF Zones
+            <h2 className="font-['Public_Sans'] text-3xl sm:text-4xl font-black text-white uppercase tracking-tight">
+              5 CAF Regional Scouting Zones
             </h2>
-            <p className="text-sm text-slate-400">
-              Direct intelligence from local domestic academies, regional tournaments, and European landing pipelines.
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Africa is not a monolith. Our scouting methodology splits the continent into distinct developmental zones to contextualize physical profiles, tactical demands, and academy traditions.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                zone: "WAFU Zone A & B",
-                region: "West Africa",
-                countries: ["Nigeria 🇳🇬", "Ghana 🇬🇭", "Senegal 🇸🇳", "Ivory Coast 🇨🇮", "Mali 🇲🇱"],
-                prospectCount: "85+ Scouted",
-                accent: "border-emerald-500/30 bg-emerald-500/5",
-                tagColor: "text-emerald-400 bg-emerald-500/10",
-              },
-              {
-                zone: "UNAF",
-                region: "North Africa",
-                countries: ["Morocco 🇲🇦", "Egypt 🇪🇬", "Algeria 🇩🇿", "Tunisia 🇹🇳"],
-                prospectCount: "48+ Scouted",
-                accent: "border-amber-500/30 bg-amber-500/5",
-                tagColor: "text-amber-400 bg-amber-500/10",
-              },
-              {
-                zone: "COSAFA",
-                region: "Southern Africa",
-                countries: ["South Africa 🇿🇦", "Zambia 🇿🇲", "Angola 🇦🇴", "Zimbabwe 🇿🇼"],
-                prospectCount: "36+ Scouted",
-                accent: "border-cyan-500/30 bg-cyan-500/5",
-                tagColor: "text-cyan-400 bg-cyan-500/10",
-              },
-              {
-                zone: "CECAFA",
-                region: "East & Central Africa",
-                countries: ["Kenya 🇰🇪", "Uganda 🇺🇬", "Tanzania 🇹🇿", "Ethiopia 🇪🇹"],
-                prospectCount: "24+ Scouted",
-                accent: "border-indigo-500/30 bg-indigo-500/5",
-                tagColor: "text-indigo-400 bg-indigo-500/10",
-              },
-              {
-                zone: "UNIFFAC",
-                region: "Central Africa",
-                countries: ["Cameroon 🇨🇲", "DR Congo 🇨🇩", "Gabon 🇬🇦", "Congo 🇨🇬"],
-                prospectCount: "32+ Scouted",
-                accent: "border-rose-500/30 bg-rose-500/5",
-                tagColor: "text-rose-400 bg-rose-500/10",
-              },
-              {
-                zone: "Global Diaspora",
-                region: "European Landing Leagues",
-                countries: ["Belgium 🇧🇪", "France 🇫🇷", "Portugal 🇵🇹", "Turkey 🇹🇷"],
-                prospectCount: "110+ Tracked",
-                accent: "border-purple-500/30 bg-purple-500/5",
-                tagColor: "text-purple-400 bg-purple-500/10",
-              },
-            ].map((z) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {CAF_ZONES.map((zone, i) => (
               <div
-                key={z.zone}
-                className={`p-6 rounded-3xl border ${z.accent} backdrop-blur-xl flex flex-col justify-between space-y-4 hover:scale-[1.02] transition-transform`}
+                key={zone.name}
+                className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 space-y-4 shadow-lg hover:border-[#CC5500]/40 transition-colors flex flex-col justify-between"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${z.tagColor}`}>
-                      {z.region}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-black text-[#FFB693]">
+                      ZONE 0{i + 1}
                     </span>
-                    <span className="font-mono text-xs font-bold text-slate-300">
-                      {z.prospectCount}
+                    <span className="text-xs font-['Public_Sans'] font-bold text-slate-400 uppercase">
+                      CAF REGION
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{z.zone}</h3>
-                  <div className="flex flex-wrap gap-1.5 mt-3">
-                    {z.countries.map((c) => (
-                      <span
-                        key={c}
-                        className="text-xs px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 border border-white/5"
-                      >
-                        {c}
-                      </span>
-                    ))}
+
+                  <h3 className="font-['Public_Sans'] text-base font-extrabold text-white">
+                    {zone.name}
+                  </h3>
+
+                  <div className="text-[11px] font-mono text-[#FFB693] bg-[#0C0E12] p-2 rounded-[4px] border border-[rgba(224,192,178,0.06)]">
+                    {zone.countries}
                   </div>
+
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    {zone.desc}
+                  </p>
                 </div>
 
-                <Link
-                  href="/players"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 pt-2"
+                <div className="pt-4 border-t border-[rgba(224,192,178,0.08)] text-[11px]">
+                  <span className="font-bold text-slate-300">Key Prospects: </span>
+                  <span className="text-slate-400">{zone.talents}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 4. ANALYTICAL PILLARS ──────────────────────────────────── */}
+      <section className="py-20 bg-[#090B0E] border-b border-[rgba(224,192,178,0.12)]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl space-y-12">
+          <div className="space-y-3 max-w-2xl">
+            <h2 className="font-['Public_Sans'] text-3xl font-black text-white uppercase tracking-tight">
+              Four Pillars of African Talent Intelligence
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              How we transform raw grassroots talent data into actionable recruitment intelligence.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {ANALYTICAL_PILLARS.map((p) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.num}
+                  className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 space-y-4 shadow-lg"
                 >
-                  Explore Zone Prospects →
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-black text-[#CC5500]">
+                      {p.num}
+                    </span>
+                    <Icon className="h-5 w-5 text-[#FFB693]" />
+                  </div>
 
-      {/* Scouting Methodology & Feature Pillars */}
-      <section className="py-20 bg-[#080B0E] border-t border-white/5">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16 space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider">
-              <Award className="h-3.5 w-3.5" /> Analytical Rigor
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Four Pillars of Talent Verification
-            </h2>
-            <p className="text-sm text-slate-400">
-              How our on-ground scouting network and data scientists evaluate high-potential players.
-            </p>
-          </div>
+                  <h3 className="font-['Public_Sans'] text-sm font-extrabold text-white uppercase">
+                    {p.title}
+                  </h3>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                icon: BarChart3,
-                title: "Quantitative Metrics",
-                desc: "Granular per-90 metrics, expected goals (xG), progressive actions, and physical recovery load.",
-              },
-              {
-                icon: ScrollText,
-                title: "Human Scout Reports",
-                desc: "Verified on-site evaluations analyzing mental composure, tactical intelligence, and coachability.",
-              },
-              {
-                icon: Target,
-                title: "Tactical Role Fit",
-                desc: "Percentile pizzas and role classification (e.g. Sweeper Keeper, Inverted Winger, Press-Resistant 6).",
-              },
-              {
-                icon: TrendingUp,
-                title: "Career & Value Index",
-                desc: "Projected market ceilings, contract status, transfer interest, and step-up readiness.",
-              },
-            ].map((pillar) => (
-              <div
-                key={pillar.title}
-                className="p-6 rounded-3xl bg-[#0e141a] border border-white/10 hover:border-emerald-500/30 transition-all space-y-3"
-              >
-                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
-                  <pillar.icon className="h-5 w-5" />
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    {p.description}
+                  </p>
                 </div>
-                <h3 className="text-base font-bold text-white">{pillar.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{pillar.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Pricing / Tiers Section */}
-      <section className="py-20 bg-[#0b1015] border-t border-white/5">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12 space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider">
-              <Shield className="h-3.5 w-3.5" /> Scout Access
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Flexible Intelligence Tiers
-            </h2>
-            <p className="text-sm text-slate-400">
-              From independent scouts and analysts to top-tier club recruitment departments.
-            </p>
-          </div>
-
+      {/* ─── 5. PRICING & SUBSCRIPTION TIERS ───────────────────────── */}
+      <section className="py-20 bg-[#0C0E12]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <PricingPlans />
         </div>
       </section>
-
-      {/* Newsletter Dispatch */}
-      <section className="py-20 bg-[#080B0E] border-t border-white/5">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-[#0e171d] to-[#0a1014] p-8 md:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden">
-            <div className="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto">
-              <ScrollText className="h-6 w-6" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-              Weekly African Scouting Dispatch
-            </h2>
-            <p className="text-sm text-slate-400 max-w-lg mx-auto">
-              Receive curated dossiers on breakout U21 talents, transfer rumblings across CAF leagues, and advanced statistical breakdowns directly in your inbox.
-            </p>
-            <div className="max-w-md mx-auto">
-              <NewsletterForm />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <DarkFooter />
     </div>
   );
 }

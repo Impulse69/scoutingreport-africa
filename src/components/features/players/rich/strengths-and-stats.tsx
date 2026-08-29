@@ -10,32 +10,37 @@ import {
 } from "recharts";
 import type { RichPlayerProfile } from "@/lib/features/players/rich-mock";
 
-export function KeyStrengths({ player }: { player: RichPlayerProfile }) {
+export function KeyStrengths({
+  player,
+  strengths,
+}: {
+  player?: RichPlayerProfile;
+  strengths?: { label: string; value: number }[];
+}) {
+  const data = strengths ?? player?.keyStrengths ?? [];
+
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="flex items-center justify-between border-b border-white/5 px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
-          Key Strengths
+    <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] overflow-hidden shadow-xl font-['Inter']">
+      <header className="flex items-center justify-between border-b border-[rgba(224,192,178,0.1)] px-6 py-4 bg-[#171B23]">
+        <p className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-wider text-white">
+          Tactical & Physical Superpowers
         </p>
-        <button
-          type="button"
-          className="rounded border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-300 hover:bg-white/10 transition-colors"
-        >
-          Goalkeeper
-        </button>
+        <span className="rounded-[3px] bg-[#CC5500]/20 px-2 py-0.5 font-mono text-[10px] font-bold text-[#FFB693] border border-[#CC5500]/30">
+          Scout Index
+        </span>
       </header>
 
-      <div className="grid gap-6 px-6 py-5 md:grid-cols-[1fr_1.2fr]">
-        <ul className="space-y-3.5">
-          {player.keyStrengths.map((s) => (
-            <li key={s.label}>
-              <div className="mb-1 flex items-center justify-between font-mono text-xs">
-                <span className="text-zinc-300">{s.label}</span>
-                <span className="font-bold tabular-nums text-cyan-300">{s.value}</span>
+      <div className="grid gap-6 p-6 md:grid-cols-[1fr_1.2fr]">
+        <ul className="space-y-4">
+          {data.map((s) => (
+            <li key={s.label} className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-300 font-medium">{s.label}</span>
+                <span className="font-mono font-bold tabular-nums text-[#FFB693]">{s.value}%</span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+              <div className="h-1.5 w-full bg-[#1E232D] overflow-hidden rounded-none">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-300"
+                  className="h-full bg-gradient-to-r from-[#9C3F00] to-[#CC5500]"
                   style={{ width: `${s.value}%` }}
                 />
               </div>
@@ -49,116 +54,126 @@ export function KeyStrengths({ player }: { player: RichPlayerProfile }) {
               cx="50%"
               cy="50%"
               outerRadius="78%"
-              data={player.keyStrengths.map((s) => ({
+              data={data.map((s) => ({
                 attr: s.label,
                 value: s.value,
                 fullMark: 100,
               }))}
             >
-              <PolarGrid stroke="rgba(255,255,255,0.08)" />
+              <PolarGrid stroke="rgba(224,192,178,0.12)" />
               <PolarAngleAxis
                 dataKey="attr"
-                tick={{ fill: "rgba(255,255,255,0.55)", fontSize: 10 }}
+                stroke="#94A3B8"
+                tick={{ fill: "#94A3B8", fontSize: 10, fontFamily: "Inter" }}
               />
-              <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+              <PolarRadiusAxis
+                angle={30}
+                domain={[0, 100]}
+                stroke="transparent"
+                tick={false}
+              />
               <Radar
+                name="Score"
                 dataKey="value"
-                stroke="#06b6d4"
-                fill="#06b6d4"
-                fillOpacity={0.22}
+                stroke="#CC5500"
                 strokeWidth={2}
+                fill="#CC5500"
+                fillOpacity={0.25}
               />
             </RadarChart>
           </ResponsiveContainer>
         </div>
       </div>
-
-      <footer className="border-t border-white/5 px-6 py-3">
-        <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
-          Estimated profile{" "}
-          <span className="ml-1 rounded border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-orange-400">
-            {player.estimatedProfile}
-          </span>
-        </p>
-      </footer>
     </section>
   );
 }
 
-export function PerNinetyBars({ player }: { player: RichPlayerProfile }) {
+export function PerNinetyBars({
+  stats,
+}: {
+  stats: { label: string; value: number; max: number; unit?: string }[];
+}) {
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="flex items-center justify-between border-b border-white/5 px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
-          Per 90 Performance
+    <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] overflow-hidden shadow-xl font-['Inter']">
+      <header className="flex items-center justify-between border-b border-[rgba(224,192,178,0.1)] px-6 py-4 bg-[#171B23]">
+        <p className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-wider text-white">
+          Standardized Per 90 Output
         </p>
-        <button className="font-mono text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors">
-          All Stats →
-        </button>
+        <span className="font-mono text-[10px] text-slate-400">vs Positional Peers</span>
       </header>
-      <ul className="divide-y divide-white/5">
-        {player.perNinetyStats.map((s) => {
-          const pct = (s.value / s.max) * 100;
+
+      <div className="p-6 space-y-4">
+        {stats.map((st) => {
+          const pct = Math.min(100, Math.round((st.value / st.max) * 100));
           return (
-            <li key={s.label} className="flex items-center gap-4 px-6 py-3.5">
-              <span className="w-32 shrink-0 font-mono text-xs text-zinc-300">{s.label}</span>
-              <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/5">
+            <div key={st.label} className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-300 font-medium">{st.label}</span>
+                <span className="font-mono font-bold text-white tabular-nums">
+                  {st.value} {st.unit ?? ""}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-[#1E232D] overflow-hidden rounded-none">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-300"
-                  style={{ width: `${Math.min(pct, 100)}%` }}
+                  className="h-full bg-gradient-to-r from-[#8C4E2E] to-[#CC5500]"
+                  style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="w-12 shrink-0 text-right font-mono text-xs font-bold tabular-nums text-cyan-300">
-                {s.value.toFixed(2)}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-export function RecentForm({ player }: { player: RichPlayerProfile }) {
-  return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="flex items-center justify-between border-b border-white/5 px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
-          Recent Form
-        </p>
-        <button className="font-mono text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors">
-          View all →
-        </button>
-      </header>
-      <div className="grid grid-cols-6 gap-2 px-6 py-5">
-        {player.recentForm.map((m, i) => {
-          const tone =
-            m.result === "W"
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-              : m.result === "D"
-                ? "border-zinc-500/40 bg-zinc-500/10 text-zinc-300"
-                : "border-red-500/40 bg-red-500/10 text-red-300";
-          return (
-            <div
-              key={i}
-              className={`flex flex-col items-center gap-1 rounded-lg border ${tone} px-2 py-2`}
-              title={`vs ${m.opponent}`}
-            >
-              <span className="font-mono text-xs font-bold">{m.result}</span>
-              <span className="font-mono text-[9px] tabular-nums">{m.rating.toFixed(1)}</span>
             </div>
           );
         })}
       </div>
-      <div className="border-t border-white/5 px-6 py-3 text-right">
-        <p className="font-mono text-[11px] text-zinc-400">
-          Avg{" "}
-          <span className="font-bold text-cyan-300 tabular-nums">
-            {(
-              player.recentForm.reduce((a, b) => a + b.rating, 0) / player.recentForm.length
-            ).toFixed(2)}
-          </span>
+    </section>
+  );
+}
+
+export function RecentForm({
+  matches,
+}: {
+  matches: { date: string; opponent: string; result: "W" | "D" | "L"; rating: number }[];
+}) {
+  return (
+    <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] overflow-hidden shadow-xl font-['Inter']">
+      <header className="border-b border-[rgba(224,192,178,0.1)] px-6 py-4 bg-[#171B23]">
+        <p className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-wider text-white">
+          Recent Match Form Trajectory
         </p>
+      </header>
+
+      <div className="p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {matches.map((m, i) => (
+            <div
+              key={i}
+              className="rounded-[4px] bg-[#0C0E12] border border-[rgba(224,192,178,0.08)] p-3 space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={`px-1.5 py-0.5 rounded-[2px] font-mono text-[9px] font-black ${
+                    m.result === "W"
+                      ? "bg-[#CC5500]/20 text-[#FFB693]"
+                      : m.result === "D"
+                      ? "bg-slate-700/40 text-slate-300"
+                      : "bg-red-900/30 text-red-300"
+                  }`}
+                >
+                  {m.result}
+                </span>
+                <span className="font-mono text-xs font-black text-white">
+                  {m.rating.toFixed(1)}
+                </span>
+              </div>
+              <div>
+                <div className="font-['Public_Sans'] text-xs font-bold text-white truncate">
+                  vs {m.opponent}
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">
+                  {new Date(m.date).toLocaleDateString()}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
