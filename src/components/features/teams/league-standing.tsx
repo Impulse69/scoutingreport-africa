@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { StandingRow } from "@/lib/features/teams/mock";
+import { getTeamRefBySlug, type StandingRow } from "@/lib/features/teams/mock";
 
 type Props = {
   standing: StandingRow[];
@@ -8,6 +8,42 @@ type Props = {
   mySlug: string;
   totalRecord: { won: number; drawn: number; lost: number; gf: number; ga: number };
 };
+
+/**
+ * A standings table lists every club in the division, but only clubs in the
+ * team index have a page. Link the ones that resolve and render the rest as
+ * plain text rather than sending people to a 404.
+ */
+function TeamCell({ row, me }: { row: StandingRow; me: boolean }) {
+  const crest = row.crestUrl ? (
+    <Image src={row.crestUrl} alt="" width={16} height={16} className="rounded-sm" />
+  ) : (
+    <span className="h-4 w-4 rounded-sm bg-zinc-800" />
+  );
+
+  const tone = me ? "font-semibold text-cyan-300" : "text-zinc-200";
+
+  if (!getTeamRefBySlug(row.teamSlug)) {
+    return (
+      <span className={`flex items-center gap-2 ${tone}`}>
+        {crest}
+        {row.teamName}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={`/teams/${row.teamSlug}`}
+      className={`flex items-center gap-2 transition-colors ${tone} ${
+        me ? "" : "hover:text-white"
+      }`}
+    >
+      {crest}
+      {row.teamName}
+    </Link>
+  );
+}
 
 const ordinalSuffix = (n: number) => {
   if (n >= 11 && n <= 13) return "th";
@@ -78,27 +114,7 @@ export function LeagueStanding({ standing, myPosition, mySlug, totalRecord }: Pr
                     {row.rank}
                   </td>
                   <td className="px-3 py-2.5">
-                    <Link
-                      href={`/teams/${row.teamSlug}`}
-                      className={`flex items-center gap-2 transition-colors ${
-                        me
-                          ? "font-semibold text-cyan-300"
-                          : "text-zinc-200 hover:text-white"
-                      }`}
-                    >
-                      {row.crestUrl ? (
-                        <Image
-                          src={row.crestUrl}
-                          alt=""
-                          width={16}
-                          height={16}
-                          className="rounded-sm"
-                        />
-                      ) : (
-                        <span className="h-4 w-4 rounded-sm bg-zinc-800" />
-                      )}
-                      {row.teamName}
-                    </Link>
+                    <TeamCell row={row} me={me} />
                   </td>
                   <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">{row.played}</td>
                   <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">{row.won}</td>

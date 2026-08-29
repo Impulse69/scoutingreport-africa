@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { PlayerCreateForm } from "@/components/features/reports/player-create-form";
+import { PlayerForm } from "@/components/features/reports/player-form";
 
 export const metadata = { title: "New player" };
 
@@ -32,7 +32,7 @@ export default async function NewPlayerPage({
           report you write on them surfaces on their profile.
         </p>
       </header>
-      <PlayerCreateForm defaultName={sp.name ?? ""} />
+      <PlayerForm mode="create" defaultName={sp.name ?? ""} />
     </div>
   );
 }

@@ -1,65 +1,70 @@
-import { Share2, Star } from "lucide-react";
+import { Share2, Star, Sparkles, BookmarkPlus, Shield } from "lucide-react";
 import type { RichPlayerProfile } from "@/lib/features/players/rich-mock";
 import { PlayerPhoto } from "./photo";
+import Link from "next/link";
 
 export function PlayerHero({ player }: { player: RichPlayerProfile }) {
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br from-[#1a1208] via-[#0E0A05] to-[#0B0B0B] px-6 py-6">
-      {/* dim photo background */}
-      <div className="absolute inset-0 opacity-30 mix-blend-overlay">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-700/30 via-transparent to-transparent" />
-      </div>
+    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0e171f] via-[#0b1116] to-[#080c10] px-6 sm:px-8 py-8 shadow-2xl">
+      {/* Dim ambient glow background */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-        <div className="flex items-start gap-5">
-          <PlayerPhoto src={player.photoUrl} name={player.fullName} size={80} rounded="xl" />
+      <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col sm:flex-row items-start gap-6">
+          <div className="relative shrink-0 overflow-hidden rounded-2xl border-2 border-emerald-500/30 bg-slate-900 shadow-xl">
+            <PlayerPhoto src={player.photoUrl} name={player.fullName} size={96} rounded="xl" />
+          </div>
 
-          <div className="space-y-1.5">
-            <h1 className="font-mono text-2xl font-bold tracking-tight text-white">
-              {player.fullName}
-            </h1>
-            <p className="font-mono text-xs text-zinc-400">
-              {player.position} · {player.club} · {player.league}
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                {player.fullName}
+              </h1>
+              <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300 flex items-center gap-1">
+                <Sparkles className="h-3 w-3" /> {player.position}
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-300 font-medium">
+              {player.club} · <span className="text-slate-400">{player.league}</span> · <span className="text-emerald-400 font-bold">{player.nationality}</span>
             </p>
-            <div className="flex flex-wrap items-center gap-3 pt-1.5 font-mono text-[11px] text-zinc-500">
-              <span>{player.age} yrs</span>
-              <span className="h-1 w-1 rounded-full bg-zinc-700" />
+
+            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-slate-400">
+              <span className="text-white font-bold">{player.age} yrs</span>
+              <span className="h-1 w-1 rounded-full bg-slate-700" />
               <span>{player.heightCm} cm</span>
-              <span className="h-1 w-1 rounded-full bg-zinc-700" />
+              <span className="h-1 w-1 rounded-full bg-slate-700" />
               <span className="capitalize">{player.preferredFoot} foot</span>
-              <span className="h-1 w-1 rounded-full bg-zinc-700" />
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-3 w-3 ${
-                      i < 1 ? "fill-orange-500 text-orange-500" : "text-zinc-700"
-                    }`}
-                  />
-                ))}
-              </div>
+              <span className="h-1 w-1 rounded-full bg-slate-700" />
+              <span className="text-amber-400 font-bold">{player.estimatedProfile}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-3">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-[11px] text-zinc-300 hover:bg-white/10 transition-colors"
-          >
-            <Share2 className="h-3 w-3" />
-            Share card
-          </button>
-          <div className="grid grid-cols-4 gap-6 font-mono text-right">
+        <div className="flex flex-col items-stretch sm:items-end gap-4">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/watchlists"
+              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-slate-200 hover:bg-white/10 hover:text-white transition-all"
+            >
+              <BookmarkPlus className="h-3.5 w-3.5 text-amber-400" />
+              Track in Watchlist
+            </Link>
+          </div>
+
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-4 gap-4 sm:gap-6 text-center sm:text-right p-4 rounded-2xl bg-[#080d12]/90 border border-white/5 shadow-inner">
             {[
               { label: "Apps", value: player.appearances },
               { label: "Goals", value: player.goals },
               { label: "Assists", value: player.assists },
-              { label: "Rating", value: player.rating.toFixed(2) },
+              { label: "Rating", value: player.rating.toFixed(2), highlight: true },
             ].map((s) => (
               <div key={s.label}>
-                <p className="text-2xl font-bold tabular-nums text-white">{s.value}</p>
-                <p className="mt-1 text-[10px] uppercase tracking-wider text-zinc-500">
+                <p className={`text-xl sm:text-2xl font-mono font-black tabular-nums ${s.highlight ? "text-emerald-400" : "text-white"}`}>
+                  {s.value}
+                </p>
+                <p className="mt-0.5 text-[10px] uppercase font-bold tracking-wider text-slate-400">
                   {s.label}
                 </p>
               </div>

@@ -1,8 +1,24 @@
 import Link from "next/link";
 import { Wallet, Calendar, MapPin, Building2 } from "lucide-react";
 import type { RichPlayerProfile } from "@/lib/features/players/rich-mock";
+import { isLiveRoute } from "@/lib/shared/routes";
 
-export function SimilarPlayers({ player }: { player: RichPlayerProfile }) {
+/**
+ * Rich profiles carry names pulled from ESPN and demo fixtures, most of which
+ * have no page on this site. Link a name only when it resolves — `linkable`
+ * holds the slugs that actually exist — and render the rest as plain text.
+ */
+function canLinkPlayer(slug: string, linkable?: Set<string>) {
+  return !!linkable?.has(slug);
+}
+
+export function SimilarPlayers({
+  player,
+  linkable,
+}: {
+  player: RichPlayerProfile;
+  linkable?: Set<string>;
+}) {
   return (
     <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
       <header className="flex items-center justify-between border-b border-white/5 px-6 py-4">
@@ -14,12 +30,9 @@ export function SimilarPlayers({ player }: { player: RichPlayerProfile }) {
         </span>
       </header>
       <ul className="divide-y divide-white/5">
-        {player.similarPlayers.map((p) => (
-          <li key={p.slug}>
-            <Link
-              href={`/players/${p.slug}`}
-              className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-white/5"
-            >
+        {player.similarPlayers.map((p) => {
+          const row = (
+            <>
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 font-mono text-[10px] font-bold text-zinc-400">
                 {p.name
                   .split(" ")
@@ -37,9 +50,24 @@ export function SimilarPlayers({ player }: { player: RichPlayerProfile }) {
               <span className="rounded-full border border-cyan-500/40 bg-cyan-500/10 px-2 py-0.5 font-mono text-[10px] font-bold tabular-nums text-cyan-300">
                 {p.similarity}
               </span>
-            </Link>
-          </li>
-        ))}
+            </>
+          );
+
+          return (
+            <li key={p.slug}>
+              {canLinkPlayer(p.slug, linkable) ? (
+                <Link
+                  href={`/players/${p.slug}`}
+                  className="flex items-center gap-3 px-6 py-3 transition-colors hover:bg-white/5"
+                >
+                  {row}
+                </Link>
+              ) : (
+                <div className="flex items-center gap-3 px-6 py-3">{row}</div>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -227,7 +255,13 @@ export function CareerHistory({ player }: { player: RichPlayerProfile }) {
 
 // ScoutNotes lives in ./scout-notes.tsx — auth-gated and persisted.
 
-export function AboutPlayer({ player }: { player: RichPlayerProfile }) {
+export function AboutPlayer({
+  player,
+  linkable,
+}: {
+  player: RichPlayerProfile;
+  linkable?: Set<string>;
+}) {
   return (
     <section>
       <h3 className="font-mono text-sm font-bold text-white">About {player.fullName}</h3>
@@ -235,16 +269,25 @@ export function AboutPlayer({ player }: { player: RichPlayerProfile }) {
 
       <h4 className="mt-8 font-mono text-sm font-bold text-white">Explore More</h4>
       <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {player.exploreMore.map((e) => (
-          <li key={e.label}>
-            <Link
-              href={e.href}
-              className="block rounded-md border border-white/5 bg-[#0E0E0E] px-3 py-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-cyan-500/30 hover:bg-cyan-500/5 hover:text-cyan-300"
-            >
-              {e.label}
-            </Link>
-          </li>
-        ))}
+        {player.exploreMore
+          // These come from the ESPN bundle and point at league/player pages
+          // that mostly don't exist here. Show only the ones that resolve.
+          .filter((e) => {
+            const slug = e.href.startsWith("/players/")
+              ? e.href.slice("/players/".length)
+              : null;
+            return slug ? canLinkPlayer(slug, linkable) : isLiveRoute(e.href);
+          })
+          .map((e) => (
+            <li key={e.label}>
+              <Link
+                href={e.href}
+                className="block rounded-md border border-white/5 bg-[#0E0E0E] px-3 py-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-cyan-500/30 hover:bg-cyan-500/5 hover:text-cyan-300"
+              >
+                {e.label}
+              </Link>
+            </li>
+          ))}
       </ul>
 
       <p className="mt-6 flex items-center gap-2 font-mono text-[10px] text-zinc-600">

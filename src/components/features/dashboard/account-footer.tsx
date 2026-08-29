@@ -3,14 +3,19 @@
 import { useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
-import { Sun, Moon, Mail, LogOut } from "lucide-react";
+import { Mail, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/core/supabase/client";
+import type { ProfileRole } from "@/lib/shared/constants";
 
-export function AccountFooter({ email }: { email: string | null }) {
+export function AccountFooter({
+  email,
+  role,
+}: {
+  email: string | null;
+  role?: ProfileRole;
+}) {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const [pending, start] = useTransition();
 
   const onSignOut = () =>
@@ -34,33 +39,30 @@ export function AccountFooter({ email }: { email: string | null }) {
             {email}
           </span>
         ) : null}
+        {role ? (
+          <span className="flex items-center gap-1.5 capitalize text-zinc-500">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {role}
+          </span>
+        ) : null}
         <Link
           href="/settings"
-          className="hover:text-white transition-colors"
+          className="flex items-center gap-1.5 transition-colors hover:text-white"
         >
-          Email preferences
+          <Settings className="h-3.5 w-3.5" />
+          Account settings
         </Link>
         <button
           type="button"
           disabled={pending}
           onClick={onSignOut}
-          className="flex items-center gap-1.5 hover:text-red-400 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 transition-colors hover:text-red-400 disabled:opacity-50"
         >
           <LogOut className="h-3 w-3" />
           {pending ? "Signing out…" : "Sign out"}
         </button>
-        <button
-          type="button"
-          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          className="flex items-center gap-1.5 hover:text-white transition-colors"
-        >
-          {theme === "light" ? (
-            <Moon className="h-3.5 w-3.5" />
-          ) : (
-            <Sun className="h-3.5 w-3.5" />
-          )}
-          Toggle theme
-        </button>
+        {/* The theme toggle used to live here. The app is pinned to dark until
+            a real light palette exists, so the control was a no-op. */}
       </div>
     </section>
   );

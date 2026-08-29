@@ -10,8 +10,9 @@ import {
   Calendar,
   LineChart,
   ArrowLeft,
-  Sun,
   ChevronDown,
+  Shield,
+  Trophy
 } from "lucide-react";
 import type { TeamRef } from "@/lib/features/teams/mock";
 
@@ -23,10 +24,10 @@ type TeamSidebarProps = {
 
 const NAV = [
   { href: "", label: "Overview", icon: LayoutGrid },
-  { href: "squad", label: "Squad", icon: Users },
-  { href: "performance", label: "Performance", icon: TrendingUp },
+  { href: "squad", label: "Squad Roster", icon: Users },
+  { href: "performance", label: "Tactical Metrics", icon: TrendingUp },
   { href: "fixtures", label: "Fixtures", icon: Calendar },
-  { href: "trends", label: "Trends", icon: LineChart },
+  { href: "trends", label: "Form Trends", icon: LineChart },
 ] as const;
 
 export function TeamSidebar({ team, season, seasons }: TeamSidebarProps) {
@@ -34,41 +35,38 @@ export function TeamSidebar({ team, season, seasons }: TeamSidebarProps) {
   const base = `/teams/${team.slug}`;
 
   return (
-    <aside className="hidden md:flex sticky top-0 h-screen w-60 shrink-0 flex-col border-r border-white/5 bg-[#070707] px-5 py-6">
+    <aside className="hidden md:flex sticky top-0 h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-[#06090c] px-6 py-8">
       {/* Crest + name */}
       <div className="flex flex-col items-center text-center">
-        <div className="relative h-16 w-16 mb-3">
+        <div className="relative h-18 w-18 mb-4">
           {team.crestUrl ? (
             <Image
               src={team.crestUrl}
               alt={team.name}
               fill
-              sizes="64px"
+              sizes="72px"
               className="object-contain"
             />
           ) : (
-            <div className="h-full w-full rounded-full bg-orange-600 flex items-center justify-center font-mono font-bold">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center font-mono font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">
               {team.shortName.slice(0, 2).toUpperCase()}
             </div>
           )}
         </div>
-        <p className="font-mono text-sm font-semibold text-white">{team.name}</p>
-        <p className="mt-1 text-[11px] text-zinc-500">{team.league}</p>
+        <h2 className="font-extrabold text-base text-white tracking-tight">{team.name}</h2>
+        <p className="mt-1 text-xs text-slate-400 font-medium">{team.league}</p>
       </div>
 
-      {/* Season selector */}
+      {/* Season badge */}
       <div className="mt-6 mb-4">
-        <button
-          type="button"
-          className="flex w-full items-center justify-between rounded-md border border-white/10 bg-white/5 px-3 py-2 text-xs font-mono text-zinc-300 hover:bg-white/10 transition-colors"
-        >
-          <span>{season}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-zinc-500" />
-        </button>
+        <div className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-[#0c1218] px-3.5 py-2 text-xs font-mono font-bold text-slate-300">
+          <span>Season {season}</span>
+          <Trophy className="h-3.5 w-3.5 text-amber-400" />
+        </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-0.5">
+      <nav className="flex-1 space-y-1">
         {NAV.map((item) => {
           const target = item.href ? `${base}/${item.href}` : base;
           const Icon = item.icon;
@@ -79,38 +77,43 @@ export function TeamSidebar({ team, season, seasons }: TeamSidebarProps) {
             <Link
               key={item.label}
               href={target}
-              className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-xs font-mono transition-colors ${
+              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all ${
                 isActive
-                  ? "bg-white/10 text-white"
-                  : "text-zinc-500 hover:bg-white/5 hover:text-zinc-200"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className="h-4 w-4" />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Bottom nav */}
-      <div className="mt-6 space-y-2 border-t border-white/5 pt-5 text-[11px] font-mono text-zinc-500">
+      {/* Bottom Nav */}
+      <div className="mt-6 space-y-2.5 border-t border-white/10 pt-5 text-xs text-slate-400">
         <Link
-          href={`/leagues/${team.leagueSlug}`}
-          className="flex items-center gap-2 hover:text-white transition-colors"
+          href="/leagues"
+          className="flex items-center gap-2 hover:text-emerald-400 transition-colors font-medium"
         >
-          <ArrowLeft className="h-3 w-3" />
-          {team.league}
+          <Trophy className="h-3.5 w-3.5 text-amber-400" />
+          <span>All Competitions</span>
         </Link>
-        <button
-          type="button"
-          className="flex items-center gap-2 hover:text-white transition-colors"
+        <Link
+          href="/players"
+          className="flex items-center gap-2 hover:text-emerald-400 transition-colors font-medium"
         >
-          <Sun className="h-3 w-3" />
-          Toggle Theme
-        </button>
+          <Users className="h-3.5 w-3.5 text-emerald-400" />
+          <span>Player Catalogue</span>
+        </Link>
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 hover:text-white transition-colors font-bold pt-2 border-t border-white/5"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Command Hub</span>
+        </Link>
       </div>
-      {/* season-list reference (sidebar selector kept simple for now) */}
-      <span className="sr-only">{seasons.join(", ")}</span>
     </aside>
   );
 }

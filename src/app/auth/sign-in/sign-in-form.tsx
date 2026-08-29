@@ -1,19 +1,17 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, Loader2, ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/core/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { startGoogleOAuth } from "@/lib/core/auth/google-oauth";
 import { toast } from "sonner";
 
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextParam = searchParams.get("next") ?? "/";
-  const next = nextParam.startsWith("/") ? nextParam : "/";
+  const nextParam = searchParams.get("next") ?? "/dashboard";
+  const next = nextParam.startsWith("/") ? nextParam : "/dashboard";
   const error = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,124 +35,114 @@ export function SignInForm() {
       return;
     }
 
+    toast.success("Welcome back to ScoutingReport Africa");
     router.replace(next);
     router.refresh();
   }
 
   async function onGoogleSignIn() {
     setGooglePending(true);
-    const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
-
-    const { error: signInError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo },
-    });
-
-    if (signInError) {
+    try {
+      await startGoogleOAuth(next);
+    } catch (error) {
       setGooglePending(false);
-      toast.error(signInError.message);
+      toast.error(error instanceof Error ? error.message : "Could not open Google sign-in.");
     }
   }
 
   return (
     <div className="space-y-6">
-      {error ? (
-        <div className="border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900 dark:border-red-500/20 dark:bg-red-950/30 dark:text-red-300">
+      {error && (
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs font-semibold text-red-300">
           {error}
         </div>
-      ) : null}
+      )}
 
-      <Button
+      <button
         type="button"
-        variant="outline"
-        size="lg"
-        className="h-12 w-full justify-center rounded-lg border-stone-200 bg-white text-stone-900 shadow-sm hover:bg-stone-50 dark:border-stone-800 dark:bg-stone-950 dark:text-white dark:hover:bg-stone-900"
         disabled={pending || googlePending}
         onClick={onGoogleSignIn}
+        className="h-12 w-full rounded-2xl border border-white/10 bg-[#0c1218] hover:bg-[#121921] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
       >
-        <span className="mr-2 flex size-5 items-center justify-center rounded-full border border-stone-200 bg-white text-xs font-black text-stone-800">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-black text-slate-950">
           G
         </span>
-        {googlePending ? "Opening Google..." : "Continue with Google"}
-      </Button>
+        <span>{googlePending ? "Opening Google..." : "Continue with Google"}</span>
+      </button>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
-        <div className="h-px bg-stone-200 dark:bg-stone-800" />
-        <span>Email access</span>
-        <div className="h-px bg-stone-200 dark:bg-stone-800" />
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        <div className="h-px bg-white/10" />
+        <span>Or Email Access</span>
+        <div className="h-px bg-white/10" />
       </div>
 
       <form onSubmit={onPasswordSignIn} className="space-y-4">
-        <div className="space-y-2">
-          <Label
+        <div className="space-y-1.5">
+          <label
             htmlFor="email"
-            className="text-xs uppercase tracking-[0.14em] text-stone-500"
+            className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block"
           >
-            Email
-          </Label>
+            Scout Email
+          </label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone-400" />
-            <Input
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
               id="email"
               type="email"
               autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@scoutingreport.africa"
-              className="h-12 rounded-lg border-stone-200 bg-white pl-10 text-stone-950 placeholder:text-stone-400 focus-visible:border-orange-600 focus-visible:ring-orange-600/20 dark:border-stone-800 dark:bg-stone-950 dark:text-white"
+              placeholder="scout@club.com"
+              className="w-full h-11 pl-10 pr-4 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label
+        <div className="space-y-1.5">
+          <label
             htmlFor="password"
-            className="text-xs uppercase tracking-[0.14em] text-stone-500"
+            className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block"
           >
             Password
-          </Label>
+          </label>
           <div className="relative">
-            <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone-400" />
-            <Input
+            <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="h-12 rounded-lg border-stone-200 bg-white px-10 text-stone-950 placeholder:text-stone-400 focus-visible:border-orange-600 focus-visible:ring-orange-600/20 dark:border-stone-800 dark:bg-stone-950 dark:text-white"
+              placeholder="••••••••"
+              className="w-full h-11 pl-10 pr-10 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600/40 dark:hover:text-stone-200"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              onClick={() => setShowPassword((value) => !value)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-200 transition-colors"
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? (
-                <EyeOff className="size-4" />
-              ) : (
-                <Eye className="size-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
 
-        <Button
+        <button
           type="submit"
-          size="lg"
-          className="h-12 w-full rounded-lg bg-orange-600 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-sm shadow-orange-900/10 transition-all hover:bg-orange-700 active:scale-[0.99]"
           disabled={pending || googlePending}
+          className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
         >
-          {pending ? "Signing in..." : "Sign in"}
-        </Button>
+          {pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <span>Sign In to Scout Hub</span>
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
+        </button>
       </form>
-
-      <p className="text-center text-xs leading-5 text-stone-500 dark:text-stone-400">
-        Access is limited to approved scouts, analysts, and club staff.
-      </p>
     </div>
   );
 }

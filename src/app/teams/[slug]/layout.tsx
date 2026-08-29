@@ -14,7 +14,6 @@ export default async function TeamLayout({
   const ref = getTeamRefBySlug(slug);
   if (!data && !ref) notFound();
 
-  // Build a minimal team ref for the sidebar when full data isn't seeded yet.
   const team = data?.team ?? {
     slug: ref!.slug,
     name: ref!.name,
@@ -22,17 +21,17 @@ export default async function TeamLayout({
     league: ref!.league,
     leagueSlug: ref!.league.toLowerCase().replace(/\s+/g, "-"),
     crestUrl: "",
-    primaryColor: "#666",
+    primaryColor: "#10b981",
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0B0B0B] text-zinc-100">
+    <div className="flex min-h-screen bg-[#080B0E] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
       <TeamSidebar
         team={team}
         season="2025/2026"
         seasons={["2025/2026", "2024/2025", "2023/2024", "2022/2023"]}
       />
-      <main className="flex-1 min-w-0 px-6 py-8 md:px-10">{children}</main>
+      <main className="flex-1 min-w-0 px-4 py-8 sm:px-8 md:px-10 overflow-x-hidden">{children}</main>
     </div>
   );
 }

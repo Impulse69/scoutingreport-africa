@@ -86,6 +86,42 @@ export async function listWatchlistPlayers(
     }));
 }
 
+/**
+ * The viewer's watchlists, each flagged with whether it already contains the
+ * given player. Feeds the "add to watchlist" control on a player profile.
+ */
+export async function listWatchlistOptionsForPlayer(
+  userId: string,
+  playerId: string,
+): Promise<{ id: string; name: string; alreadyHas: boolean }[]> {
+  const supabase = await createClient();
+
+  const { data: lists } = await supabase
+    .from("watchlists")
+    .select("id, name")
+    .eq("owner_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (!lists || lists.length === 0) return [];
+
+  const { data: entries } = await supabase
+    .from("watchlist_players")
+    .select("watchlist_id")
+    .eq("player_id", playerId)
+    .in(
+      "watchlist_id",
+      lists.map((l) => l.id as string),
+    );
+
+  const has = new Set((entries ?? []).map((e) => e.watchlist_id as string));
+
+  return lists.map((l) => ({
+    id: l.id as string,
+    name: l.name as string,
+    alreadyHas: has.has(l.id as string),
+  }));
+}
+
 export async function listWatchlistsForUser(userId: string): Promise<WatchlistSummary[]> {
   const supabase = await createClient();
   const { data } = await supabase

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -21,6 +22,36 @@ import {
 } from "@/lib/shared/constants";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; reportId: string }>;
+}): Promise<Metadata> {
+  const { slug, reportId } = await params;
+  const report = await getReportById(reportId);
+
+  if (!report || report.status !== "published" || report.player?.slug !== slug) {
+    return { title: "Report", robots: { index: false } };
+  }
+
+  const name = report.player.full_name;
+  const context = report.match_description ?? "Scouting report";
+
+  return {
+    title: `${name} — ${context}`,
+    description:
+      report.projection?.slice(0, 160) ||
+      `Structured scouting report on ${name}${
+        report.match_date ? `, ${report.match_date}` : ""
+      }.`,
+    openGraph: {
+      type: "article",
+      title: `${name} — ${context}`,
+      publishedTime: report.published_at ?? undefined,
+    },
+  };
+}
 
 export default async function PublicReportPage({
   params,

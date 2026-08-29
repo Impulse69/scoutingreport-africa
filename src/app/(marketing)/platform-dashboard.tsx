@@ -1,396 +1,312 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import Link from "next/link";
-import { Search, ArrowUpRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import Image from "next/image";
+import {
+  Users,
+  Search,
+  Sparkles,
+  TrendingUp,
+  Flame,
+  ArrowRight,
+  Shield,
+  Star,
+  Activity,
+  CheckCircle2
+} from "lucide-react";
 
-// Map a team display name to a /teams/[slug] route. Aligned with TEAM_INDEX
-// in src/lib/features/teams/mock.ts so familiar names hit a real page.
-const NAME_TO_SLUG: Record<string, string> = {
-  "Real Madrid": "real-madrid",
-  "FC Barcelona": "fc-barcelona",
-  "Barcelona": "fc-barcelona",
-  "Atlético Madrid": "atletico-madrid",
-  "Villarreal": "villarreal",
-  "Real Betis": "real-betis",
-  "Real Sociedad": "real-sociedad",
-  "Manchester City": "manchester-city",
-  "Manchester United": "manchester-united",
-  "Liverpool": "liverpool",
-  "Arsenal": "arsenal",
-  "Chelsea": "chelsea",
-  "Tottenham Hotspur": "tottenham",
-  "Bayern Munich": "bayern-munich",
-  "Borussia Dortmund": "borussia-dortmund",
-  "RB Leipzig": "rb-leipzig",
-  "Paris Saint-Germain": "psg",
-  "Olympique de Marseille": "marseille",
-  "Inter Milan": "inter-milan",
-  "AC Milan": "ac-milan",
-  "Juventus": "juventus",
-  "Napoli": "napoli",
-  "AS Roma": "roma",
-  "Lazio": "lazio",
-  "Ajax": "ajax",
-  "PSV": "psv",
-  "FC Porto": "porto",
-  "Benfica": "benfica",
-  "Celtic": "celtic",
-  "Rangers": "rangers",
-};
-
-function slugFor(name: string): string {
-  if (NAME_TO_SLUG[name]) return NAME_TO_SLUG[name];
-  return name.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-");
-}
-
-type Team = {
-  id: string;
+type Prospect = {
+  slug: string;
   name: string;
+  age: number;
+  club: string;
   league: string;
-  leagueSlug?: string | null;
-  logo: string | null;
-  url?: string | null;
+  nation: string;
+  flag: string;
+  position: string;
+  role: string;
+  rating: number;
+  marketValue: string;
+  attributes: {
+    pace: number;
+    dribbling: number;
+    shooting: number;
+    passing: number;
+    physical: number;
+    defense: number;
+  };
+  strengths: string[];
 };
 
-type TeamSearchResponse = {
-  teams?: Team[];
-};
-
-const seededTeams: Team[] = [
+const FEATURED_PROSPECTS: Prospect[] = [
   {
-    id: "s:600~t:124",
-    name: "Borussia Dortmund",
+    slug: "victor-boniface",
+    name: "Victor Boniface",
+    age: 24,
+    club: "Bayer Leverkusen",
     league: "Bundesliga",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/124.png",
+    nation: "Nigeria",
+    flag: "🇳🇬",
+    position: "Forward (ST)",
+    role: "Complete Forward / Physical Target",
+    rating: 8.6,
+    marketValue: "€45,000,000",
+    attributes: { pace: 85, dribbling: 88, shooting: 89, passing: 78, physical: 92, defense: 42 },
+    strengths: ["Explosive Hold-up Play", "Ball-Striking Velocity", "1v1 Isolation Dominance"],
   },
   {
-    id: "s:600~t:132",
-    name: "Bayern Munich",
-    league: "Bundesliga",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/132.png",
-  },
-  {
-    id: "s:600~t:86",
-    name: "Real Madrid",
-    league: "LaLiga",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
-  },
-  {
-    id: "s:600~t:382",
-    name: "Manchester City",
+    slug: "mohammed-kudus",
+    name: "Mohammed Kudus",
+    age: 24,
+    club: "West Ham United",
     league: "Premier League",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/382.png",
+    nation: "Ghana",
+    flag: "🇬🇭",
+    position: "Winger (RW/AM)",
+    role: "Dynamic Inside Forward",
+    rating: 8.7,
+    marketValue: "€50,000,000",
+    attributes: { pace: 90, dribbling: 94, shooting: 84, passing: 81, physical: 86, defense: 54 },
+    strengths: ["World-class Take-on Rate", "Low Center of Gravity", "Transition Drive"],
   },
   {
-    id: "s:600~t:359",
-    name: "Arsenal",
-    league: "Premier League",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
-  },
-  {
-    id: "s:600~t:83",
-    name: "Barcelona",
-    league: "LaLiga",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
-  },
-  {
-    id: "s:600~t:364",
-    name: "Liverpool",
-    league: "Premier League",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/364.png",
-  },
-  {
-    id: "s:600~t:160",
-    name: "Paris Saint-Germain",
+    slug: "lamine-camara",
+    name: "Lamine Camara",
+    age: 21,
+    club: "AS Monaco",
     league: "Ligue 1",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/160.png",
+    nation: "Senegal",
+    flag: "🇸🇳",
+    position: "Midfielder (CM/DM)",
+    role: "Box-to-Box Engine",
+    rating: 8.3,
+    marketValue: "€18,000,000",
+    attributes: { pace: 79, dribbling: 82, shooting: 77, passing: 86, physical: 84, defense: 83 },
+    strengths: ["Set-piece Delivery", "Pressing Intensity", "Vertical Line-Breaking"],
   },
   {
-    id: "s:600~t:363",
-    name: "Chelsea",
+    slug: "nicolas-jackson",
+    name: "Nicolas Jackson",
+    age: 23,
+    club: "Chelsea",
     league: "Premier League",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/363.png",
+    nation: "Senegal",
+    flag: "🇸🇳",
+    position: "Forward (ST)",
+    role: "Mobile Channel Runner",
+    rating: 8.2,
+    marketValue: "€40,000,000",
+    attributes: { pace: 88, dribbling: 84, shooting: 81, passing: 76, physical: 83, defense: 45 },
+    strengths: ["Blindside Movement", "Box Entry Timing", "Counter-attack Catalyst"],
   },
   {
-    id: "s:600~t:103",
-    name: "AC Milan",
-    league: "Serie A",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/103.png",
-  },
-  {
-    id: "s:600~t:110",
-    name: "Inter Milan",
-    league: "Serie A",
-    logo: "https://a.espncdn.com/i/teamlogos/soccer/500/110.png",
-  },
-  {
-    id: "s:600~t:139",
-    name: "Ajax",
-    league: "Eredivisie",
-    logo: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/139.png&h=64&w=64&scale=crop&location=origin",
+    slug: "simon-adingra",
+    name: "Simon Adingra",
+    age: 23,
+    club: "Brighton & Hove Albion",
+    league: "Premier League",
+    nation: "Ivory Coast",
+    flag: "🇨🇮",
+    position: "Winger (LW/RW)",
+    role: "Direct 1v1 Specialist",
+    rating: 8.1,
+    marketValue: "€30,000,000",
+    attributes: { pace: 91, dribbling: 89, shooting: 78, passing: 77, physical: 72, defense: 48 },
+    strengths: ["Two-footed Delivery", "Rapid Deceleration", "High-pressing Value"],
   },
 ];
 
 export function PlatformDashboard() {
-  const t = useTranslations("platform");
-  const [query, setQuery] = useState("");
-  const [searchTeams, setSearchTeams] = useState<Team[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState(false);
-  const [brokenLogos, setBrokenLogos] = useState<Set<string>>(() => new Set());
+  const [selectedSlug, setSelectedSlug] = useState<string>("victor-boniface");
+  const [activeCategory, setActiveCategory] = useState<"all" | "FWD" | "MID" | "DEF">("all");
 
-  const normalizedQuery = query.trim();
+  const current = FEATURED_PROSPECTS.find((p) => p.slug === selectedSlug) ?? FEATURED_PROSPECTS[0];
 
-  useEffect(() => {
-    if (normalizedQuery.length < 2) {
-      setSearchTeams([]);
-      setIsSearching(false);
-      setSearchError(false);
-      return;
-    }
-
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(async () => {
-      setIsSearching(true);
-      setSearchError(false);
-
-      try {
-        const response = await fetch(
-          `/api/football-team-search?q=${encodeURIComponent(normalizedQuery)}`,
-          { signal: controller.signal },
-        );
-
-        if (!response.ok) {
-          throw new Error("Team search failed");
-        }
-
-        const data = (await response.json()) as TeamSearchResponse;
-        setSearchTeams(data.teams ?? []);
-      } catch (error) {
-        if (!controller.signal.aborted) {
-          setSearchTeams([]);
-          setSearchError(true);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsSearching(false);
-        }
-      }
-    }, 250);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      controller.abort();
-    };
-  }, [normalizedQuery]);
-
-  const visibleTeams = useMemo(() => {
-    if (normalizedQuery.length < 2) {
-      return seededTeams.slice(0, 6);
-    }
-
-    return searchTeams;
-  }, [normalizedQuery.length, searchTeams]);
-
-  const resultLabel =
-    normalizedQuery.length < 2 ? t("topTeams") : t("searchResults");
-  const resultCounter =
-    normalizedQuery.length < 2
-      ? t("curatedCount", { shown: visibleTeams.length })
-      : t("resultCount", { count: visibleTeams.length });
+  const filtered = FEATURED_PROSPECTS.filter((p) => {
+    if (activeCategory === "FWD") return p.position.includes("Forward") || p.position.includes("Winger");
+    if (activeCategory === "MID") return p.position.includes("Midfielder");
+    if (activeCategory === "DEF") return p.position.includes("Defender");
+    return true;
+  });
 
   return (
-    <div className="max-w-5xl mx-auto bg-[#111] border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden relative">
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
-      <div className="bg-[#0B0B0B] rounded-xl border border-white/5 p-6 flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-64 space-y-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              onInput={(event) => setQuery(event.currentTarget.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchLabel")}
-              className="w-full bg-[#1A1A1A] border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-orange-500/50 text-white placeholder:text-zinc-600"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                {resultLabel}
-              </div>
-              <div className="text-[11px] font-medium text-orange-500 tabular-nums">
-                {resultCounter}
-              </div>
-            </div>
-
-            <div className="space-y-1 pr-1">
-              {visibleTeams.map((team) => (
-                <Link
-                  key={team.id}
-                  href={`/teams/${slugFor(team.name)}`}
-                  className="group w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-orange-500/50 transition-colors text-left"
-                >
-                  <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white">
-                    {team.logo && !brokenLogos.has(team.id) ? (
-                      <Image
-                        src={team.logo}
-                        alt={`${team.name} logo`}
-                        width={24}
-                        height={24}
-                        className="h-6 w-6 object-contain"
-                        loading="lazy"
-                        onError={() =>
-                          setBrokenLogos((current) => {
-                            const next = new Set(current);
-                            next.add(team.id);
-                            return next;
-                          })
-                        }
-                        unoptimized
-                      />
-                    ) : (
-                      <span className="text-[10px] font-bold uppercase text-zinc-950">
-                        {team.name.slice(0, 2)}
-                      </span>
-                    )}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-zinc-300 group-hover:text-white">
-                      {team.name}
-                    </span>
-                    <span className="block truncate text-[11px] text-zinc-600">
-                      {team.league}
-                    </span>
-                  </span>
-                  <ArrowUpRight className="h-3 w-3 text-zinc-600 group-hover:text-orange-500 transition-colors" />
-                </Link>
-              ))}
-
-              {isSearching ? (
-                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-zinc-500">
-                  {t("searching")}
-                </div>
-              ) : null}
-
-              {!isSearching && normalizedQuery.length === 1 ? (
-                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-zinc-500">
-                  {t("minCharacters")}
-                </div>
-              ) : null}
-
-              {!isSearching && searchError ? (
-                <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] p-3 text-sm text-red-200">
-                  {t("searchError")}
-                </div>
-              ) : null}
-
-              {!isSearching && !searchError && normalizedQuery.length >= 2 && visibleTeams.length === 0 ? (
-                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-zinc-500">
-                  {t("noResults", { query: normalizedQuery })}
-                </div>
-              ) : null}
-            </div>
-          </div>
+    <div className="w-full">
+      {/* Category Pills */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-2 bg-[#0c1218] p-1.5 rounded-2xl border border-white/10">
+          <button
+            type="button"
+            onClick={() => setActiveCategory("all")}
+            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              activeCategory === "all"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            All Positions
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory("FWD")}
+            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              activeCategory === "FWD"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Attackers
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory("MID")}
+            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              activeCategory === "MID"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Midfielders
+          </button>
         </div>
 
-        <div className="flex-1 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { label: t("stats.matchesTracked"), val: "12,345", trend: "+12%" },
-              { label: t("stats.playersInDb"), val: "50,000+", trend: "+5%" },
-              { label: t("stats.dataAccuracy"), val: "99.9%", trend: t("stats.stable") },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-[#1A1A1A] border border-white/5 rounded-xl p-4">
-                <div className="text-xs text-zinc-500 mb-2">{stat.label}</div>
-                <div className="text-2xl font-bold">{stat.val}</div>
-                <div className="text-xs text-orange-500 mt-2 font-medium">{stat.trend}</div>
-              </div>
-            ))}
-          </div>
+        <Link
+          href="/players"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300"
+        >
+          View 200+ scouted players in database <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
 
-          <div className="bg-[#1A1A1A] border border-white/5 rounded-xl p-6 relative overflow-hidden">
-            {/* Chart header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-                  League performance trend
-                </p>
-                <p className="mt-1 text-xs text-zinc-400">
-                  xG rolling avg · last 12 weeks
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-mono text-lg font-bold tabular-nums text-orange-500">
-                  +24.6%
-                </p>
-                <p className="font-mono text-[10px] text-zinc-500">vs prior period</p>
-              </div>
-            </div>
-
-            {/* Chart body */}
-            <div className="relative h-48">
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-orange-500/10 to-transparent mix-blend-screen" />
-              <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <path
-                  d="M0 100 Q 20 80, 40 90 T 80 40 T 100 20 L 100 100 Z"
-                  fill="rgba(249,115,22,0.08)"
-                />
-                <path
-                  d="M0 100 Q 20 80, 40 90 T 80 40 T 100 20"
-                  fill="none"
-                  stroke="#F97316"
-                  strokeWidth="2"
-                  vectorEffect="non-scaling-stroke"
-                />
-              </svg>
-              {/* Y-axis ticks */}
-              <div className="absolute -left-1 top-0 flex h-full flex-col justify-between font-mono text-[9px] tabular-nums text-zinc-600">
-                <span>2.4</span>
-                <span>1.6</span>
-                <span>0.8</span>
-                <span>0.0</span>
-              </div>
-            </div>
-
-            {/* X-axis ticks */}
-            <div className="mt-2 flex justify-between font-mono text-[9px] text-zinc-600 px-1">
-              <span>W1</span>
-              <span>W3</span>
-              <span>W5</span>
-              <span>W7</span>
-              <span>W9</span>
-              <span>W11</span>
-              <span>W12</span>
-            </div>
-          </div>
-
-          {/* Bottom KPI strip — fills the rail, removes empty space */}
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: "Form", val: "W W D L W", tone: "text-emerald-400" },
-              { label: "Clean sheets", val: "8 / 14", tone: "text-cyan-400" },
-              { label: "Goal diff", val: "+27", tone: "text-orange-400" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-[#1A1A1A] border border-white/5 rounded-xl p-3"
+      {/* Main Showcase Panel */}
+      <div className="grid lg:grid-cols-12 gap-6 items-stretch">
+        {/* Left Prospects List */}
+        <div className="lg:col-span-5 space-y-2.5">
+          {filtered.map((p) => {
+            const isSelected = p.slug === selectedSlug;
+            return (
+              <button
+                key={p.slug}
+                type="button"
+                onClick={() => setSelectedSlug(p.slug)}
+                className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between ${
+                  isSelected
+                    ? "bg-[#121c22] border-emerald-500/40 shadow-lg shadow-emerald-500/10"
+                    : "bg-[#0c1218]/90 border-white/10 hover:border-white/20 hover:bg-[#10171e]"
+                }`}
               >
-                <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
-                  {s.label}
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-lg font-black border border-white/10 shadow-inner">
+                    {p.flag}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-white truncate">{p.name}</span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/5">
+                        {p.nation}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 truncate mt-0.5">
+                      {p.club} · {p.position}
+                    </p>
+                  </div>
                 </div>
-                <div className={`mt-1 font-mono text-sm font-bold tabular-nums ${s.tone}`}>
-                  {s.val}
+
+                <div className="flex flex-col items-end shrink-0 ml-3">
+                  <div className="flex items-center gap-1 text-emerald-400 font-mono font-black text-sm">
+                    <Star className="h-3 w-3 fill-emerald-400" />
+                    <span>{p.rating}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-mono">{p.marketValue}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right Deep Intelligence Breakdown */}
+        <div className="lg:col-span-7 rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-[#0e161c] to-[#0a1014] p-6 lg:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 blur-3xl rounded-full pointer-events-none" />
+
+          {/* Top Header */}
+          <div className="relative z-10">
+            <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-white/10">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{current.flag}</span>
+                  <h4 className="text-2xl font-black text-white tracking-tight">{current.name}</h4>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-black uppercase">
+                    Verified Scout Profile
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  {current.role} · <span className="text-slate-200">{current.club}</span> ({current.league})
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-[10px] uppercase font-bold text-slate-400">Scout Score</p>
+                  <p className="text-2xl font-mono font-black text-emerald-400">{current.rating} / 10</p>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Tactical Strengths */}
+            <div className="my-6">
+              <p className="text-[11px] uppercase font-bold tracking-wider text-amber-400 mb-2.5 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" /> Key Tactical Superpowers
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {current.strengths.map((str) => (
+                  <span
+                    key={str}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-200"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5 text-amber-400" /> {str}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Radar / Stat Bars */}
+            <div className="space-y-3.5 my-6">
+              <p className="text-[11px] uppercase font-bold tracking-wider text-emerald-400 flex items-center gap-1.5">
+                <Activity className="h-3.5 w-3.5" /> Benchmark Percentiles (vs Position Cohort)
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {Object.entries(current.attributes).map(([attr, val]) => (
+                  <div
+                    key={attr}
+                    className="p-3 rounded-2xl bg-[#131d24] border border-white/5 space-y-1.5"
+                  >
+                    <div className="flex justify-between text-[11px]">
+                      <span className="uppercase font-bold text-slate-400">{attr}</span>
+                      <span className="font-mono font-bold text-emerald-400">{val}%</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500"
+                        style={{ width: `${val}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Action */}
+          <div className="relative z-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-xs text-slate-400">
+              Estimated Market Valuation: <span className="font-bold text-white">{current.marketValue}</span>
+            </div>
+            <Link
+              href={`/players/${current.slug}`}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
+            >
+              Open Full Scout Dossier <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </div>

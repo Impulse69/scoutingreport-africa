@@ -3,13 +3,19 @@ import { updateSession } from "@/lib/core/supabase/middleware";
 
 // Auth-gated route prefixes. /scout/* and /admin/* were removed during the
 // dashboard teardown — anything that needs a signed-in user goes here.
-const PROTECTED_PREFIXES = ["/watchlists", "/dashboard", "/scout"];
+const PROTECTED_PREFIXES = ["/watchlists", "/dashboard", "/scout", "/settings"];
 
 export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
 
   const pathname = request.nextUrl.pathname;
-  const needsUser = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+
+  // Match whole path segments. A plain `startsWith` made "/scout" also capture
+  // "/scouting" — a public marketing page — and bounced anonymous visitors to
+  // the sign-in screen.
+  const needsUser = PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
 
   if (!needsUser) return response;
 

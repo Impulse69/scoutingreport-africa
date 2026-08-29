@@ -89,16 +89,31 @@ export async function saveScoutReport(
 
   revalidatePath("/players");
   revalidatePath(`/scout`);
+
+  // Look up the slug so we can revalidate the public URLs this report feeds.
+  const { data: row } = await supabase
+    .from("players")
+    .select("slug")
+    .eq("id", data.player_id)
+    .maybeSingle<{ slug: string }>();
+
+  if (row) {
+    revalidatePath(`/players/${row.slug}`);
+    revalidatePath(`/players/${row.slug}/reports/${id}`);
+  }
+
   if (data.status === "published") {
-    // Look up slug to revalidate the public report URL.
-    const { data: row } = await supabase
-      .from("players")
-      .select("slug")
-      .eq("id", data.player_id)
-      .single<{ slug: string }>();
-    if (row) {
-      revalidatePath(`/players/${row.slug}`);
-      revalidatePath(`/players/${row.slug}/reports/${id}`);
+    // Keep the aggregate view in step with the reports feeding it. The profile
+    // page aggregates from the raw ratings table, so a failure here is not
+    // user-visible — don't fail the save over it.
+    const { error: refreshError } = await supabase.rpc(
+      "refresh_player_category_ratings",
+    );
+    if (refreshError) {
+      console.error(
+        "[reports] player_category_ratings refresh failed:",
+        refreshError.message,
+      );
     }
   }
 

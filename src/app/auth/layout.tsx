@@ -1,67 +1,89 @@
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { Sparkles, Shield, Compass, CheckCircle2 } from "lucide-react";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-[#080B0E] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
       {/* Cinematic Branding Panel */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 text-stone-50 relative overflow-hidden bg-stone-950">
-        {/* Hero Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2676&auto=format&fit=crop" 
-            alt="Scouting Hero"
-            className="w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-stone-950/20" />
-        </div>
+      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-[#0c161d] via-[#091015] to-[#060a0d] border-r border-white/10">
+        {/* Luminous Glows */}
+        <div className="absolute top-1/4 left-10 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-amber-500/10 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight text-xl transition-opacity hover:opacity-80">
-            <span className="flex h-8 w-8 items-center justify-center rounded-none bg-orange-600 text-[11px] font-black text-white">
+          <Link href="/" className="inline-flex items-center gap-3 group focus:outline-none">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-md shadow-emerald-500/20 text-slate-950 font-mono font-black text-sm">
               SR
-            </span>
-            <span>ScoutingReport Africa</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-white text-base tracking-tight">
+                  SCOUTING REPORT
+                </span>
+                <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  AFRICA
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400">Talent Intelligence & Scout Network</p>
+            </div>
           </Link>
         </div>
 
-        <div className="relative z-10 max-w-sm">
-          <span className="inline-block px-2 py-1 mb-6 text-[10px] font-bold tracking-[0.2em] uppercase bg-orange-600 text-white">
-            Ground Truth
-          </span>
-          <h2 className="text-5xl font-bold tracking-tighter leading-[0.9] mb-6">
-            Identify talent <br />
-            <span className="text-stone-400">beyond the data.</span>
+        <div className="relative z-10 max-w-md space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider">
+            <Sparkles className="h-3 w-3 text-amber-400" /> Ground-Truth Intelligence
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-[1.05]">
+            Unearth talent <br />
+            <span className="gradient-text-emerald">beyond the highlight reel.</span>
           </h2>
-          <p className="text-stone-400 text-lg leading-relaxed font-medium">
-            Authentic, human-verified reports written directly from academies and pitches across the continent.
+          <p className="text-slate-300 text-sm leading-relaxed">
+            Standardized, verified scouting dossiers and tactical radar evaluations compiled directly across all 54 CAF national associations and elite academy hubs.
           </p>
+
+          <div className="space-y-2 pt-2 text-xs text-slate-300 font-medium">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span>Full catalogue of 200+ scouted African prodigies</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span>Custom recruitment watchlists & pipeline exports</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span>Verified scout dossiers and percentile visualizers</span>
+            </div>
+          </div>
         </div>
-        
-        <div className="relative z-10 flex items-center gap-4 text-[10px] font-mono tracking-widest text-stone-500 uppercase">
-          <div className="h-[1px] w-8 bg-stone-800" />
-          <span>Authorized Personnel Access</span>
+
+        <div className="relative z-10 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <span>© {new Date().getFullYear()} ScoutingReport Africa</span>
+          <span className="text-emerald-400">Authorized Personnel Portal</span>
         </div>
       </div>
 
       {/* Main Authentication Area */}
-      <main className="flex-1 flex flex-col bg-white dark:bg-stone-950">
-        <header className="lg:hidden border-b border-stone-100 dark:border-stone-900 bg-white/80 dark:bg-stone-950/80 backdrop-blur-md sticky top-0 z-50 p-4">
+      <main className="flex-1 flex flex-col bg-[#080B0E]">
+        <header className="lg:hidden border-b border-white/10 bg-[#080B0E]/90 backdrop-blur-md sticky top-0 z-50 p-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
-              <span className="flex h-6 w-6 items-center justify-center rounded-none bg-orange-600 text-[8px] font-black text-white">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 text-[10px] font-black text-slate-950">
                 SR
-              </span>
-              <span className="text-sm">ScoutingReport Africa</span>
+              </div>
+              <span className="text-sm font-extrabold text-white">ScoutingReport Africa</span>
             </Link>
-            <Link href="/" className="text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors">
-              Exit
+            <Link
+              href="/"
+              className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+            >
+              Back to Home
             </Link>
           </div>
         </header>
 
         <div className="flex-1 flex items-center justify-center p-4 sm:p-8">
-          <div className="w-full max-w-[400px]">
+          <div className="w-full max-w-[420px]">
             {children}
           </div>
         </div>

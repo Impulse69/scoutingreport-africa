@@ -49,89 +49,149 @@
 }
 
 :root {
-  --background: oklch(0.99 0.005 60);
-  --foreground: oklch(0.2 0.02 60);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.02 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.02 60);
-  --primary: oklch(0.55 0.17 40);
-  --primary-foreground: oklch(0.99 0.005 60);
-  --secondary: oklch(0.96 0.01 60);
-  --secondary-foreground: oklch(0.25 0.02 60);
-  --muted: oklch(0.96 0.01 60);
-  --muted-foreground: oklch(0.5 0.02 60);
-  --accent: oklch(0.95 0.03 145);
-  --accent-foreground: oklch(0.25 0.08 145);
-  --destructive: oklch(0.58 0.22 25);
-  --border: oklch(0.9 0.01 60);
-  --input: oklch(0.9 0.01 60);
-  --ring: oklch(0.55 0.17 40);
-  --chart-1: oklch(0.6 0.18 40);
-  --chart-2: oklch(0.55 0.13 160);
-  --chart-3: oklch(0.7 0.14 85);
-  --chart-4: oklch(0.55 0.13 230);
-  --chart-5: oklch(0.55 0.16 300);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.98 0.005 60);
-  --sidebar-foreground: oklch(0.2 0.02 60);
-  --sidebar-primary: oklch(0.55 0.17 40);
-  --sidebar-primary-foreground: oklch(0.99 0.005 60);
-  --sidebar-accent: oklch(0.95 0.03 145);
-  --sidebar-accent-foreground: oklch(0.25 0.08 145);
-  --sidebar-border: oklch(0.9 0.01 60);
-  --sidebar-ring: oklch(0.55 0.17 40);
+  /* High-end Emerald & Gold Obsidian Palette */
+  --background: #080B0E;
+  --foreground: #F1F5F9;
+  --card: #0E1318;
+  --card-foreground: #F1F5F9;
+  --popover: #0E1318;
+  --popover-foreground: #F1F5F9;
+  --primary: #10B981;
+  --primary-foreground: #042F2E;
+  --secondary: #161F26;
+  --secondary-foreground: #F1F5F9;
+  --muted: #161F26;
+  --muted-foreground: #94A3B8;
+  --accent: #F59E0B;
+  --accent-foreground: #451A03;
+  --destructive: #EF4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #10B981;
+  --chart-1: #10B981;
+  --chart-2: #F59E0B;
+  --chart-3: #06B6D4;
+  --chart-4: #8B5CF6;
+  --chart-5: #EC4899;
+  --radius: 0.75rem;
+  --sidebar: #0B0F13;
+  --sidebar-foreground: #F1F5F9;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #042F2E;
+  --sidebar-accent: #161F26;
+  --sidebar-accent-foreground: #10B981;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #10B981;
 }
 
 .dark {
-  --background: oklch(0.15 0.01 60);
-  --foreground: oklch(0.97 0.01 60);
-  --card: oklch(0.19 0.01 60);
-  --card-foreground: oklch(0.97 0.01 60);
-  --popover: oklch(0.19 0.01 60);
-  --popover-foreground: oklch(0.97 0.01 60);
-  --primary: oklch(0.68 0.17 40);
-  --primary-foreground: oklch(0.15 0.01 60);
-  --secondary: oklch(0.26 0.015 60);
-  --secondary-foreground: oklch(0.97 0.01 60);
-  --muted: oklch(0.26 0.015 60);
-  --muted-foreground: oklch(0.68 0.01 60);
-  --accent: oklch(0.35 0.06 145);
-  --accent-foreground: oklch(0.95 0.03 145);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.68 0.17 40);
-  --chart-1: oklch(0.72 0.18 40);
-  --chart-2: oklch(0.7 0.14 160);
-  --chart-3: oklch(0.78 0.15 85);
-  --chart-4: oklch(0.68 0.14 230);
-  --chart-5: oklch(0.7 0.17 300);
-  --sidebar: oklch(0.17 0.01 60);
-  --sidebar-foreground: oklch(0.97 0.01 60);
-  --sidebar-primary: oklch(0.68 0.17 40);
-  --sidebar-primary-foreground: oklch(0.15 0.01 60);
-  --sidebar-accent: oklch(0.35 0.06 145);
-  --sidebar-accent-foreground: oklch(0.95 0.03 145);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.68 0.17 40);
+  --background: #080B0E;
+  --foreground: #F1F5F9;
+  --card: #0E1318;
+  --card-foreground: #F1F5F9;
+  --popover: #0E1318;
+  --popover-foreground: #F1F5F9;
+  --primary: #10B981;
+  --primary-foreground: #042F2E;
+  --secondary: #161F26;
+  --secondary-foreground: #F1F5F9;
+  --muted: #161F26;
+  --muted-foreground: #94A3B8;
+  --accent: #F59E0B;
+  --accent-foreground: #451A03;
+  --destructive: #EF4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #10B981;
+  --chart-1: #10B981;
+  --chart-2: #F59E0B;
+  --chart-3: #06B6D4;
+  --chart-4: #8B5CF6;
+  --chart-5: #EC4899;
+  --sidebar: #0B0F13;
+  --sidebar-foreground: #F1F5F9;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #042F2E;
+  --sidebar-accent: #161F26;
+  --sidebar-accent-foreground: #10B981;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #10B981;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/40;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-emerald-500/25 selection:text-emerald-200;
   }
   html {
     @apply font-sans;
   }
 }
 
-/* Hero overlays — fade-in/fade-out cycle for the cycling stat cards.
-   Lives in globals.css instead of styled-jsx because Turbopack chokes on
-   <style jsx> blocks in client components (silent compile hang). */
+/* Custom Glassmorphism & Glowing Utilities */
+.glass-panel {
+  background: rgba(14, 19, 24, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-emerald {
+  background: rgba(14, 19, 24, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(22, 31, 38, 0.85);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px);
+}
+
+.gradient-text-emerald {
+  background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #A7F3D0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #FDE68A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glow-emerald {
+  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
+}
+
+.glow-gold {
+  box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.25);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080B0E;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10B981;
+}
+
+/* Hero Stat Overlays Animation */
 .hero-fade {
   animation: hero-cycle 4500ms ease-in-out;
   will-change: opacity, transform;
@@ -155,7 +215,6 @@
   }
 }
 
-/* Site-wide 80% scale — placed outside @layer so it outranks preflight. */
 html {
-  font-size: 12.8px;
+  font-size: 13.5px;
 }

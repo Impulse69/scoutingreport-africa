@@ -82,26 +82,26 @@ export function MostSelectedXI({ formation }: { formation: Formation }) {
   const stat = STATS.find((s) => s.key === statKey)!;
 
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E] overflow-hidden">
+    <section className="rounded-3xl border border-white/10 bg-[#0c1218] overflow-hidden shadow-xl">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/5 px-6 py-4">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500">
-            Most selected XI
+          <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-400">
+            Tactical Formation & Starters
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
-            Most-frequent starter at each slot · 2025/2026
+          <p className="mt-0.5 text-xs text-slate-400">
+            Most selected tactical XI lineup · Season 2025/2026
           </p>
         </div>
-        <span className="rounded-md border border-white/10 bg-white/5 px-3 py-1 font-mono text-xs text-zinc-300">
+        <span className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-xs font-bold text-emerald-300">
           {formation.code}
         </span>
       </div>
 
       {/* Stat tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-white/5 px-6 py-3">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mr-2">
-          Stat
+      <div className="flex flex-wrap items-center gap-2 border-b border-white/5 px-6 py-3 bg-[#0a0e13]">
+        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mr-2">
+          Metric:
         </span>
         {STATS.map((s) => {
           const Icon = s.icon;
@@ -111,32 +111,26 @@ export function MostSelectedXI({ formation }: { formation: Formation }) {
               key={s.key}
               type="button"
               onClick={() => setStatKey(s.key)}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                 active
-                  ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/30"
-                  : "text-zinc-400 border border-transparent hover:bg-white/5 hover:text-white"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                  : "text-slate-400 border border-transparent hover:bg-white/5 hover:text-white"
               }`}
             >
-              <Icon className="h-3 w-3" />
+              <Icon className="h-3.5 w-3.5" />
               {s.label}
             </button>
           );
         })}
-        <button
-          type="button"
-          className="flex items-center gap-1 rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
-        >
-          More <ChevronDown className="h-3 w-3" />
-        </button>
         <div className="ml-auto flex items-center gap-2 text-xs">
-          <span className="text-zinc-500 font-mono uppercase tracking-wider">Per 90</span>
+          <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Per 90</span>
           <button
             type="button"
             role="switch"
             aria-checked={per90}
             onClick={() => setPer90((v) => !v)}
             className={`relative h-5 w-9 rounded-full transition-colors ${
-              per90 ? "bg-cyan-500" : "bg-white/10"
+              per90 ? "bg-emerald-500" : "bg-white/10"
             }`}
           >
             <span
@@ -156,27 +150,27 @@ export function MostSelectedXI({ formation }: { formation: Formation }) {
 
 function Pitch({ formation, stat, per90 }: { formation: Formation; stat: Stat; per90: boolean }) {
   return (
-    <div className="relative mx-auto my-6 aspect-[3/4] w-full max-w-[640px] overflow-hidden rounded-lg border border-white/5 bg-[#0A0F0A]">
+    <div className="relative mx-auto my-6 aspect-[3/4] w-full max-w-[640px] overflow-hidden rounded-2xl border border-white/10 bg-[#070e0a]">
       {/* Pitch lines */}
       <svg
         viewBox="0 0 100 133"
         className="absolute inset-0 h-full w-full"
         preserveAspectRatio="none"
       >
-        <rect x="0" y="0" width="100" height="133" fill="transparent" stroke="rgba(255,255,255,0.08)" strokeWidth="0.4" />
+        <rect x="0" y="0" width="100" height="133" fill="transparent" stroke="rgba(16,185,129,0.2)" strokeWidth="0.4" />
         {/* halfway line */}
-        <line x1="0" y1="66.5" x2="100" y2="66.5" stroke="rgba(255,255,255,0.08)" strokeWidth="0.3" />
+        <line x1="0" y1="66.5" x2="100" y2="66.5" stroke="rgba(16,185,129,0.2)" strokeWidth="0.3" />
         {/* center circle */}
-        <circle cx="50" cy="66.5" r="9" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.3" />
-        <circle cx="50" cy="66.5" r="0.5" fill="rgba(255,255,255,0.15)" />
+        <circle cx="50" cy="66.5" r="9" fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="0.3" />
+        <circle cx="50" cy="66.5" r="0.5" fill="rgba(16,185,129,0.4)" />
         {/* boxes */}
-        <rect x="22" y="0" width="56" height="14" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.3" />
-        <rect x="36" y="0" width="28" height="6" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.3" />
-        <rect x="22" y="119" width="56" height="14" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.3" />
-        <rect x="36" y="127" width="28" height="6" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.3" />
+        <rect x="22" y="0" width="56" height="14" fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="0.3" />
+        <rect x="36" y="0" width="28" height="6" fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="0.3" />
+        <rect x="22" y="119" width="56" height="14" fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="0.3" />
+        <rect x="36" y="127" width="28" height="6" fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="0.3" />
         {/* grid hint */}
         <pattern id="grid" width="6.66" height="6.66" patternUnits="userSpaceOnUse">
-          <path d="M 6.66 0 L 0 0 0 6.66" fill="none" stroke="rgba(255,255,255,0.025)" strokeWidth="0.2" />
+          <path d="M 6.66 0 L 0 0 0 6.66" fill="none" stroke="rgba(16,185,129,0.05)" strokeWidth="0.2" />
         </pattern>
         <rect width="100" height="133" fill="url(#grid)" />
       </svg>
@@ -196,25 +190,25 @@ function Pitch({ formation, stat, per90 }: { formation: Formation; stat: Stat; p
             }}
           >
             <div className="relative">
-              <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-white/15 bg-stone-200">
+              <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-emerald-500/40 bg-slate-800 shadow-md">
                 {player.photoUrl ? (
                   <Image src={player.photoUrl} alt={player.shortName} width={48} height={48} className="object-cover" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center font-mono text-xs font-bold text-stone-700">
+                  <div className="flex h-full w-full items-center justify-center font-mono text-xs font-black text-emerald-300">
                     {player.shortName.slice(0, 2)}
                   </div>
                 )}
               </div>
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-[#0E0E0E] font-mono text-[9px] font-bold text-white">
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-[#0c1218] font-mono text-[9px] font-bold text-white shadow-sm">
                 {player.shirtNumber}
               </span>
             </div>
-            <p className="font-mono text-[11px] font-semibold text-white">{player.shortName}</p>
+            <p className="text-[11px] font-bold text-white drop-shadow-md">{player.shortName}</p>
             <span
-              className={`flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[10px] tabular-nums ${
+              className={`flex items-center gap-1 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${
                 isHi
-                  ? "border border-cyan-500/40 bg-cyan-500/10 text-cyan-300"
-                  : "border border-white/10 bg-black/40 text-zinc-400"
+                  ? "border border-amber-500/50 bg-amber-500/20 text-amber-300"
+                  : "border border-white/10 bg-black/70 text-slate-300"
               }`}
             >
               <stat.icon className="h-2.5 w-2.5" />

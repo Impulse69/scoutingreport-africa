@@ -283,6 +283,41 @@ export type Database = {
           },
         ]
       }
+      scout_player_notes: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string
+          player_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string
+          player_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string
+          player_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scout_player_notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scout_report_ratings: {
         Row: {
           category: Database["public"]["Enums"]["rating_category"]

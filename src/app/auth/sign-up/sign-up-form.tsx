@@ -1,19 +1,17 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail, User } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, User, Loader2, ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/core/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { startGoogleOAuth } from "@/lib/core/auth/google-oauth";
 import { toast } from "sonner";
 
 export function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextParam = searchParams.get("next") ?? "/";
-  const next = nextParam.startsWith("/") ? nextParam : "/";
+  const nextParam = searchParams.get("next") ?? "/dashboard";
+  const next = nextParam.startsWith("/") ? nextParam : "/dashboard";
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,9 +44,8 @@ export function SignUpForm() {
       return;
     }
 
-    // If a session exists immediately, the project has email confirmation off.
     if (data.session) {
-      toast.success("Welcome aboard");
+      toast.success("Welcome to ScoutingReport Africa");
       router.replace(next);
       router.refresh();
       return;
@@ -60,34 +57,22 @@ export function SignUpForm() {
 
   async function onGoogleSignUp() {
     setGooglePending(true);
-    const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo },
-    });
-
-    if (error) {
+    try {
+      await startGoogleOAuth(next);
+    } catch (error) {
       setGooglePending(false);
-      toast.error(error.message);
+      toast.error(error instanceof Error ? error.message : "Could not open Google sign-up.");
     }
   }
 
   if (confirmationSent) {
     return (
-      <div className="space-y-4 rounded-xl border border-orange-500/30 bg-orange-500/5 p-6">
-        <Mail className="h-6 w-6 text-orange-500" />
+      <div className="space-y-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
+        <Mail className="h-8 w-8 text-emerald-400 mx-auto" />
         <div className="space-y-2">
-          <h2 className="text-lg font-bold tracking-tight text-stone-950 dark:text-white">
-            Check your inbox
-          </h2>
-          <p className="text-sm text-stone-500 dark:text-stone-400">
-            We sent a confirmation link to{" "}
-            <span className="font-mono text-stone-900 dark:text-white">
-              {confirmationSent}
-            </span>
-            . Click it to activate your account.
+          <h2 className="text-lg font-bold text-white">Check Your Inbox</h2>
+          <p className="text-xs text-slate-300">
+            We sent a verification link to <span className="font-mono text-emerald-300 font-bold">{confirmationSent}</span>. Click it to activate your scout account.
           </p>
         </div>
       </div>
@@ -96,80 +81,78 @@ export function SignUpForm() {
 
   return (
     <div className="space-y-6">
-      <Button
+      <button
         type="button"
-        variant="outline"
-        size="lg"
-        className="h-12 w-full justify-center rounded-lg border-stone-200 bg-white text-stone-900 shadow-sm hover:bg-stone-50 dark:border-stone-800 dark:bg-stone-950 dark:text-white dark:hover:bg-stone-900"
         disabled={pending || googlePending}
         onClick={onGoogleSignUp}
+        className="h-12 w-full rounded-2xl border border-white/10 bg-[#0c1218] hover:bg-[#121921] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
       >
-        <span className="mr-2 flex size-5 items-center justify-center rounded-full border border-stone-200 bg-white text-xs font-black text-stone-800">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-black text-slate-950">
           G
         </span>
-        {googlePending ? "Opening Google..." : "Continue with Google"}
-      </Button>
+        <span>{googlePending ? "Opening Google..." : "Continue with Google"}</span>
+      </button>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
-        <div className="h-px bg-stone-200 dark:bg-stone-800" />
-        <span>Or with email</span>
-        <div className="h-px bg-stone-200 dark:bg-stone-800" />
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        <div className="h-px bg-white/10" />
+        <span>Or With Email</span>
+        <div className="h-px bg-white/10" />
       </div>
 
       <form onSubmit={onSignUp} className="space-y-4">
-        <div className="space-y-2">
-          <Label
+        <div className="space-y-1.5">
+          <label
             htmlFor="display_name"
-            className="text-xs uppercase tracking-[0.14em] text-stone-500"
+            className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block"
           >
-            Display name
-          </Label>
+            Scout / Analyst Name
+          </label>
           <div className="relative">
-            <User className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone-400" />
-            <Input
+            <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
               id="display_name"
               autoComplete="name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your name"
-              className="h-12 rounded-lg border-stone-200 bg-white pl-10 text-stone-950 placeholder:text-stone-400 focus-visible:border-orange-600 focus-visible:ring-orange-600/20 dark:border-stone-800 dark:bg-stone-950 dark:text-white"
+              placeholder="e.g. Samuel Eto'o"
               maxLength={120}
+              className="w-full h-11 pl-10 pr-4 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label
+        <div className="space-y-1.5">
+          <label
             htmlFor="email"
-            className="text-xs uppercase tracking-[0.14em] text-stone-500"
+            className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block"
           >
-            Email
-          </Label>
+            Work Email
+          </label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone-400" />
-            <Input
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
               id="email"
               type="email"
               autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@scoutingreport.africa"
-              className="h-12 rounded-lg border-stone-200 bg-white pl-10 text-stone-950 placeholder:text-stone-400 focus-visible:border-orange-600 focus-visible:ring-orange-600/20 dark:border-stone-800 dark:bg-stone-950 dark:text-white"
+              placeholder="scout@club.com"
+              className="w-full h-11 pl-10 pr-4 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label
+        <div className="space-y-1.5">
+          <label
             htmlFor="password"
-            className="text-xs uppercase tracking-[0.14em] text-stone-500"
+            className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block"
           >
-            Password
-          </Label>
+            Password (Min 8 Chars)
+          </label>
           <div className="relative">
-            <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-stone-400" />
-            <Input
+            <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
@@ -178,41 +161,42 @@ export function SignUpForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
-              className="h-12 rounded-lg border-stone-200 bg-white px-10 text-stone-950 placeholder:text-stone-400 focus-visible:border-orange-600 focus-visible:ring-orange-600/20 dark:border-stone-800 dark:bg-stone-950 dark:text-white"
+              className="w-full h-11 pl-10 pr-10 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600/40 dark:hover:text-stone-200"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              onClick={() => setShowPassword((value) => !value)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-200 transition-colors"
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? (
-                <EyeOff className="size-4" />
-              ) : (
-                <Eye className="size-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
 
-        <Button
+        <button
           type="submit"
-          size="lg"
-          className="h-12 w-full rounded-lg bg-orange-600 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-sm shadow-orange-900/10 transition-all hover:bg-orange-700 active:scale-[0.99]"
           disabled={pending || googlePending}
+          className="w-full h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2"
         >
-          {pending ? "Creating account..." : "Create account"}
-        </Button>
+          {pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <span>Create Scout Account</span>
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
+        </button>
       </form>
 
-      <p className="text-center text-xs leading-5 text-stone-500 dark:text-stone-400">
-        By signing up you agree to our{" "}
-        <a href="/terms" className="underline hover:text-stone-700 dark:hover:text-stone-200">
-          terms
+      <p className="text-center text-[11px] text-slate-400">
+        By signing up, you agree to our{" "}
+        <a href="/terms" className="underline text-emerald-400 hover:text-emerald-300">
+          Terms
         </a>{" "}
         and{" "}
-        <a href="/privacy" className="underline hover:text-stone-700 dark:hover:text-stone-200">
-          privacy policy
+        <a href="/privacy" className="underline text-emerald-400 hover:text-emerald-300">
+          Privacy Policy
         </a>
         .
       </p>

@@ -73,10 +73,17 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <TranslationSweeper />
+          {/* The product is designed dark throughout — the marketing site,
+              player profiles and scout workspace all paint their own dark
+              surfaces. Following the OS preference put light-theme tokens
+              (near-white cards, dark text) inside those hardcoded dark shells,
+              so pages using shared components rendered unreadable. Pin dark
+              until a real light palette exists. */}
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
-            enableSystem
+            defaultTheme="dark"
+            forcedTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange
           >
             <TooltipProvider delay={200}>
