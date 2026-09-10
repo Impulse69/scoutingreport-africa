@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { Search, Loader2, User, Trophy, ArrowRight, X, Sparkles, Command } from "lucide-react";
+import { Search, Loader2, User, Trophy, ArrowRight, X, Sparkles } from "lucide-react";
 import { searchGlobalOmni, type OmniSearchResult } from "@/lib/features/search/actions";
 
 const POPULAR_SUGGESTIONS = [
@@ -17,11 +15,13 @@ const POPULAR_SUGGESTIONS = [
 ];
 
 export function NavSearch() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filterType, setFilterType] = useState<"all" | "player" | "club">("all");
-  const [results, setResults] = useState<OmniSearchResult[]>([]);
+  const [searchResult, setSearchResult] = useState<{
+    query: string;
+    items: OmniSearchResult[];
+  }>({ query: "", items: [] });
   const [isSearching, startSearching] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,20 +55,25 @@ export function NavSearch() {
 
   // Debounced search
   useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
+    const normalizedQuery = query.trim();
+    if (!normalizedQuery) return;
+
+    let cancelled = false;
 
     const timer = setTimeout(() => {
       startSearching(async () => {
-        const res = await searchGlobalOmni(query);
-        setResults(res);
+        const items = await searchGlobalOmni(normalizedQuery);
+        if (!cancelled) setSearchResult({ query: normalizedQuery, items });
       });
     }, 150);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [query]);
+
+  const results = searchResult.query === query.trim() ? searchResult.items : [];
 
   const displayedResults = results.filter((r) => {
     if (filterType === "player") return r.type === "player";
@@ -203,7 +208,7 @@ export function NavSearch() {
                   </div>
                 ) : !isSearching ? (
                   <div className="py-12 text-center text-slate-400">
-                    <p className="text-sm font-['Public_Sans'] font-bold text-white">No dossiers match "{query}"</p>
+                    <p className="text-sm font-['Public_Sans'] font-bold text-white">No dossiers match &quot;{query}&quot;</p>
                     <p className="text-xs text-slate-400 mt-1">
                       Try searching by nationality (e.g. Nigeria, Senegal, Morocco) or club.
                     </p>

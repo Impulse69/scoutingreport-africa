@@ -151,8 +151,10 @@ When you ship one of them: add the path to `LIVE_ROUTES` and it starts linking.
 Nothing else needs to change.
 
 Some data is still mock — `src/lib/features/teams/mock.ts` (team pages) and
-`src/lib/features/players/rich-mock.ts` (one demo profile). Global search hits
-the live ESPN endpoint, and `espn-*` slugs render an ESPN-backed profile.
+`src/lib/features/players/rich-mock.ts` (one demo profile). Global search now
+combines published, RLS-visible Supabase dossiers with live ESPN discovery; it
+never substitutes made-up players when the external endpoint is unavailable.
+`espn-*` slugs render an ESPN-backed profile.
 
 ---
 
