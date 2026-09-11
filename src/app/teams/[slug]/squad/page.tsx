@@ -1,8 +1,20 @@
-import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import { Users, Database } from "lucide-react";
-import { getTeamBySlug, getTeamRefBySlug } from "@/lib/features/teams/mock";
-import { filterExistingPlayerSlugs } from "@/lib/features/players/queries";
+import { notFound } from "next/navigation";
+import { Database, Users } from "lucide-react";
+import { getTeamRefBySlug } from "@/lib/features/teams/mock";
+import {
+  listPublishedTeamPlayers,
+  positionGroup,
+  type PositionGroup,
+} from "@/lib/features/teams/queries";
+
+const GROUP_LABELS: Record<PositionGroup, string> = {
+  GK: "Goalkeepers",
+  DEF: "Defenders",
+  MID: "Midfielders",
+  FWD: "Forwards",
+};
 
 export default async function SquadPage({
   params,
@@ -10,104 +22,140 @@ export default async function SquadPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = getTeamBySlug(slug);
+  const team = getTeamRefBySlug(slug);
+  if (!team) notFound();
 
-  // The team layout renders for any club in the search index, but only some are
-  // fully seeded. Match the overview page and show the "not seeded yet" state
-  // instead of 404ing on a tab the sidebar itself links to.
-  if (!data) {
-    const ref = getTeamRefBySlug(slug);
-    if (!ref) notFound();
-
-    return (
-      <div className="space-y-6">
-        <header className="border-b border-white/5 pb-6">
-          <h1 className="font-mono text-3xl font-bold tracking-tight text-white">
-            Squad
-          </h1>
-          <p className="mt-2 font-mono text-xs text-zinc-500">
-            {ref.name} · {ref.league}
-          </p>
-        </header>
-        <div className="rounded-xl border border-dashed border-white/10 bg-[#0E0E0E] py-16 text-center">
-          <Database className="mx-auto h-6 w-6 text-zinc-500" />
-          <p className="mt-3 font-mono text-sm text-zinc-300">
-            {ref.name} squad data lands when the league ingest pipeline ships
-          </p>
-          <p className="mt-1 text-xs text-zinc-500">
-            The club is registered. Roster, minutes, and per-player output
-            populate once match-data sync covers {ref.league}.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const all = [
-    ...data.formation.slots.map((s) => s.player),
-    ...data.backups.GK,
-    ...data.backups.DEF,
-    ...data.backups.MID,
-    ...data.backups.FWD,
-  ];
-
-  // Squad rosters come from the club feed, not from our own player table. Only
-  // link the names that have a profile behind them — the rest would 404.
-  const linkable = await filterExistingPlayerSlugs(all.map((p) => p.slug));
+  const squad = await listPublishedTeamPlayers(team.name);
+  const groups = squad.players.reduce<Record<PositionGroup, typeof squad.players>>(
+    (result, player) => {
+      result[positionGroup(player.primaryPositionCode)].push(player);
+      return result;
+    },
+    { GK: [], DEF: [], MID: [], FWD: [] },
+  );
 
   return (
     <div className="space-y-6">
       <header className="border-b border-white/5 pb-6">
-        <h1 className="font-mono text-3xl font-bold tracking-tight text-white">Squad</h1>
-        <p className="mt-2 font-mono text-xs text-zinc-500">{all.length} players · 2025/2026</p>
+        <h1 className="font-mono text-3xl font-bold tracking-tight text-white">
+          Published squad
+        </h1>
+        <p className="mt-2 font-mono text-xs text-zinc-500">
+          {team.name} · {squad.players.length} scouting dossier
+          {squad.players.length === 1 ? "" : "s"}
+        </p>
       </header>
 
-      <div className="rounded-xl border border-white/5 bg-[#0E0E0E] overflow-hidden">
-        <table className="w-full text-xs font-mono">
-          <thead className="bg-white/5">
-            <tr className="text-left text-[10px] uppercase tracking-wider text-zinc-500">
-              <th className="px-4 py-3">#</th>
-              <th className="px-4 py-3">Player</th>
-              <th className="px-4 py-3">Pos</th>
-              <th className="px-4 py-3 text-right">Apps</th>
-              <th className="px-4 py-3 text-right">Mins</th>
-              <th className="px-4 py-3 text-right">Goals</th>
-              <th className="px-4 py-3 text-right">Assists</th>
-              <th className="px-4 py-3 text-right">Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            {all.map((p) => (
-              <tr key={p.id} className="border-t border-white/5 hover:bg-white/5">
-                <td className="px-4 py-3 text-zinc-500">{p.shirtNumber}</td>
-                <td className="px-4 py-3 text-white">
-                  {linkable.has(p.slug) ? (
-                    <Link href={`/players/${p.slug}`} className="hover:text-cyan-300">
-                      {p.shortName}
-                    </Link>
-                  ) : (
-                    p.shortName
-                  )}
-                </td>
-                <td className="px-4 py-3 text-zinc-400">{p.position}</td>
-                <td className="px-4 py-3 text-right tabular-nums text-zinc-300">{p.appearances}</td>
-                <td className="px-4 py-3 text-right tabular-nums text-zinc-300">
-                  {p.minutes.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right tabular-nums text-zinc-300">{p.goals}</td>
-                <td className="px-4 py-3 text-right tabular-nums text-zinc-300">{p.assists}</td>
-                <td className="px-4 py-3 text-right font-bold tabular-nums text-cyan-300">
-                  {p.rating.toFixed(2)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {squad.unavailable ? (
+        <EmptyState
+          icon={Database}
+          title="Squad data is temporarily unavailable"
+          detail="Supabase could not return the published roster. No mock players are substituted."
+        />
+      ) : squad.players.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No published players yet"
+          detail={`Players linked to “${team.name}” appear here after a scout publishes their dossier.`}
+        />
+      ) : (
+        <div className="space-y-5">
+          {(Object.keys(GROUP_LABELS) as PositionGroup[]).map((group) => {
+            const players = groups[group];
+            if (players.length === 0) return null;
 
-      <p className="text-[11px] text-zinc-500">
+            return (
+              <section
+                key={group}
+                className="overflow-hidden rounded-xl border border-white/5 bg-[#0E0E0E]"
+              >
+                <div className="flex items-center justify-between border-b border-white/5 bg-white/[0.02] px-5 py-3">
+                  <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-300">
+                    {GROUP_LABELS[group]}
+                  </h2>
+                  <span className="font-mono text-[10px] text-zinc-500">
+                    {players.length}
+                  </span>
+                </div>
+                <div className="divide-y divide-white/5">
+                  {players.map((player) => (
+                    <Link
+                      key={player.id}
+                      href={`/players/${player.slug}`}
+                      className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-white/[0.04]"
+                    >
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-emerald-500/10">
+                        {player.photoUrl ? (
+                          <Image
+                            src={player.photoUrl}
+                            alt=""
+                            fill
+                            sizes="40px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center font-mono text-xs font-bold text-emerald-300">
+                            {(player.commonName ?? player.fullName)
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((part) => part[0])
+                              .join("")
+                              .toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold text-white">
+                          {player.commonName ?? player.fullName}
+                        </p>
+                        {player.commonName ? (
+                          <p className="truncate text-xs text-zinc-500">
+                            {player.fullName}
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="text-right font-mono">
+                        <p className="text-xs font-bold text-emerald-300">
+                          {player.primaryPositionCode}
+                        </p>
+                        <p className="mt-1 text-[10px] text-zinc-500">
+                          {player.nationalityCode}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
+
+      <p className="text-[11px] leading-5 text-zinc-500">
         <Users className="mr-1 inline h-3 w-3" />
-        Sortable filters and aggregated per-90 stats land in the next pass.
+        This roster contains published ScoutingReport dossiers only. Match
+        appearances and performance statistics will appear after a verified
+        fixture data source is connected.
+      </p>
+    </div>
+  );
+}
+
+function EmptyState({
+  icon: Icon,
+  title,
+  detail,
+}: {
+  icon: typeof Database;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-xl border border-dashed border-white/10 bg-[#0E0E0E] px-6 py-16 text-center">
+      <Icon className="mx-auto h-6 w-6 text-zinc-500" />
+      <p className="mt-3 font-mono text-sm text-zinc-300">{title}</p>
+      <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-zinc-500">
+        {detail}
       </p>
     </div>
   );

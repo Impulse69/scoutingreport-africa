@@ -10,16 +10,13 @@ import {
   Calendar,
   LineChart,
   ArrowLeft,
-  ChevronDown,
-  Shield,
   Trophy
 } from "lucide-react";
 import type { TeamRef } from "@/lib/features/teams/mock";
 
 type TeamSidebarProps = {
   team: TeamRef;
-  season: string;
-  seasons: string[];
+  contextLabel: string;
 };
 
 const NAV = [
@@ -30,7 +27,7 @@ const NAV = [
   { href: "trends", label: "Form Trends", icon: LineChart },
 ] as const;
 
-export function TeamSidebar({ team, season, seasons }: TeamSidebarProps) {
+export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
   const pathname = usePathname();
   const base = `/teams/${team.slug}`;
 
@@ -60,7 +57,7 @@ export function TeamSidebar({ team, season, seasons }: TeamSidebarProps) {
       {/* Season badge */}
       <div className="mt-6 mb-4">
         <div className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-[#0c1218] px-3.5 py-2 text-xs font-mono font-bold text-slate-300">
-          <span>Season {season}</span>
+          <span>{contextLabel}</span>
           <Trophy className="h-3.5 w-3.5 text-amber-400" />
         </div>
       </div>
