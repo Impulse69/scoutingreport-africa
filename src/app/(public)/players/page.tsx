@@ -4,18 +4,10 @@ import Image from "next/image";
 import {
   Users,
   Search,
-  Filter,
-  Sparkles,
   ArrowRight,
-  Shield,
-  Star,
-  Activity,
   SlidersHorizontal,
-  Flame,
-  UserCheck
 } from "lucide-react";
 import { listPublishedPlayers } from "@/lib/features/players/queries";
-import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { POSITIONS, CAF_COUNTRIES } from "@/lib/shared/constants";
 
@@ -108,6 +100,12 @@ export default async function PlayersPage({
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/compare"
+            className="px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
+          >
+            Compare Players
+          </Link>
           <Link
             href="/scout/reports/new"
             className="px-4 py-2.5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"

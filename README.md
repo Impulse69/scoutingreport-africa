@@ -55,6 +55,7 @@ scout creates a player  →  writes a report  →  publishes it
   publishing is what puts them on the public roster
 - `/scout/reports/new`, `/scout/reports/[id]/edit` — the report form
 - `/players`, `/players/[slug]` — public roster and profile
+- `/compare` — compare two published dossiers and their published-report ratings
 - `/players/[slug]/reports/[reportId]` — a published report
 
 A player must be **published** to appear publicly. A report must be **published**
@@ -142,7 +143,7 @@ segments — a prefix match would make `/scout` also capture `/scouting`.
 ## What isn't built yet
 
 The navigation and dashboard describe a wider product than exists: predictions,
-FPL sub-tools, per-league pages, player compare, fixtures. Those routes have no
+FPL sub-tools, per-league pages, fixtures. Those routes have no
 page, so **`src/lib/shared/routes.ts` is the single source of truth** for what's
 live. `isLiveRoute()` drives the disabled "Soon" state in the nav and on
 dashboard cards, so an unbuilt feature is never a 404.
