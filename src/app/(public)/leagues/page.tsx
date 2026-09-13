@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ArrowRight,
-  Building2,
   Flag,
   Globe2,
   GraduationCap,
@@ -82,17 +81,13 @@ export default async function LeaguesPage() {
   const groups = groupCompetitions(competitions);
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-10 px-6 py-10">
+    <div className="mx-auto w-full max-w-6xl space-y-8 px-6 py-8">
       <header className="flex flex-col justify-between gap-6 border-b border-border pb-8 md:flex-row md:items-end">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            <Building2 className="h-4 w-4" aria-hidden="true" />
-            Verified reference data
-          </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
             Competitions &amp; Leagues
           </h1>
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
             Browse competition records maintained in the scouting database. We
             only show confirmed reference data—never invented rankings,
             tactical scores, or club coverage.
@@ -102,13 +97,13 @@ export default async function LeaguesPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/players"
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Browse players
           </Link>
           <Link
             href="/scout"
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Scout workspace
           </Link>
@@ -128,18 +123,18 @@ export default async function LeaguesPage() {
           description="Competition records will appear here after an administrator adds them to the reference catalogue."
         />
       ) : (
-        <div className="space-y-12">
+        <div className="space-y-8">
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-border bg-card p-5">
-              <p className="text-3xl font-semibold text-foreground">
+            <div className="rounded-lg border border-border bg-card p-5">
+              <p className="text-2xl font-semibold tabular-nums text-foreground">
                 {competitions.length}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
                 verified competition records
               </p>
             </div>
-            <div className="rounded-xl border border-border bg-card p-5">
-              <p className="text-3xl font-semibold text-foreground">
+            <div className="rounded-lg border border-border bg-card p-5">
+              <p className="text-2xl font-semibold tabular-nums text-foreground">
                 {groups.length}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -151,13 +146,13 @@ export default async function LeaguesPage() {
           {groups.map((group) => {
             const Icon = group.icon;
             return (
-              <section key={group.type} className="space-y-5">
+              <section key={group.type} className="space-y-4">
                 <div className="flex items-start gap-3 border-b border-border pb-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-foreground">
+                    <h2 className="text-base font-semibold text-foreground">
                       {group.label}
                     </h2>
                     <p className="text-sm text-muted-foreground">
@@ -170,14 +165,14 @@ export default async function LeaguesPage() {
                   {group.competitions.map((competition) => (
                     <article
                       key={competition.id}
-                      className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+                      className="rounded-lg border border-border bg-card p-5"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {competition.countryName ?? "Pan-African"}
                           </p>
-                          <h3 className="mt-2 text-base font-bold leading-snug text-foreground">
+                          <h3 className="mt-2 text-sm font-semibold leading-snug text-foreground">
                             {competition.name}
                           </h3>
                         </div>
@@ -196,7 +191,7 @@ export default async function LeaguesPage() {
                       {competition.countryCode ? (
                         <Link
                           href={`/players?nat=${competition.countryCode}`}
-                          className="mt-5 flex items-center justify-between border-t border-border pt-3 text-sm font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
+                          className="mt-5 flex items-center justify-between border-t border-border pt-3 text-sm font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           Players from {competition.countryName}
                           <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -213,7 +208,7 @@ export default async function LeaguesPage() {
             );
           })}
 
-          <p className="rounded-xl border border-border bg-muted/30 px-5 py-4 text-sm leading-relaxed text-muted-foreground">
+          <p className="rounded-lg border border-border bg-muted/30 px-5 py-4 text-sm leading-6 text-muted-foreground">
             Player and fixture coverage will appear only when verified records
             are linked to a competition. Missing coverage is left empty rather
             than inferred.
