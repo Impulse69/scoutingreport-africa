@@ -35,14 +35,14 @@ export default async function TeamOverviewPage({
 
   return (
     <div className="space-y-8">
-      <header className="border-b border-white/5 pb-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-400">
+      <header className="border-b border-border pb-6">
+        <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-primary">
           Club dossier
         </p>
-        <h1 className="mt-2 font-mono text-3xl font-bold tracking-tight text-white">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
           {team.name}
         </h1>
-        <p className="mt-2 font-mono text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-muted-foreground">
           {team.league} · {team.country}
         </p>
       </header>
@@ -67,38 +67,38 @@ export default async function TeamOverviewPage({
           detail={`Scouts can add a player with “${team.name}” as the current club. Draft players stay private until published.`}
         />
       ) : (
-        <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-          <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
+        <section className="rounded-lg border border-border bg-card">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div>
-              <h2 className="font-mono text-sm font-bold text-white">
+              <h2 className="text-sm font-semibold text-foreground">
                 Recently catalogued
               </h2>
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Published scouting profiles currently representing {team.name}
               </p>
             </div>
             <Link
               href={`/teams/${slug}/squad`}
-              className="font-mono text-xs font-bold text-emerald-400 hover:text-emerald-300"
+              className="text-xs font-semibold text-primary hover:underline"
             >
               View squad →
             </Link>
           </div>
-          <div className="grid gap-px bg-white/5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-px bg-border sm:grid-cols-2 xl:grid-cols-3">
             {squad.players.slice(0, 6).map((player) => (
               <Link
                 key={player.id}
                 href={`/players/${player.slug}`}
-                className="bg-[#0E0E0E] p-5 transition-colors hover:bg-white/[0.04]"
+                className="bg-card p-5 transition-colors hover:bg-muted"
               >
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                   Published dossier
                 </div>
-                <p className="mt-3 font-bold text-white">
+                <p className="mt-3 font-semibold text-foreground">
                   {player.commonName ?? player.fullName}
                 </p>
-                <p className="mt-1 font-mono text-xs text-zinc-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {player.primaryPositionCode} · {player.nationalityCode}
                 </p>
               </Link>
@@ -120,13 +120,13 @@ function Metric({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-white/5 bg-[#0E0E0E] p-4">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+    <div className="rounded-lg border border-border bg-card p-4">
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
       <p
-        className={`mt-2 font-mono text-2xl font-bold ${
-          accent ? "text-emerald-400" : "text-white"
+        className={`mt-2 text-2xl font-semibold ${
+          accent ? "text-primary" : "text-foreground"
         }`}
       >
         {value}
@@ -145,10 +145,10 @@ function StatusPanel({
   detail: string;
 }) {
   return (
-    <div className="rounded-xl border border-dashed border-white/10 bg-[#0E0E0E] px-6 py-16 text-center">
-      <Icon className="mx-auto h-6 w-6 text-zinc-500" />
-      <p className="mt-3 font-mono text-sm text-zinc-300">{title}</p>
-      <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-zinc-500">
+    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
+      <Icon className="mx-auto h-6 w-6 text-muted-foreground" />
+      <p className="mt-3 text-sm font-medium text-foreground">{title}</p>
+      <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-muted-foreground">
         {detail}
       </p>
     </div>

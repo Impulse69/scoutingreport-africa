@@ -11,8 +11,8 @@ type StatCardProps = {
 };
 
 const deltaTones: Record<NonNullable<StatCardProps["deltaTone"]>, string> = {
-  positive: "text-emerald-500",
-  negative: "text-red-500",
+  positive: "text-green-700",
+  negative: "text-destructive",
   neutral: "text-muted-foreground",
 };
 
@@ -27,20 +27,19 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-border/60 bg-card p-5 transition-colors hover:border-orange-500/40",
+        "rounded-lg border border-border bg-card p-5",
         className,
       )}
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {label}
         </p>
         {Icon ? (
-          <Icon className="h-4 w-4 text-orange-500/80" />
+          <Icon className="h-4 w-4 text-muted-foreground" />
         ) : null}
       </div>
-      <div className="mt-3 font-mono text-3xl font-black tabular-nums tracking-tight text-foreground">
+      <div className="mt-3 text-2xl font-semibold tabular-nums text-foreground">
         {value}
       </div>
       {delta ? (

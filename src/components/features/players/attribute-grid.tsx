@@ -20,13 +20,13 @@ export function AttributeGrid({ groups }: AttributeGridProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {groups.map((group) => (
         <div key={group.category} className="space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-stone-400 border-b border-stone-100 pb-2">
+          <h3 className="text-sm font-bold  tracking-normal text-muted-foreground border-b border-border pb-2">
             {group.category}
           </h3>
           <div className="space-y-2">
             {group.attributes.map((attr) => (
               <div key={attr.name} className="flex items-center justify-between group">
-                <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+                <span className="text-sm text-muted-foreground group-hover:text-muted-foreground transition-colors">
                   {attr.name}
                 </span>
                 <RatingBadge value={attr.value} />
@@ -41,11 +41,11 @@ export function AttributeGrid({ groups }: AttributeGridProps) {
 
 function RatingBadge({ value }: { value: number }) {
   const getRatingColor = (v: number) => {
-    if (v >= 16) return "bg-orange-600 text-white";
-    if (v >= 13) return "bg-orange-400 text-white";
-    if (v >= 10) return "bg-amber-200 text-amber-900";
-    if (v >= 7) return "bg-stone-200 text-stone-600";
-    return "bg-stone-100 text-stone-400";
+    if (v >= 16) return "bg-primary text-primary-foreground";
+    if (v >= 13) return "bg-primary text-primary-foreground";
+    if (v >= 10) return "bg-muted text-primary";
+    if (v >= 7) return "bg-muted text-muted-foreground";
+    return "bg-muted text-muted-foreground";
   };
 
   return (

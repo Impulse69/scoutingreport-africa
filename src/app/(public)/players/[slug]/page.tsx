@@ -9,8 +9,6 @@ import {
   GitBranch,
   Sparkles,
   Info,
-  ArrowRight,
-  Shield,
   Award,
   PlusCircle
 } from "lucide-react";
@@ -46,13 +44,8 @@ import {
   SimilarPlayers,
   DefensiveHeatmap,
   MarketValueCard,
-  CareerHistory,
   AboutPlayer,
 } from "@/components/features/players/rich/side-widgets";
-import {
-  LeagueDistribution,
-  PositionalScatter,
-} from "@/components/features/players/rich/scatters";
 import { ScoutNotes } from "@/components/features/players/rich/scout-notes";
 import {
   DetailedStatsTab,
@@ -77,15 +70,24 @@ function isTabId(v: string | undefined): v is TabId {
   return !!v && TABS.some((t) => t.id === v);
 }
 
+import { resolvePlayerPhotoDynamic } from "@/lib/features/players/photos";
+
 async function loadRich(slug: string) {
   const bundled = getRichPlayerProfile(slug);
-  if (bundled) return bundled;
+  if (bundled) {
+    const photo = await resolvePlayerPhotoDynamic(bundled.fullName, bundled.photoUrl);
+    return { ...bundled, photoUrl: photo };
+  }
 
   if (slug.startsWith("espn-")) {
     const espnId = slug.slice("espn-".length);
     const bundle = await fetchEspnBundle(espnId);
     if (bundle.overview?.athlete) {
-      return bundleToRichProfile(espnId, bundle) ?? null;
+      const p = bundleToRichProfile(espnId, bundle);
+      if (p) {
+        const photo = await resolvePlayerPhotoDynamic(p.fullName, p.photoUrl);
+        return { ...p, photoUrl: photo };
+      }
     }
   }
   return null;
@@ -110,7 +112,7 @@ export async function generateMetadata({
     ].filter(Boolean);
 
     return {
-      title: `${player.commonName || player.fullName} · Dossier`,
+      title: `${player.commonName || player.fullName}`,
       description:
         player.bio?.slice(0, 160) ||
         `Scouting profile for ${player.fullName} — ${bits.join(" · ")}.`,
@@ -121,12 +123,12 @@ export async function generateMetadata({
   const rich = getRichPlayerProfile(slug);
   if (rich) {
     return {
-      title: `${rich.fullName} · Dossier`,
+      title: `${rich.fullName}`,
       description: `Scouting profile for ${rich.fullName} — ${rich.club}.`,
     };
   }
 
-  return { title: "Player Dossier · ScoutingReport Africa" };
+  return { title: "Player" };
 }
 
 export default async function PlayerProfilePage({
@@ -142,7 +144,13 @@ export default async function PlayerProfilePage({
 
   const user = await getCurrentUser();
 
-  const dbPlayer = await getPlayerProfile(slug);
+  const rawDbPlayer = await getPlayerProfile(slug);
+  const dbPlayer = rawDbPlayer
+    ? {
+        ...rawDbPlayer,
+        photoUrl: await resolvePlayerPhotoDynamic(rawDbPlayer.fullName, rawDbPlayer.photoUrl),
+      }
+    : null;
   const rich = dbPlayer ? null : await loadRich(slug);
 
   if (!dbPlayer && !rich) notFound();
@@ -159,27 +167,27 @@ export default async function PlayerProfilePage({
       !!user && (user.role === "admin" || dbPlayer.createdBy === user.id);
 
     return (
-      <div className="container mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8 py-8 font-['Inter']">
+      <div className="container mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8 py-8 ">
         {/* Breadcrumb */}
-        <nav className="flex flex-wrap items-center gap-2 text-[10px] font-['Public_Sans'] uppercase tracking-widest text-slate-400">
-          <Link href="/" className="hover:text-white transition-colors">
-            Archive Home
+        <nav className="flex flex-wrap items-center gap-2 text-[10px]  tracking-tight text-muted-foreground">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            Home
           </Link>
           <span>/</span>
-          <Link href="/players" className="hover:text-white transition-colors">
-            Player Directory
+          <Link href="/players" className="hover:text-foreground transition-colors">
+            Players
           </Link>
           <span>/</span>
-          <span className="text-[#FFB693] font-bold">
+          <span className="text-primary font-bold">
             {dbPlayer.commonName || dbPlayer.fullName}
           </span>
         </nav>
 
         {dbPlayer.status === "draft" && (
-          <p className="flex items-start gap-2 rounded-[4px] border border-[#CC5500]/40 bg-[#CC5500]/10 px-4 py-3 text-xs text-[#FFB693]">
+          <p className="flex items-start gap-2 rounded-md border border-border bg-muted px-4 py-3 text-xs text-primary">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
-              This player is in draft status. Only administrators and authors can review this dossier.
+              This player is in draft status. Only administrators and authors can see this page.
             </span>
           </p>
         )}
@@ -198,18 +206,18 @@ export default async function PlayerProfilePage({
         {reports.length > 0 ? (
           <PlayerReportsList slug={slug} reports={reports} />
         ) : (
-          <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-8 text-center space-y-3 shadow-lg">
-            <Award className="h-8 w-8 text-slate-500 mx-auto opacity-40" />
-            <p className="font-['Public_Sans'] text-sm font-bold text-white">
+          <section className="rounded-lg border border-border bg-card p-8 text-center space-y-3 shadow-lg">
+            <Award className="h-8 w-8 text-muted-foreground mx-auto opacity-40" />
+            <p className="text-sm font-bold text-foreground">
               No Published Scouting Reports On This Prospect Yet
             </p>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Evaluation dossiers contain match-by-match observation notes, minutes watched, and standardized tactical grades.
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+              Reports record the fixture, minutes observed, and ratings across the four categories.
             </p>
             <div className="pt-2">
               <Link
                 href={`/scout/reports/new?player=${dbPlayer.id}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-bold text-xs uppercase tracking-wider industrial-shadow transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary hover:opacity-95 text-primary-foreground font-bold text-xs  tracking-normal  transition-all"
               >
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span>Write First Scouting Report</span>
@@ -220,11 +228,11 @@ export default async function PlayerProfilePage({
 
         {/* Bio */}
         {dbPlayer.bio && (
-          <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 shadow-lg space-y-2">
-            <h3 className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-widest text-[#FFB693]">
+          <section className="rounded-lg border border-border bg-card p-6 shadow-lg space-y-2">
+            <h3 className="text-xs font-semibold  tracking-tight text-primary">
               Scout Background & Notes
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{dbPlayer.bio}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{dbPlayer.bio}</p>
           </section>
         )}
 
@@ -253,25 +261,25 @@ export default async function PlayerProfilePage({
   );
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8 py-8 font-['Inter']">
+    <div className="container mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8 py-8 ">
       {/* Breadcrumbs */}
-      <nav className="flex flex-wrap items-center gap-2 text-[10px] font-['Public_Sans'] uppercase tracking-widest text-slate-400">
-        <Link href="/" className="hover:text-white transition-colors">
-          Archive Home
+      <nav className="flex flex-wrap items-center gap-2 text-[10px]  tracking-tight text-muted-foreground">
+        <Link href="/" className="hover:text-foreground transition-colors">
+          Home
         </Link>
         <span>/</span>
-        <Link href="/players" className="hover:text-white transition-colors">
-          Player Directory
+        <Link href="/players" className="hover:text-foreground transition-colors">
+          Players
         </Link>
         <span>/</span>
-        <span className="text-[#FFB693] font-bold">{player.fullName}</span>
+        <span className="text-primary font-bold">{player.fullName}</span>
       </nav>
 
       {/* Hero */}
       <PlayerHero player={player} />
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[rgba(224,192,178,0.12)] pb-3 font-['Public_Sans'] text-xs font-bold uppercase tracking-wider">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3 text-xs font-bold  tracking-normal">
         {TABS.map((t) => {
           const Icon = t.icon;
           const active = activeTab === t.id;
@@ -279,10 +287,10 @@ export default async function PlayerProfilePage({
             <Link
               key={t.id}
               href={`/players/${slug}?tab=${t.id}`}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[4px] transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md transition-all ${
                 active
-                  ? "bg-[#CC5500] text-white shadow-md"
-                  : "text-slate-400 hover:text-white hover:bg-[#171B23]"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
               <Icon className="h-3.5 w-3.5" />

@@ -20,12 +20,12 @@ export function KeyStrengths({
   const data = strengths ?? player?.keyStrengths ?? [];
 
   return (
-    <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] overflow-hidden shadow-xl font-['Inter']">
-      <header className="flex items-center justify-between border-b border-[rgba(224,192,178,0.1)] px-6 py-4 bg-[#171B23]">
-        <p className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-wider text-white">
+    <section className="rounded-lg border border-border bg-card overflow-hidden  ">
+      <header className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted">
+        <p className="text-xs font-semibold  tracking-normal text-foreground">
           Tactical & Physical Superpowers
         </p>
-        <span className="rounded-[3px] bg-[#CC5500]/20 px-2 py-0.5 font-mono text-[10px] font-bold text-[#FFB693] border border-[#CC5500]/30">
+        <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-[10px] font-bold text-primary border border-border">
           Scout Index
         </span>
       </header>
@@ -35,12 +35,12 @@ export function KeyStrengths({
           {data.map((s) => (
             <li key={s.label} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-medium">{s.label}</span>
-                <span className="font-mono font-bold tabular-nums text-[#FFB693]">{s.value}%</span>
+                <span className="text-muted-foreground font-medium">{s.label}</span>
+                <span className="font-mono font-bold tabular-nums text-primary">{s.value}%</span>
               </div>
-              <div className="h-1.5 w-full bg-[#1E232D] overflow-hidden rounded-none">
+              <div className="h-1.5 w-full bg-muted overflow-hidden rounded-none">
                 <div
-                  className="h-full bg-gradient-to-r from-[#9C3F00] to-[#CC5500]"
+                  className="h-full bg-primary"
                   style={{ width: `${s.value}%` }}
                 />
               </div>
@@ -60,11 +60,11 @@ export function KeyStrengths({
                 fullMark: 100,
               }))}
             >
-              <PolarGrid stroke="rgba(224,192,178,0.12)" />
+              <PolarGrid stroke="#E2E8F0" />
               <PolarAngleAxis
                 dataKey="attr"
-                stroke="#94A3B8"
-                tick={{ fill: "#94A3B8", fontSize: 10, fontFamily: "Inter" }}
+                stroke="#64748B"
+                tick={{ fill: "#64748B", fontSize: 10, fontFamily: "Inter" }}
               />
               <PolarRadiusAxis
                 angle={30}
@@ -75,9 +75,9 @@ export function KeyStrengths({
               <Radar
                 name="Score"
                 dataKey="value"
-                stroke="#CC5500"
+                stroke="#1D4ED8"
                 strokeWidth={2}
-                fill="#CC5500"
+                fill="#1D4ED8"
                 fillOpacity={0.25}
               />
             </RadarChart>
@@ -94,12 +94,12 @@ export function PerNinetyBars({
   stats: { label: string; value: number; max: number; unit?: string }[];
 }) {
   return (
-    <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] overflow-hidden shadow-xl font-['Inter']">
-      <header className="flex items-center justify-between border-b border-[rgba(224,192,178,0.1)] px-6 py-4 bg-[#171B23]">
-        <p className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-wider text-white">
+    <section className="rounded-lg border border-border bg-card overflow-hidden  ">
+      <header className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted">
+        <p className="text-xs font-semibold  tracking-normal text-foreground">
           Standardized Per 90 Output
         </p>
-        <span className="font-mono text-[10px] text-slate-400">vs Positional Peers</span>
+        <span className="font-mono text-[10px] text-muted-foreground">vs Positional Peers</span>
       </header>
 
       <div className="p-6 space-y-4">
@@ -108,14 +108,14 @@ export function PerNinetyBars({
           return (
             <div key={st.label} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-medium">{st.label}</span>
-                <span className="font-mono font-bold text-white tabular-nums">
+                <span className="text-muted-foreground font-medium">{st.label}</span>
+                <span className="font-mono font-bold text-foreground tabular-nums">
                   {st.value} {st.unit ?? ""}
                 </span>
               </div>
-              <div className="h-1.5 w-full bg-[#1E232D] overflow-hidden rounded-none">
+              <div className="h-1.5 w-full bg-muted overflow-hidden rounded-none">
                 <div
-                  className="h-full bg-gradient-to-r from-[#8C4E2E] to-[#CC5500]"
+                  className="h-full bg-primary"
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -133,9 +133,9 @@ export function RecentForm({
   matches: { date: string; opponent: string; result: "W" | "D" | "L"; rating: number }[];
 }) {
   return (
-    <section className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] overflow-hidden shadow-xl font-['Inter']">
-      <header className="border-b border-[rgba(224,192,178,0.1)] px-6 py-4 bg-[#171B23]">
-        <p className="font-['Public_Sans'] text-xs font-extrabold uppercase tracking-wider text-white">
+    <section className="rounded-lg border border-border bg-card overflow-hidden  ">
+      <header className="border-b border-border px-6 py-4 bg-muted">
+        <p className="text-xs font-semibold  tracking-normal text-foreground">
           Recent Match Form Trajectory
         </p>
       </header>
@@ -145,29 +145,29 @@ export function RecentForm({
           {matches.map((m, i) => (
             <div
               key={i}
-              className="rounded-[4px] bg-[#0C0E12] border border-[rgba(224,192,178,0.08)] p-3 space-y-2"
+              className="rounded-md bg-muted border border-border p-3 space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span
-                  className={`px-1.5 py-0.5 rounded-[2px] font-mono text-[9px] font-black ${
+                  className={`px-1.5 py-0.5 rounded-md font-mono text-[9px] font-semibold ${
                     m.result === "W"
-                      ? "bg-[#CC5500]/20 text-[#FFB693]"
+                      ? "bg-muted text-primary"
                       : m.result === "D"
-                      ? "bg-slate-700/40 text-slate-300"
+                      ? "bg-muted text-muted-foreground"
                       : "bg-red-900/30 text-red-300"
                   }`}
                 >
                   {m.result}
                 </span>
-                <span className="font-mono text-xs font-black text-white">
+                <span className="font-mono text-xs font-semibold text-foreground">
                   {m.rating.toFixed(1)}
                 </span>
               </div>
               <div>
-                <div className="font-['Public_Sans'] text-xs font-bold text-white truncate">
+                <div className="text-xs font-bold text-foreground truncate">
                   vs {m.opponent}
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">
+                <div className="text-[10px] text-muted-foreground font-mono">
                   {new Date(m.date).toLocaleDateString()}
                 </div>
               </div>

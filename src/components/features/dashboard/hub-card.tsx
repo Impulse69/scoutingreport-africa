@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Lock, type LucideIcon, ArrowUpRight } from "lucide-react";
 import { isLiveRoute, PLANNED_LABEL } from "@/lib/shared/routes";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 
 export type HubCardProps = {
   href: string;
@@ -19,24 +21,22 @@ export function HubCard({
   locked,
   accent = "primary",
 }: HubCardProps) {
+  void accent;
   const baseClassName =
-    "group relative flex items-start gap-4 rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 transition-all duration-200";
+    "group relative flex items-start gap-4 rounded-lg border border-border bg-card p-5 transition-colors";
 
-  // Planned feature
   if (!isLiveRoute(href)) {
     return (
-      <div className={`${baseClassName} opacity-75 cursor-default select-none`} aria-disabled="true">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border border-[rgba(224,192,178,0.08)] bg-[#0C0E12]">
-          <Icon className="h-5 w-5 text-slate-500" />
+      <div className={`${baseClassName} cursor-default select-none bg-muted`} aria-disabled="true">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground">
+          <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-['Public_Sans'] font-bold text-sm text-slate-300 truncate">{title}</span>
-            <span className="shrink-0 rounded-[3px] border border-[rgba(224,192,178,0.15)] bg-[#0C0E12] px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400">
-              {PLANNED_LABEL}
-            </span>
+            <span className="truncate text-sm font-semibold text-muted-foreground">{title}</span>
+            <Badge variant="outline">{PLANNED_LABEL}</Badge>
           </div>
-          <p className="mt-1 text-xs leading-relaxed text-slate-400">
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             {description}
           </p>
         </div>
@@ -44,26 +44,26 @@ export function HubCard({
     );
   }
 
-  // Locked feature
   if (locked) {
     return (
-      <div className={`${baseClassName} cursor-not-allowed select-none overflow-hidden`} aria-disabled="true">
-        <div className="pointer-events-none flex w-full items-start gap-4 opacity-40 blur-[1px]">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12]">
-            <Icon className="h-5 w-5 text-slate-400" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-['Public_Sans'] font-bold text-sm text-white truncate">{title}</p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">{description}</p>
-          </div>
+      <div className={`${baseClassName} select-none bg-muted`} aria-disabled="true">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground">
+          <Icon className="h-5 w-5" />
         </div>
-        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[#0C0E12]/80 backdrop-blur-[2px]">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <p className="truncate text-sm font-semibold text-muted-foreground">{title}</p>
+            <Badge variant="secondary" className="gap-1">
+              <Lock className="h-3 w-3" />
+              Locked
+            </Badge>
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
           <Link
             href="/#pricing"
-            className="flex items-center gap-1.5 rounded-[4px] border border-[#CC5500]/40 bg-[#CC5500]/15 px-3.5 py-1.5 text-xs font-['Public_Sans'] font-bold text-[#FFB693] shadow-lg transition-colors hover:bg-[#CC5500]/25"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "mt-3" })}
           >
-            <Lock className="h-3.5 w-3.5" />
-            Upgrade to Pro
+            Upgrade
           </Link>
         </div>
       </div>
@@ -73,19 +73,19 @@ export function HubCard({
   return (
     <Link
       href={href}
-      className={`${baseClassName} hover:border-[#CC5500]/50 hover:bg-[#171B23] hover:shadow-lg`}
+      className={`${baseClassName} hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-[#FFB693] group-hover:border-[#CC5500]/40 group-hover:text-white transition-all">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-primary transition-colors group-hover:bg-background">
         <Icon className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between">
-          <p className="font-['Public_Sans'] font-bold text-sm text-white truncate group-hover:text-[#FFB693] transition-colors">
+          <p className="truncate text-sm font-semibold text-foreground">
             {title}
           </p>
-          <ArrowUpRight className="h-3.5 w-3.5 text-slate-500 opacity-0 group-hover:opacity-100 group-hover:text-[#CC5500] transition-all" />
+          <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
-        <p className="mt-1 text-xs leading-relaxed text-slate-400">
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
           {description}
         </p>
       </div>

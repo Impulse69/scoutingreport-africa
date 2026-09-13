@@ -2,8 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -39,160 +37,140 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.375rem;
-  --radius-xl: 0.375rem;
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: calc(var(--radius) - 0.125rem);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
 }
 
 :root {
-  /* Stitch Design System: The Kinetic Archive (Industrial Precision) */
-  --background: #0C0E12;
-  --foreground: #F3F4F6;
-  --card: #12151C;
-  --card-foreground: #F3F4F6;
-  --popover: #12151C;
-  --popover-foreground: #F3F4F6;
-  --primary: #CC5500;
-  --primary-container: #9C3F00;
+  --background: #FFFFFF;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #1D4ED8;
   --primary-foreground: #FFFFFF;
-  --secondary: #8C4E2E;
-  --secondary-foreground: #FFDBCC;
-  --muted: #181C24;
-  --muted-foreground: #8C7166;
-  --accent: #E27E12;
-  --accent-foreground: #FFFFFF;
-  --destructive: #BA1A1A;
-  --border: rgba(224, 192, 178, 0.12);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #CC5500;
-  --chart-1: #CC5500;
-  --chart-2: #0073E1;
-  --chart-3: #8C4E2E;
-  --chart-4: #FFB693;
-  --chart-5: #E27E12;
-  --radius: 0.375rem;
-  --sidebar: #090B0E;
-  --sidebar-foreground: #F3F4F6;
-  --sidebar-primary: #CC5500;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B;
+  --accent: #F1F5F9;
+  --accent-foreground: #0F172A;
+  --destructive: #B91C1C;
+  --border: #E2E8F0;
+  --input: #CBD5E1;
+  --ring: #1D4ED8;
+  --chart-1: #1D4ED8;
+  --chart-2: #0F766E;
+  --chart-3: #B45309;
+  --chart-4: #7C3AED;
+  --chart-5: #475569;
+  --radius: 0.5rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #1D4ED8;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #171B23;
-  --sidebar-accent-foreground: #FFB693;
-  --sidebar-border: rgba(224, 192, 178, 0.12);
-  --sidebar-ring: #CC5500;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #1D4ED8;
 }
 
-.dark {
-  --background: #0C0E12;
-  --foreground: #F3F4F6;
-  --card: #12151C;
-  --card-foreground: #F3F4F6;
-  --popover: #12151C;
-  --popover-foreground: #F3F4F6;
-  --primary: #CC5500;
-  --primary-container: #9C3F00;
-  --primary-foreground: #FFFFFF;
-  --secondary: #8C4E2E;
-  --secondary-foreground: #FFDBCC;
-  --muted: #181C24;
-  --muted-foreground: #8C7166;
-  --accent: #E27E12;
-  --accent-foreground: #FFFFFF;
-  --destructive: #BA1A1A;
-  --border: rgba(224, 192, 178, 0.12);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #CC5500;
-  --chart-1: #CC5500;
-  --chart-2: #0073E1;
-  --chart-3: #8C4E2E;
-  --chart-4: #FFB693;
-  --chart-5: #E27E12;
-  --radius: 0.375rem;
-  --sidebar: #090B0E;
-  --sidebar-foreground: #F3F4F6;
-  --sidebar-primary: #CC5500;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #171B23;
-  --sidebar-accent-foreground: #FFB693;
-  --sidebar-border: rgba(224, 192, 178, 0.12);
-  --sidebar-ring: #CC5500;
-}
-
-/* Base Body */
 body {
-  background-color: #0C0E12;
-  color: #F3F4F6;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Public Sans Headline Typography */
 .font-headline {
   font-family: var(--font-public-sans), 'Public Sans', sans-serif;
-  letter-spacing: -0.02em;
 }
 
-/* Industrial Precision Surface Levels */
 .surface-canvas {
-  background-color: #0C0E12;
+  background-color: var(--background);
 }
 
 .surface-low {
-  background-color: #12151C;
+  background-color: var(--card);
 }
 
 .surface-container {
-  background-color: #171B23;
+  background-color: var(--muted);
 }
 
 .surface-high {
-  background-color: #1E232D;
+  background-color: var(--muted);
 }
 
 .surface-highest {
-  background-color: #272C38;
+  background-color: var(--muted);
 }
 
-/* Stitch Industrial Shadow & Accents */
 .industrial-shadow {
-  box-shadow: 0 4px 0 0 rgba(156, 63, 0, 0.25);
+  box-shadow: none;
 }
 
 .industrial-panel {
-  background-color: #12151C;
-  border: 1px solid rgba(224, 192, 178, 0.1);
-  border-radius: 6px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .industrial-panel-hover {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: none;
 }
 .industrial-panel-hover:hover {
-  background-color: #171B23;
-  border-color: rgba(204, 85, 0, 0.4);
+  background-color: var(--card);
+  border-color: var(--border);
 }
 
 .input-focus-accent:focus {
   outline: none;
-  border-bottom: 2px solid #CC5500;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
-/* Precision Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0C0E12;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272C38;
+  background: var(--border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #CC5500;
+  background: var(--muted-foreground);
+}
+
+/* Remove annoying focus/active border outlines on mouse click while preserving keyboard accessibility */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-color: transparent !important;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+summary:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
 }

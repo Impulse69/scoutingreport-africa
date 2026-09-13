@@ -19,19 +19,19 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b border-border/60 pb-6 mb-8 md:flex-row md:items-end md:justify-between",
+        "mb-8 flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-end md:justify-between",
         className,
       )}
     >
       <div className="space-y-2">
         {eyebrow ? (
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-orange-500">
+          <p className="text-xs font-medium text-muted-foreground">
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>
         {description ? (
-          <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
+          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
             {description}
           </p>
         ) : null}

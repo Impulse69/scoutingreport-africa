@@ -57,7 +57,7 @@ export function PlayerPicker() {
   return (
     <div ref={wrapRef} className="relative">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
           onChange={(e) => {
@@ -71,9 +71,9 @@ export function PlayerPicker() {
       </div>
 
       {open && (query.trim().length >= 2 || visibleResults.length > 0) ? (
-        <div className="absolute left-0 right-0 top-full z-40 mt-2 max-h-[360px] overflow-y-auto rounded-xl border border-white/10 bg-[#111]/97 shadow-2xl backdrop-blur-md">
+        <div className="absolute left-0 right-0 top-full z-40 mt-2 max-h-[360px] overflow-y-auto rounded-lg border border-border bg-popover shadow-sm">
           {pending ? (
-            <div className="flex items-center gap-2 px-4 py-6 font-mono text-xs text-zinc-500">
+            <div className="flex items-center gap-2 px-4 py-6 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
               Searching…
             </div>
@@ -84,9 +84,9 @@ export function PlayerPicker() {
                   <button
                     type="button"
                     onClick={() => pick(r.id)}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-white/5"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-muted"
                   >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 font-mono text-[10px] font-bold text-zinc-400">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
                       {r.fullName
                         .split(" ")
                         .map((s) => s[0])
@@ -96,16 +96,16 @@ export function PlayerPicker() {
                     </span>
                     <span className="flex-1">
                       <span className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-semibold text-white">
+                        <span className="text-sm font-medium">
                           {r.fullName}
                         </span>
                         {r.status === "draft" ? (
-                          <span className="rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-px font-mono text-[9px] uppercase tracking-wider text-amber-300">
+                          <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                             Draft
                           </span>
                         ) : null}
                       </span>
-                      <span className="block font-mono text-[10px] text-zinc-500">
+                      <span className="block text-xs text-muted-foreground">
                         {r.primaryPositionCode ?? "—"}
                         {r.nationalityCode ? ` · ${r.nationalityCode}` : ""}
                       </span>
@@ -117,14 +117,14 @@ export function PlayerPicker() {
           ) : null}
 
           {showEmpty ? (
-            <div className="border-t border-white/5 px-4 py-3 text-center">
-              <p className="font-mono text-xs text-zinc-400">
+            <div className="border-t border-border px-4 py-3 text-center">
+              <p className="text-sm text-muted-foreground">
                 No player matches{" "}
-                <span className="text-white">&ldquo;{query}&rdquo;</span>
+                <span className="font-medium text-foreground">&ldquo;{query}&rdquo;</span>
               </p>
               <Link
                 href={`/scout/players/new?name=${encodeURIComponent(query)}`}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-cyan-500/40 bg-cyan-500/10 px-3 py-1.5 font-mono text-[11px] text-cyan-300 transition-colors hover:bg-cyan-500/20"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-3 py-1.5 text-sm text-primary transition-colors hover:bg-accent"
               >
                 <UserPlus className="h-3 w-3" />
                 Create &ldquo;{query}&rdquo;

@@ -523,7 +523,7 @@ export function bundleToRichProfile(
     perNinetyStats,
     recentForm: recentForm.length
       ? recentForm
-      : Array.from({ length: 6 }).map((_, i) => ({
+      : Array.from({ length: 6 }, () => ({
           date: "",
           opponent: "—",
           result: "D" as const,

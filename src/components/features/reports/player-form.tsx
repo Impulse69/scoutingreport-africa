@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -245,8 +246,8 @@ export function PlayerForm(props: Props) {
         </Field>
       </Section>
 
-      <div className="sticky bottom-4 z-30 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-[#0E0E0E]/95 px-4 py-3 shadow-2xl backdrop-blur">
-        <p className="font-mono text-[11px] text-zinc-500">
+      <div className="sticky bottom-0 z-30 flex flex-wrap items-center gap-3 border-t border-border bg-background px-4 py-3">
+        <p className="text-xs text-muted-foreground">
           {props.mode === "create" ? (
             "Adding a new player"
           ) : (
@@ -254,7 +255,7 @@ export function PlayerForm(props: Props) {
               Editing ·{" "}
               <span
                 className={
-                  status === "published" ? "text-emerald-400" : "text-amber-400"
+                  status === "published" ? "text-primary" : "text-muted-foreground"
                 }
               >
                 {status}
@@ -297,7 +298,6 @@ export function PlayerForm(props: Props) {
               type="button"
               disabled={pending || incomplete}
               onClick={() => save(status, false)}
-              className="bg-orange-600 hover:bg-orange-700"
             >
               <Save className="mr-1.5 h-3.5 w-3.5" />
               Save changes
@@ -318,7 +318,6 @@ export function PlayerForm(props: Props) {
               type="button"
               disabled={pending || incomplete}
               onClick={() => save("published", true)}
-              className="bg-orange-600 hover:bg-orange-700"
             >
               <UserPlus className="mr-1.5 h-3.5 w-3.5" />
               Publish & start report
@@ -332,13 +331,13 @@ export function PlayerForm(props: Props) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="border-b border-white/5 px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
+    <section className="rounded-lg border border-border bg-card">
+      <header className="border-b border-border px-5 py-3.5">
+        <h2 className="text-base font-semibold text-foreground">
           {title}
-        </p>
+        </h2>
       </header>
-      <div className="grid gap-4 px-6 py-5 md:grid-cols-2">{children}</div>
+      <div className="grid gap-4 p-5 md:grid-cols-2">{children}</div>
     </section>
   );
 }
@@ -354,9 +353,9 @@ function Field({
 }) {
   return (
     <div className={full ? "md:col-span-2" : ""}>
-      <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+      <Label className="mb-1.5">
         {label}
-      </label>
+      </Label>
       {children}
     </div>
   );

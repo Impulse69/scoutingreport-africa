@@ -16,7 +16,7 @@ type ActionResult<T> =
  * Upsert a scout report + its normalised ratings.
  * - reportId omitted → INSERT (new report).
  * - reportId provided → UPDATE (must own the row, enforced by RLS).
- * Always replaces the full ratings array atomically.
+ * Replaces the full ratings array through a transactional database function.
  */
 export async function saveScoutReport(
   input: ScoutReportInput,
@@ -35,7 +35,6 @@ export async function saveScoutReport(
 
   const reportRow = {
     player_id: data.player_id,
-    author_id: user!.id,
     status: data.status,
     match_description: data.match_description ?? null,
     match_date: data.match_date ?? null,
@@ -45,6 +44,12 @@ export async function saveScoutReport(
     observation_type: data.observation_type,
     strengths: data.strengths,
     improvements: data.improvements,
+    // §3–§6 and §8 section Notes boxes from the report template.
+    technical_notes: data.technical_notes ?? null,
+    tactical_notes: data.tactical_notes ?? null,
+    physical_notes: data.physical_notes ?? null,
+    mentality_notes: data.mentality_notes ?? null,
+    improvements_notes: data.improvements_notes ?? null,
     projection: data.projection ?? null,
     role_fit: data.role_fit ?? null,
     recruitment_decision: data.recruitment_decision ?? null,
@@ -58,7 +63,7 @@ export async function saveScoutReport(
   if (!id) {
     const { data: inserted, error } = await supabase
       .from("scout_reports")
-      .insert(reportRow)
+      .insert({ ...reportRow, author_id: user!.id })
       .select("id")
       .single();
     if (error || !inserted) {
@@ -73,18 +78,15 @@ export async function saveScoutReport(
     if (error) return { error: error.message };
   }
 
-  // Replace ratings atomically: delete all then re-insert.
-  await supabase.from("scout_report_ratings").delete().eq("report_id", id);
-  if (data.ratings.length > 0) {
-    const ratingsRows = data.ratings.map((r) => ({
-      report_id: id,
-      category: r.category,
-      sub_area: r.sub_area,
-      rating: r.rating,
-      notes: r.notes ?? null,
-    }));
-    const { error } = await supabase.from("scout_report_ratings").insert(ratingsRows);
-    if (error) return { error: `Ratings save failed: ${error.message}` };
+  const { error: ratingsError } = await supabase.rpc(
+    "replace_scout_report_ratings",
+    {
+      p_report_id: id,
+      p_ratings: data.ratings,
+    },
+  );
+  if (ratingsError) {
+    return { error: `Ratings save failed: ${ratingsError.message}` };
   }
 
   revalidatePath("/players");

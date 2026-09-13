@@ -12,7 +12,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { POSITIONS, CAF_COUNTRIES } from "@/lib/shared/constants";
 
 export const metadata: Metadata = {
-  title: "African Football Talent Catalogue · ScoutingReport Africa",
+  title: "Players Directory",
   description:
     "Search scouted African footballers by position, age, nationality, physical metrics, and verified ratings.",
 };
@@ -72,49 +72,107 @@ export default async function PlayersPage({
   searchParams: Promise<{ q?: string; pos?: string; nat?: string; sort?: string }>;
 }) {
   const sp = await searchParams;
-  const players = await listPublishedPlayers(200);
+  const rawPlayers = await listPublishedPlayers(200);
 
   const q = (sp.q ?? "").trim().toLowerCase();
+  const isPanAfrican =
+    q === "pan-african" ||
+    q === "pan african" ||
+    q === "caf" ||
+    q === "all" ||
+    q === "all-africa" ||
+    q === "africa" ||
+    q === "continental";
+
+  let players = rawPlayers;
+
+  // If searching for a specific player not in the local mock DB list, query global search
+  if (q && !isPanAfrican && !rawPlayers.some((p) => p.fullName.toLowerCase().includes(q))) {
+    try {
+      const { searchGlobalOmni } = await import("@/lib/features/search/actions");
+      const hits = await searchGlobalOmni(q);
+      const playerHits = hits.filter((h) => h.type === "player");
+      if (playerHits.length > 0) {
+        const extraPlayers = playerHits.map((h) => ({
+          id: h.id,
+          slug: h.url.replace(/^\/players\//, ""),
+          fullName: h.title,
+          primaryPositionCode: h.subtitle.split("·")[0]?.trim() ?? "FWD",
+          nationalityCode: null,
+          currentClub: h.subtitle.split("·")[1]?.trim() ?? null,
+          photoUrl: h.badge ?? null,
+        }));
+        players = [...rawPlayers, ...extraPlayers];
+      }
+    } catch {}
+  }
+
   const filtered = players.filter((p) => {
+    // 1. Position filtering
     if (sp.pos && !matchesPosition(p.primaryPositionCode, sp.pos)) return false;
+
+    // 2. Nationality code filtering
     if (sp.nat && p.nationalityCode !== sp.nat) return false;
-    if (q && !p.fullName.toLowerCase().includes(q) && !countryName(p.nationalityCode).toLowerCase().includes(q)) return false;
+
+    // 3. Query string filtering
+    if (q && !isPanAfrican) {
+      const matchName = p.fullName.toLowerCase().includes(q);
+      const cName = countryName(p.nationalityCode).toLowerCase();
+      const natCode = (p.nationalityCode ?? "").toLowerCase();
+      const matchNat = cName.includes(q) || natCode === q;
+      const matchClub = (p.currentClub ?? "").toLowerCase().includes(q);
+      const posCode = (p.primaryPositionCode ?? "").toLowerCase();
+      const posName = positionLabel(p.primaryPositionCode).toLowerCase();
+      const matchPos = posCode.includes(q) || posName.includes(q);
+
+      // Regional aliases (only when searching broad zone terms like "WAFU" or "West Africa")
+      const isWestAfrica = q === "wafu" || q === "west africa" || q === "west-africa";
+      const isNorthAfrica = q === "unaf" || q === "north africa" || q === "north-africa";
+      const isSouthernAfrica = q === "cosafa" || q === "southern africa" || q === "southern-africa";
+      const isEastAfrica = q === "cecafa" || q === "east africa" || q === "east-africa";
+
+      const matchRegion =
+        (isWestAfrica && ["nigeria", "ghana", "senegal", "côte d'ivoire", "ivory coast", "mali", "guinea"].includes(cName)) ||
+        (isNorthAfrica && ["morocco", "egypt", "algeria", "tunisia"].includes(cName)) ||
+        (isSouthernAfrica && ["south africa", "zambia", "angola", "zimbabwe"].includes(cName)) ||
+        (isEastAfrica && ["kenya", "uganda", "tanzania", "sudan", "ethiopia"].includes(cName));
+
+      if (!matchName && !matchNat && !matchClub && !matchPos && !matchRegion) {
+        return false;
+      }
+    }
     return true;
   });
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-7xl space-y-8 font-['Inter']">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-7xl space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[rgba(224,192,178,0.12)]">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
-            <Users className="h-3.5 w-3.5 text-[#CC5500]" />
-            <span>Kinetic Archive Talent Database</span>
-          </div>
-          <h1 className="font-['Public_Sans'] text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
-            Scouted African Talents
+          <h1 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">
+            African players
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
-            Standardized player evaluations across all 54 CAF national associations, domestic premier leagues, and European landing divisions.
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
+            Standardized player evaluations across all 54 CAF national associations, domestic top flights, and European landing divisions.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/compare"
-            className="px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
+            className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-card px-4 text-xs font-semibold text-foreground shadow-xs transition-colors hover:bg-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
           >
             Compare Players
           </Link>
           <Link
             href="/scout/reports/new"
-            className="px-4 py-2.5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"
+            className="inline-flex h-10 items-center justify-center px-4 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-xs transition-colors hover:bg-primary/90 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
           >
             Submit Report
           </Link>
           <Link
             href="/watchlists"
-            className="px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
+            className="inline-flex h-10 items-center justify-center px-4 rounded-xl bg-card text-foreground border border-border font-semibold text-xs transition-colors hover:bg-muted focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
           >
             My Watchlists
           </Link>
@@ -122,16 +180,16 @@ export default async function PlayersPage({
       </div>
 
       {/* Filter Control Bar */}
-      <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-4 sm:p-6 space-y-4 shadow-xl">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-4 shadow-sm">
         <form method="GET" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
           {/* Text Input */}
           <div className="lg:col-span-5 relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#CC5500]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               name="q"
               defaultValue={sp.q ?? ""}
-              placeholder="Search by player name or keyword…"
-              className="w-full h-11 pl-10 pr-4 rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#CC5500]/60 font-['Inter']"
+              placeholder="Search by player name, club, or nationality..."
+              className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-muted/50 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
             />
           </div>
 
@@ -140,9 +198,9 @@ export default async function PlayersPage({
             <select
               name="pos"
               defaultValue={sp.pos ?? ""}
-              className="w-full h-11 px-3.5 rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-xs text-white focus:outline-none focus:border-[#CC5500]/60 font-['Public_Sans'] font-medium"
+              className="w-full h-11 px-3.5 rounded-xl border border-input bg-muted/50 text-xs text-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 font-medium"
             >
-              <option value="">All Tactical Positions</option>
+              <option value="">All positions</option>
               <optgroup label="Broad Groups">
                 <option value="FWD">All Attackers (FWD)</option>
                 <option value="MID">All Midfielders (MID)</option>
@@ -164,7 +222,7 @@ export default async function PlayersPage({
             <select
               name="nat"
               defaultValue={sp.nat ?? ""}
-              className="w-full h-11 px-3.5 rounded-[4px] border border-[rgba(224,192,178,0.1)] bg-[#0C0E12] text-xs text-white focus:outline-none focus:border-[#CC5500]/60 font-['Public_Sans'] font-medium"
+              className="w-full h-11 px-3.5 rounded-xl border border-input bg-muted/50 text-xs text-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 font-medium"
             >
               <option value="">All CAF Nationalities (54)</option>
               {CAF_COUNTRIES.map((c) => (
@@ -179,7 +237,7 @@ export default async function PlayersPage({
           <div className="lg:col-span-1 flex items-center gap-2">
             <button
               type="submit"
-              className="w-full h-11 rounded-[4px] bg-[#CC5500]/20 hover:bg-[#CC5500]/30 text-[#FFB693] border border-[#CC5500]/40 font-['Public_Sans'] text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-xs transition-colors hover:bg-primary/90 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 flex items-center justify-center gap-1.5"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
               <span>Filter</span>
@@ -188,9 +246,9 @@ export default async function PlayersPage({
         </form>
 
         {/* Quick Position Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[rgba(224,192,178,0.08)]">
-          <span className="text-[10px] font-['Public_Sans'] uppercase font-bold text-slate-400 mr-1 tracking-wider">
-            Shortcuts:
+        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border">
+          <span className="text-[11px] font-bold text-muted-foreground mr-1">
+            Quick Filters:
           </span>
           {[
             { label: "All", pos: "" },
@@ -214,10 +272,10 @@ export default async function PlayersPage({
               <Link
                 key={item.label}
                 href={`/players?${queryParams.toString()}`}
-                className={`px-3 py-1 rounded-[4px] font-['Public_Sans'] text-xs font-bold transition-all ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 ${
                   isActive
-                    ? "bg-[#CC5500] text-white"
-                    : "bg-[#0C0E12] hover:bg-[#171B23] text-slate-300 border border-[rgba(224,192,178,0.1)]"
+                    ? "bg-primary text-primary-foreground shadow-2xs"
+                    : "bg-muted text-muted-foreground hover:bg-background hover:text-foreground border border-border/60"
                 }`}
               >
                 {item.label}
@@ -227,34 +285,19 @@ export default async function PlayersPage({
         </div>
       </div>
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-        <span>
-          Showing <span className="font-bold text-white">{filtered.length}</span> talent dossiers
-        </span>
-        {(sp.q || sp.pos || sp.nat) && (
-          <Link
-            href="/players"
-            className="text-[#FFB693] hover:text-white font-['Public_Sans'] font-bold flex items-center gap-1"
-          >
-            Clear Active Filters ✕
-          </Link>
-        )}
-      </div>
-
-      {/* Players Grid */}
+      {/* Grid of Players */}
       {filtered.length === 0 ? (
         <EmptyState
           icon={Users}
           title={q || sp.pos || sp.nat ? "No players match your filters" : "No published players yet"}
           description={
             q || sp.pos || sp.nat
-              ? "Try broadening your nationality or position filters, or use omni-search (⌘K) to scan global clubs."
-              : "Scouts have not published dossiers yet. Be the first to submit a scouting evaluation."
+              ? "Try broadening your nationality or position filters, or search for another player name."
+              : "No players have been published yet."
           }
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((p) => {
             const flag = flagFor(p.nationalityCode);
             const country = countryName(p.nationalityCode);
@@ -264,21 +307,22 @@ export default async function PlayersPage({
               <Link
                 key={p.id}
                 href={`/players/${p.slug}`}
-                className="group rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 hover:border-[#CC5500]/60 hover:bg-[#171B23] transition-all flex flex-col justify-between shadow-lg relative overflow-hidden"
+                className="group rounded-2xl border border-border bg-card p-5 shadow-xs transition-all hover:border-primary/50 hover:shadow-md flex flex-col justify-between relative overflow-hidden focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
               >
                 <div className="flex items-start gap-4">
                   {/* Photo / Avatar */}
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[4px] border border-[rgba(224,192,178,0.15)] bg-[#0C0E12]">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
                     {p.photoUrl ? (
                       <Image
                         src={p.photoUrl}
                         alt={p.fullName}
                         fill
                         sizes="64px"
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        unoptimized
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center font-['Public_Sans'] text-base font-black text-[#FFB693] bg-[#0C0E12]">
+                      <div className="flex h-full w-full items-center justify-center text-sm font-bold text-primary bg-primary/10">
                         {p.fullName
                           .split(" ")
                           .map((s) => s[0])
@@ -293,31 +337,31 @@ export default async function PlayersPage({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm">{flag}</span>
-                      <span className="text-[10px] font-['Public_Sans'] font-black uppercase px-2 py-0.5 rounded-[3px] bg-[#CC5500]/20 text-[#FFB693] border border-[#CC5500]/30">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
                         {p.primaryPositionCode ?? "PL"}
                       </span>
                     </div>
 
-                    <h2 className="font-['Public_Sans'] font-black text-base text-white group-hover:text-[#FFB693] transition-colors truncate">
+                    <h2 className="font-bold text-base text-foreground group-hover:text-primary transition-colors truncate">
                       {p.fullName}
                     </h2>
 
-                    <p className="text-xs text-slate-400 truncate mt-0.5">
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
                       {p.currentClub ?? "Free agent"}
                     </p>
                   </div>
                 </div>
 
                 {/* Bottom Meta */}
-                <div className="mt-5 pt-3 border-t border-[rgba(224,192,178,0.08)] flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5 text-slate-400">
-                    <span className="truncate">{country}</span>
+                <div className="mt-5 pt-3.5 border-t border-border/80 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <span className="truncate font-medium">{country}</span>
                     <span>·</span>
-                    <span className="text-[11px] text-slate-400 font-medium">{pos}</span>
+                    <span className="text-[11px] text-muted-foreground">{pos}</span>
                   </div>
 
-                  <span className="text-xs font-['Public_Sans'] font-bold text-[#FFB693] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    View Dossier <ArrowRight className="h-3.5 w-3.5 text-[#CC5500]" />
+                  <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View dossier <ArrowRight className="h-3.5 w-3.5 text-primary" />
                   </span>
                 </div>
               </Link>

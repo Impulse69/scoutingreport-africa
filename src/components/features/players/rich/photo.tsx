@@ -41,7 +41,7 @@ export function PlayerPhoto({
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden border border-white/15 bg-stone-200 ${radiusClass[rounded]} ${className}`}
+      className={`relative shrink-0 overflow-hidden border border-border bg-muted ${radiusClass[rounded]} ${className}`}
       style={{ width: size, height: size }}
     >
       {showImg ? (
@@ -51,12 +51,12 @@ export function PlayerPhoto({
           alt={name}
           width={size}
           height={size}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-top"
           loading="lazy"
           onError={() => setBroken(true)}
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center font-mono font-bold text-stone-700"
+        <div className="flex h-full w-full items-center justify-center font-mono font-bold text-muted-foreground"
           style={{ fontSize: Math.max(12, size / 5) }}
         >
           {initials}

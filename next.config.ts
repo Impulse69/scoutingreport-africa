@@ -44,6 +44,31 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.thesportsdb.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "r2.thesportsdb.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "thesportsdb.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.api-sports.io",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "crests.football-data.org",
+        pathname: "/**",
+      },
     ],
   },
 };

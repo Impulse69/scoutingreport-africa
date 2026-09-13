@@ -36,11 +36,11 @@ export default async function SquadPage({
 
   return (
     <div className="space-y-6">
-      <header className="border-b border-white/5 pb-6">
-        <h1 className="font-mono text-3xl font-bold tracking-tight text-white">
+      <header className="border-b border-border pb-6">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           Published squad
         </h1>
-        <p className="mt-2 font-mono text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-muted-foreground">
           {team.name} · {squad.players.length} scouting dossier
           {squad.players.length === 1 ? "" : "s"}
         </p>
@@ -67,24 +67,24 @@ export default async function SquadPage({
             return (
               <section
                 key={group}
-                className="overflow-hidden rounded-xl border border-white/5 bg-[#0E0E0E]"
+                className="overflow-hidden rounded-lg border border-border bg-card"
               >
-                <div className="flex items-center justify-between border-b border-white/5 bg-white/[0.02] px-5 py-3">
-                  <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-300">
+                <div className="flex items-center justify-between border-b border-border bg-muted px-5 py-3">
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                     {GROUP_LABELS[group]}
                   </h2>
-                  <span className="font-mono text-[10px] text-zinc-500">
+                  <span className="text-[10px] text-muted-foreground">
                     {players.length}
                   </span>
                 </div>
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-border">
                   {players.map((player) => (
                     <Link
                       key={player.id}
                       href={`/players/${player.slug}`}
-                      className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-white/[0.04]"
+                      className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted"
                     >
-                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-emerald-500/10">
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border bg-primary/10">
                         {player.photoUrl ? (
                           <Image
                             src={player.photoUrl}
@@ -94,7 +94,7 @@ export default async function SquadPage({
                             className="object-cover"
                           />
                         ) : (
-                          <div className="flex h-full items-center justify-center font-mono text-xs font-bold text-emerald-300">
+                          <div className="flex h-full items-center justify-center text-xs font-semibold text-primary">
                             {(player.commonName ?? player.fullName)
                               .split(/\s+/)
                               .slice(0, 2)
@@ -105,20 +105,20 @@ export default async function SquadPage({
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-white">
+                        <p className="truncate text-sm font-semibold text-foreground">
                           {player.commonName ?? player.fullName}
                         </p>
                         {player.commonName ? (
-                          <p className="truncate text-xs text-zinc-500">
+                          <p className="truncate text-xs text-muted-foreground">
                             {player.fullName}
                           </p>
                         ) : null}
                       </div>
-                      <div className="text-right font-mono">
-                        <p className="text-xs font-bold text-emerald-300">
+                      <div className="text-right">
+                        <p className="text-xs font-semibold text-primary">
                           {player.primaryPositionCode}
                         </p>
-                        <p className="mt-1 text-[10px] text-zinc-500">
+                        <p className="mt-1 text-[10px] text-muted-foreground">
                           {player.nationalityCode}
                         </p>
                       </div>
@@ -131,7 +131,7 @@ export default async function SquadPage({
         </div>
       )}
 
-      <p className="text-[11px] leading-5 text-zinc-500">
+      <p className="text-[11px] leading-5 text-muted-foreground">
         <Users className="mr-1 inline h-3 w-3" />
         This roster contains published ScoutingReport dossiers only. Match
         appearances and performance statistics will appear after a verified
@@ -151,10 +151,10 @@ function EmptyState({
   detail: string;
 }) {
   return (
-    <div className="rounded-xl border border-dashed border-white/10 bg-[#0E0E0E] px-6 py-16 text-center">
-      <Icon className="mx-auto h-6 w-6 text-zinc-500" />
-      <p className="mt-3 font-mono text-sm text-zinc-300">{title}</p>
-      <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-zinc-500">
+    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
+      <Icon className="mx-auto h-6 w-6 text-muted-foreground" />
+      <p className="mt-3 text-sm font-medium text-foreground">{title}</p>
+      <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-muted-foreground">
         {detail}
       </p>
     </div>

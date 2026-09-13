@@ -24,10 +24,10 @@ export function AttributeRadar({ data, label = "Player" }: AttributeRadarProps) 
     <div className="w-full h-[300px] md:h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-          <PolarGrid stroke="#e7e5e4" />
+          <PolarGrid stroke="var(--border)" />
           <PolarAngleAxis 
             dataKey="attribute" 
-            tick={{ fill: "#57534e", fontSize: 12, fontWeight: 500 }}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 12, fontWeight: 500 }}
           />
           <PolarRadiusAxis 
             angle={30} 
@@ -38,8 +38,8 @@ export function AttributeRadar({ data, label = "Player" }: AttributeRadarProps) 
           <Radar
             name={label}
             dataKey="value"
-            stroke="#ea580c"
-            fill="#fb923c"
+            stroke="var(--primary)"
+            fill="var(--primary)"
             fillOpacity={0.4}
           />
         </RadarChart>

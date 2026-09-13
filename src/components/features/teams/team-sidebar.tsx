@@ -21,10 +21,10 @@ type TeamSidebarProps = {
 
 const NAV = [
   { href: "", label: "Overview", icon: LayoutGrid },
-  { href: "squad", label: "Squad Roster", icon: Users },
-  { href: "performance", label: "Tactical Metrics", icon: TrendingUp },
+  { href: "squad", label: "Squad", icon: Users },
+  { href: "performance", label: "Performance", icon: TrendingUp },
   { href: "fixtures", label: "Fixtures", icon: Calendar },
-  { href: "trends", label: "Form Trends", icon: LineChart },
+  { href: "trends", label: "Trends", icon: LineChart },
 ] as const;
 
 export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
@@ -32,7 +32,7 @@ export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
   const base = `/teams/${team.slug}`;
 
   return (
-    <aside className="hidden md:flex sticky top-0 h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-[#06090c] px-6 py-8">
+    <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card px-6 py-8 md:flex">
       {/* Crest + name */}
       <div className="flex flex-col items-center text-center">
         <div className="relative h-18 w-18 mb-4">
@@ -45,20 +45,20 @@ export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
               className="object-contain"
             />
           ) : (
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center font-mono font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">
+            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary text-xl font-semibold text-primary-foreground">
               {team.shortName.slice(0, 2).toUpperCase()}
             </div>
           )}
         </div>
-        <h2 className="font-extrabold text-base text-white tracking-tight">{team.name}</h2>
-        <p className="mt-1 text-xs text-slate-400 font-medium">{team.league}</p>
+        <h2 className="text-base font-semibold tracking-tight text-foreground">{team.name}</h2>
+        <p className="mt-1 text-xs font-medium text-muted-foreground">{team.league}</p>
       </div>
 
       {/* Season badge */}
       <div className="mt-6 mb-4">
-        <div className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-[#0c1218] px-3.5 py-2 text-xs font-mono font-bold text-slate-300">
+        <div className="flex w-full items-center justify-between rounded-md border border-border bg-muted px-3.5 py-2 text-xs font-medium text-muted-foreground">
           <span>{contextLabel}</span>
-          <Trophy className="h-3.5 w-3.5 text-amber-400" />
+          <Trophy className="h-3.5 w-3.5 text-primary" />
         </div>
       </div>
 
@@ -74,10 +74,10 @@ export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
             <Link
               key={item.label}
               href={target}
-              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all ${
+              className={`flex items-center gap-3 rounded-md px-3.5 py-2.5 text-sm transition-colors ${
                 isActive
-                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-muted text-primary font-medium"
+                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -88,27 +88,27 @@ export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
       </nav>
 
       {/* Bottom Nav */}
-      <div className="mt-6 space-y-2.5 border-t border-white/10 pt-5 text-xs text-slate-400">
+      <div className="mt-6 space-y-2.5 border-t border-border pt-5 text-xs text-muted-foreground">
         <Link
           href="/leagues"
-          className="flex items-center gap-2 hover:text-emerald-400 transition-colors font-medium"
+          className="flex items-center gap-2 font-medium transition-colors hover:text-primary"
         >
-          <Trophy className="h-3.5 w-3.5 text-amber-400" />
-          <span>All Competitions</span>
+          <Trophy className="h-3.5 w-3.5 text-primary" />
+          <span>All competitions</span>
         </Link>
         <Link
           href="/players"
-          className="flex items-center gap-2 hover:text-emerald-400 transition-colors font-medium"
+          className="flex items-center gap-2 font-medium transition-colors hover:text-primary"
         >
-          <Users className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Player Catalogue</span>
+          <Users className="h-3.5 w-3.5 text-primary" />
+          <span>Players</span>
         </Link>
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 hover:text-white transition-colors font-bold pt-2 border-t border-white/5"
+          className="flex items-center gap-2 border-t border-border pt-2 font-medium transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Command Hub</span>
+          <span>Dashboard</span>
         </Link>
       </div>
     </aside>

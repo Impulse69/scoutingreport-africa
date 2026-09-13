@@ -39,7 +39,7 @@ export default async function MarketingLayout({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0C0E12] text-slate-100 selection:bg-[#CC5500] selection:text-white">
+    <div className="flex min-h-screen flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
       <MarketingNav initialAuth={initialAuth} featured={featured} />
       <main className="flex-1">{children}</main>
       <DarkFooter />
