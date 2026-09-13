@@ -6,7 +6,7 @@
 - [x] Confirm migration 0011 is already present and apply migration 0012.
 - [x] Remove anonymous execution access from the new ratings RPC.
 - [x] Verify the deployed schema, privileges, and migration history.
-- [x] Refresh and verify the Vercel CLI installation; identify stale authentication.
+- [x] Refresh the Vercel CLI and verify authenticated project access.
 - [x] Commit and push the migration follow-up to the feature branch.
 
 ## Review
@@ -17,9 +17,10 @@ anonymous execution access from the replacement-ratings RPC. Remote checks
 confirm the function is security-invoker, uses `search_path=public`, permits the
 authenticated role, and rejects the anon role.
 
-Vercel CLI was repaired and updated from 54.20.1 to 59.16.0. The installation
-works, but the saved Vercel token is invalid and requires a fresh interactive
-`vercel login` before authenticated commands can run.
+Vercel CLI was repaired and updated from 54.20.1 to 59.16.0. A fresh device
+login replaced the stale token, and `vercel whoami` verified the `impulse69`
+account. The local Vercel link still targets the `scoutingreport-africa`
+project.
 
 ---
 
