@@ -43,8 +43,7 @@ export async function listCompetitions(): Promise<CompetitionListResult> {
       .from("competitions")
       .select("id, name, type, country_code, countries(name, flag_emoji)")
       .order("type")
-      .order("name")
-      .limit(100);
+      .order("name");
 
     if (error) {
       return { competitions: [], unavailable: true };
