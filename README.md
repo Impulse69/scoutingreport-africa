@@ -156,6 +156,9 @@ name. They never show invented formations, standings, or performance numbers;
 empty and unavailable states say exactly what is missing. The existing
 `src/lib/features/teams/mock.ts` file remains only as a legacy source for
 curated search/navigation metadata; team pages do not consume its mock squad.
+The `/leagues` directory reads the public Supabase competition catalogue and
+groups those reference records by type. It does not publish editorial rankings,
+unverified tactical claims, or implied player and fixture coverage.
 One player demo remains in
 `src/lib/features/players/rich-mock.ts`. Global search
 combines published, RLS-visible Supabase dossiers with live ESPN discovery; it
