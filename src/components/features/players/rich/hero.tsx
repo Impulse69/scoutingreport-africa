@@ -29,11 +29,19 @@ export function PlayerHero({ player }: { player: RichPlayerProfile }) {
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-muted-foreground">
               <span className="text-foreground font-bold">{player.age} yrs</span>
               <span className="h-1 w-1 rounded-full bg-muted-foreground" />
-              <span>{player.heightCm} cm</span>
-              <span className="h-1 w-1 rounded-full bg-muted-foreground" />
-              <span className="capitalize">{player.preferredFoot} foot</span>
-              <span className="h-1 w-1 rounded-full bg-muted-foreground" />
-              <span className="text-primary font-bold">{player.estimatedProfile}</span>
+              {player.heightCm > 0 && <span>{player.heightCm} cm</span>}
+              {player.preferredFoot && (
+                <>
+                  <span className="h-1 w-1 rounded-full bg-muted-foreground" />
+                  <span className="capitalize">{player.preferredFoot} foot</span>
+                </>
+              )}
+              {player.estimatedProfile !== "Unavailable" && (
+                <>
+                  <span className="h-1 w-1 rounded-full bg-muted-foreground" />
+                  <span className="text-primary font-bold">{player.estimatedProfile}</span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -52,10 +60,10 @@ export function PlayerHero({ player }: { player: RichPlayerProfile }) {
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-4 gap-4 sm:gap-6 text-center sm:text-right p-4 rounded-md bg-muted border border-border">
             {[
-              { label: "Apps", value: player.appearances },
-              { label: "Goals", value: player.goals },
-              { label: "Assists", value: player.assists },
-              { label: "Rating", value: player.rating.toFixed(1) },
+              { label: "Apps", value: player.statsAvailable === false ? "—" : player.appearances },
+              { label: "Goals", value: player.statsAvailable === false ? "—" : player.goals },
+              { label: "Assists", value: player.statsAvailable === false ? "—" : player.assists },
+              { label: "Rating", value: player.rating > 0 ? player.rating.toFixed(1) : "—" },
             ].map((stat) => (
               <div key={stat.label}>
                 <p className="text-[10px] font-semibold  tracking-normal text-muted-foreground">

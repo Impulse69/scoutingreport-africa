@@ -8,6 +8,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { listPublishedPlayers } from "@/lib/features/players/queries";
+import { resolvePlayerPhotoDynamic } from "@/lib/features/players/photos";
 import { EmptyState } from "@/components/shared/empty-state";
 import { POSITIONS, CAF_COUNTRIES } from "@/lib/shared/constants";
 
@@ -93,15 +94,25 @@ export default async function PlayersPage({
       const hits = await searchGlobalOmni(q);
       const playerHits = hits.filter((h) => h.type === "player");
       if (playerHits.length > 0) {
-        const extraPlayers = playerHits.map((h) => ({
-          id: h.id,
-          slug: h.url.replace(/^\/players\//, ""),
-          fullName: h.title,
-          primaryPositionCode: h.subtitle.split("·")[0]?.trim() ?? "FWD",
-          nationalityCode: null,
-          currentClub: h.subtitle.split("·")[1]?.trim() ?? null,
-          photoUrl: h.badge ?? null,
-        }));
+        const extraPlayers = await Promise.all(
+          playerHits.map(async (h) => {
+            const player = h.player;
+            const photoUrl =
+              player?.source === "espn"
+                ? await resolvePlayerPhotoDynamic(h.title, player.photoUrl)
+                : (player?.photoUrl ?? null);
+
+            return {
+              id: h.id,
+              slug: h.url.replace(/^\/players\//, ""),
+              fullName: h.title,
+              primaryPositionCode: player?.position ?? null,
+              nationalityCode: null,
+              currentClub: player?.team ?? null,
+              photoUrl,
+            };
+          }),
+        );
         players = [...rawPlayers, ...extraPlayers];
       }
     } catch {}

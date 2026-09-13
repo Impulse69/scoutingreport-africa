@@ -304,15 +304,27 @@ export default async function PlayerProfilePage({
       {activeTab === "career" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 space-y-6">
-            <KeyStrengths strengths={player.keyStrengths} />
-            <PerNinetyBars stats={player.perNinetyStats} />
-            <RecentForm matches={player.recentForm} />
+            {player.keyStrengths.length > 0 && (
+              <KeyStrengths strengths={player.keyStrengths} />
+            )}
+            {player.perNinetyStats.length > 0 && (
+              <PerNinetyBars stats={player.perNinetyStats} />
+            )}
+            {player.recentForm.length > 0 && (
+              <RecentForm matches={player.recentForm} />
+            )}
           </div>
           <div className="lg:col-span-4 space-y-6">
             <AboutPlayer player={player} />
-            <SimilarPlayers similar={player.similarPlayers} linkable={linkable} />
-            <DefensiveHeatmap heatmap={player.heatmap} />
-            <MarketValueCard value={player.marketValue} history={player.marketValueHistory} />
+            {player.similarPlayers.length > 0 && (
+              <SimilarPlayers similar={player.similarPlayers} linkable={linkable} />
+            )}
+            {player.heatmap.length > 0 && (
+              <DefensiveHeatmap heatmap={player.heatmap} />
+            )}
+            {player.marketValue > 0 && (
+              <MarketValueCard value={player.marketValue} history={player.marketValueHistory} />
+            )}
           </div>
         </div>
       )}

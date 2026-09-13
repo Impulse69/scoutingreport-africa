@@ -27,6 +27,13 @@ export type OmniSearchResult = {
   type: "player" | "club" | "competition";
   flagEmoji?: string;
   badge?: string;
+  player?: {
+    source: "database" | "espn";
+    position: string | null;
+    team: string | null;
+    league: string | null;
+    photoUrl: string | null;
+  };
 };
 
 type EspnContent = {
@@ -97,9 +104,11 @@ async function searchEspnPlayers(query: string): Promise<GlobalSearchPlayer[]> {
           id: c.uid ?? c.id ?? c.displayName!,
           slug,
           name: c.displayName!,
-          position: meta.position ?? c.description ?? null,
+          // ESPN's description is usually a competition (for example,
+          // "Maurice Revello Tournament"), not a playing position.
+          position: meta.position,
           team: meta.team,
-          league: meta.league,
+          league: meta.league ?? c.description ?? null,
           photo: c.image?.default ?? null,
         };
       })
@@ -160,6 +169,13 @@ export async function searchGlobalOmni(query: string): Promise<OmniSearchResult[
       type: "player",
       flagEmoji: flag,
       badge: "Verified Scout Dossier",
+      player: {
+        source: "database",
+        position: p.primaryPositionCode,
+        team: p.currentClub,
+        league: null,
+        photoUrl: p.photoUrl,
+      },
     });
   }
 
@@ -172,6 +188,13 @@ export async function searchGlobalOmni(query: string): Promise<OmniSearchResult[
         subtitle: `${ep.team ?? "Club"} · ${ep.position ?? "Player"} · ${ep.league ?? ""}`,
         url: `/players/${ep.slug}`,
         type: "player",
+        player: {
+          source: "espn",
+          position: ep.position,
+          team: ep.team,
+          league: ep.league,
+          photoUrl: ep.photo,
+        },
       });
     }
   }

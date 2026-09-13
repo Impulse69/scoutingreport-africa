@@ -1,3 +1,38 @@
+# Fix searched-player profiles and data quality (2026-09-13)
+
+## Plan
+
+- [x] Reproduce the `espn-*` search-result 404 and trace its data boundaries.
+- [x] Audit player-photo handling and configured football-data providers.
+- [x] Define one canonical external-player model with stable player/team links.
+- [x] Establish regression coverage with exact production route/content assertions.
+- [x] Implement the smallest route, image, and data-source fix at the source.
+- [x] Verify player/team accuracy against the selected provider and live database.
+- [x] Run focused tests, lint, typecheck, build, and production-route smoke checks.
+- [x] Record findings, commit, and push the fix to the open feature PR.
+
+## Review
+
+The 404 was caused by treating ESPN's statistics overview as an identity
+response. The overview returned HTTP 200 without an `athlete`, after which the
+fallback endpoints returned 403 and the page called `notFound()`. The player
+directory separately discarded the provider photo and parsed a display string
+into the wrong team, position, and competition fields.
+
+The detail loader now uses ESPN's league-agnostic identity endpoint, validates
+numeric IDs, merges available overview statistics, and times out upstream
+requests. Search results preserve structured fields and resolve missing photos
+by exact name through the existing allowlisted TheSportsDB/API-Football chain.
+External profiles no longer invent preferred foot, scouting archetype, ratings,
+heatmaps, form, or market value when providers do not supply them.
+
+Validation passed: ESLint, TypeScript, production build, and production-server
+assertions. `/players?q=vini` and `/players/espn-257039` both returned HTTP 200
+and rendered Vinicius Souza, VfL Wolfsburg, and the resolved SportsDB image; the
+detail also rendered Brazil and German 2. Bundesliga.
+
+---
+
 # Apply production database migrations and verify tooling (2026-09-13)
 
 ## Plan

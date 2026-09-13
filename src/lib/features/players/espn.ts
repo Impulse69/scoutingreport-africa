@@ -49,11 +49,18 @@ type EspnAthletePayload = {
       links?: { href?: string }[];
     };
   };
-  league?: { abbreviation?: string; displayName?: string; slug?: string };
+  league?: { abbreviation?: string; displayName?: string; name?: string; slug?: string };
+  season?: { displayName?: string };
   statistics?: { splits?: { categories?: EspnStatCategory[] } };
   // Some endpoints stash categories at the top level
   categories?: EspnStatCategory[];
 };
+
+const ESPN_FETCH_TIMEOUT_MS = 8_000;
+
+function isValidEspnId(value: string): boolean {
+  return /^\d+$/.test(value);
+}
 
 type EspnGamelogEntry = {
   // Common fields seen across ESPN gamelog responses
@@ -88,28 +95,11 @@ type EspnBio = {
   };
 };
 
-const LEAGUES = [
-  "eng.1",
-  "esp.1",
-  "ger.1",
-  "ita.1",
-  "fra.1",
-  "ned.1",
-  "por.1",
-  "uefa.champions",
-  "usa.1",
-  "mex.1",
-  "bra.1",
-  "arg.1",
-  "ksa.1",
-  "tur.1",
-  "sco.1",
-];
-
 async function tryFetch<T>(url: string): Promise<T | null> {
   try {
     const r = await fetch(url, {
       headers: { accept: "application/json", "user-agent": "ScoutingReportAfrica/1.0" },
+      signal: AbortSignal.timeout(ESPN_FETCH_TIMEOUT_MS),
       next: { revalidate: 60 * 60 },
     });
     if (!r.ok) {
@@ -124,19 +114,27 @@ async function tryFetch<T>(url: string): Promise<T | null> {
 }
 
 export async function fetchEspnAthlete(espnId: string): Promise<EspnAthletePayload | null> {
-  // Try the league-agnostic overview first
-  const overview = await tryFetch<EspnAthletePayload>(
-    `https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/${espnId}/overview`,
-  );
-  if (overview?.athlete) return overview;
+  if (!isValidEspnId(espnId)) return null;
 
-  for (const lg of LEAGUES) {
-    const r = await tryFetch<EspnAthletePayload>(
-      `https://site.api.espn.com/apis/common/v3/sports/soccer/${lg}/athletes/${espnId}`,
-    );
-    if (r?.athlete) return r;
-  }
-  return null;
+  // The `/overview` endpoint is statistics-led and no longer includes an
+  // `athlete` object for every player. Load identity from the league-agnostic
+  // player endpoint, then attach overview statistics when ESPN exposes them.
+  const [profile, overview] = await Promise.all([
+    tryFetch<EspnAthletePayload>(
+      `https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/${espnId}`,
+    ),
+    tryFetch<EspnAthletePayload>(
+      `https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/${espnId}/overview`,
+    ),
+  ]);
+
+  if (!profile?.athlete || profile.athlete.id !== espnId) return null;
+
+  return {
+    ...profile,
+    statistics: overview?.statistics ?? profile.statistics,
+    categories: overview?.categories ?? profile.categories,
+  };
 }
 
 async function fetchGamelog(espnId: string): Promise<EspnGamelogEntry | null> {
@@ -170,6 +168,10 @@ export type EspnBundle = {
 };
 
 export async function fetchEspnBundle(espnId: string): Promise<EspnBundle> {
+  if (!isValidEspnId(espnId)) {
+    return { overview: null, gamelog: null, stats: null, bio: null };
+  }
+
   const overview = await fetchEspnAthlete(espnId);
   if (!overview?.athlete) {
     return { overview: null, gamelog: null, stats: null, bio: null };
@@ -402,7 +404,8 @@ export function bundleToRichProfile(
           ? "FWD"
           : "MID";
 
-  const heightCm = a.height ? Math.round(a.height * 2.54) : 180;
+  const heightInches = a.height ?? parseDisplayHeightInches(a.displayHeight);
+  const heightCm = heightInches ? Math.round(heightInches * 2.54) : 0;
 
   const cats = gatherCategories(bundle.overview);
   const apps = pickStat(cats, "appearances", "gp", "gamesplayed").value;
@@ -425,43 +428,18 @@ export function bundleToRichProfile(
   }
 
   const team = a.team?.displayName ?? "—";
-  const league = bundle.overview.league?.displayName ?? "—";
+  const league =
+    bundle.overview.league?.displayName ??
+    bundle.overview.league?.name ??
+    bundle.overview.league?.abbreviation ??
+    "—";
   const photo =
-    a.headshot?.href ??
-    `https://a.espncdn.com/i/headshots/soccer/players/full/${espnId}.png`;
-
-  // Real strengths derived from real stats where possible.
-  const keyStrengths =
-    positionGroup === "GK"
-      ? [
-          { label: "Shot Stopping", value: clamp(40 + saves * 1.2) },
-          { label: "Clean Sheets", value: clamp(40 + cleanSheets * 6) },
-          { label: "Discipline", value: clamp(95 - yellowCards * 5 - redCards * 25) },
-          { label: "Workload", value: clamp(40 + (minutes / 90) * 1.5) },
-        ]
-      : positionGroup === "DEF"
-        ? [
-            { label: "Tackling", value: clamp(40 + tackles * 1.4) },
-            { label: "Interceptions", value: clamp(40 + interceptions * 1.4) },
-            { label: "Discipline", value: clamp(95 - yellowCards * 4 - redCards * 20) },
-            { label: "Workload", value: clamp(40 + (minutes / 90) * 1.5) },
-          ]
-        : positionGroup === "MID"
-          ? [
-              { label: "Goal Involvement", value: clamp(40 + (goals + assists) * 5) },
-              { label: "Tackling", value: clamp(40 + tackles * 1.4) },
-              { label: "Discipline", value: clamp(95 - yellowCards * 4 - redCards * 20) },
-              { label: "Workload", value: clamp(40 + (minutes / 90) * 1.5) },
-            ]
-          : [
-              { label: "Finishing", value: clamp(40 + goals * 4) },
-              { label: "Creativity", value: clamp(40 + assists * 5) },
-              { label: "Goal Involvement", value: clamp(40 + (goals + assists) * 4) },
-              { label: "Workload", value: clamp(40 + (minutes / 90) * 1.5) },
-            ];
+    a.headshot?.href ?? null;
 
   const perNinetyStats =
-    positionGroup === "GK"
+    minutes <= 0
+      ? []
+      : positionGroup === "GK"
       ? [
           { label: "Saves", value: per90(saves, minutes), max: 6 },
           { label: "Clean sheets", value: apps > 0 ? +(cleanSheets / apps).toFixed(2) : 0, max: 1 },
@@ -481,7 +459,7 @@ export function bundleToRichProfile(
     date: m.date,
     opponent: m.opponent,
     result: m.result,
-    rating: m.rating > 0 ? m.rating : 6 + Math.random() * 1.4,
+    rating: m.rating > 0 ? m.rating : 0,
   }));
 
   const rating =
@@ -504,77 +482,44 @@ export function bundleToRichProfile(
     league,
     age: a.age ?? 0,
     heightCm,
-    preferredFoot: "right",
+    preferredFoot: null,
     photoUrl: photo,
-    estimatedProfile:
-      positionGroup === "GK"
-        ? "Sweeper Keeper"
-        : positionGroup === "DEF"
-          ? "Ball-playing Defender"
-          : positionGroup === "MID"
-            ? "Box-to-Box Midfielder"
-            : "All-round Forward",
+    estimatedProfile: "Unavailable",
     appearances: apps,
     goals,
     assists,
-    rating: rating || 6.5,
+    rating,
+    statsAvailable: cats.length > 0,
 
-    keyStrengths,
+    // No scouting-strength scores are returned by ESPN. Do not synthesize them
+    // from counting statistics and present the result as sourced evaluation.
+    keyStrengths: [],
     perNinetyStats,
-    recentForm: recentForm.length
-      ? recentForm
-      : Array.from({ length: 6 }, () => ({
-          date: "",
-          opponent: "—",
-          result: "D" as const,
-          rating: 0,
-        })),
+    recentForm,
     similarPlayers: [],
-    heatmap:
-      positionGroup === "GK"
-        ? [
-            { x: 50, y: 8, intensity: 0.95 },
-            { x: 42, y: 12, intensity: 0.55 },
-            { x: 58, y: 12, intensity: 0.55 },
-            { x: 50, y: 18, intensity: 0.42 },
-          ]
-        : positionGroup === "DEF"
-          ? [
-              { x: 30, y: 30, intensity: 0.7 },
-              { x: 70, y: 30, intensity: 0.7 },
-              { x: 50, y: 22, intensity: 0.6 },
-            ]
-          : positionGroup === "MID"
-            ? [
-                { x: 50, y: 50, intensity: 0.85 },
-                { x: 35, y: 55, intensity: 0.6 },
-                { x: 65, y: 55, intensity: 0.6 },
-              ]
-            : [
-                { x: 50, y: 75, intensity: 0.85 },
-                { x: 30, y: 70, intensity: 0.55 },
-                { x: 70, y: 70, intensity: 0.55 },
-              ],
-    marketValue:
-      Math.round(((goals + assists + 1) * 1_500_000 + apps * 80_000) / 100_000) * 100_000,
+    heatmap: [],
+    marketValue: 0,
     marketValueHistory: [],
-    career: [
-      {
-        season: "2025/26",
-        club: team,
-        league,
-        apps,
-        goals,
-        assists,
-        rating: rating || 6.5,
-      },
-    ],
+    career: cats.length > 0
+      ? [
+          {
+            season: bundle.overview.season?.displayName ?? "Current season",
+            club: team,
+            league,
+            apps,
+            goals,
+            assists,
+            rating,
+          },
+        ]
+      : [],
     leagueDistribution: [],
     positionalScatter: [],
     scoutNotes: null,
-    about: `${a.displayName ?? "Player"} is a ${a.age ?? "—"}-year-old ${a.position?.displayName ?? "footballer"} who plays for ${team} in ${league}. Standing at ${heightCm} cm. Stats below are pulled live from ESPN — ${apps} appearance${apps === 1 ? "" : "s"} this season, ${goals} goal${goals === 1 ? "" : "s"}, ${assists} assist${assists === 1 ? "" : "s"}.`,
+    about: cats.length > 0
+      ? `${a.displayName ?? "Player"} plays for ${team}. ESPN reports ${apps} appearance${apps === 1 ? "" : "s"}, ${goals} goal${goals === 1 ? "" : "s"}, and ${assists} assist${assists === 1 ? "" : "s"} for the available season data.`
+      : `${a.displayName ?? "Player"} plays for ${team}. Verified season statistics are not currently available from ESPN.`,
     exploreMore: [
-      { label: `${team} — Squad & Stats`, href: `/teams/${team.toLowerCase().replace(/\s+/g, "-")}` },
       { label: `${league} — Standings`, href: "/leagues" },
       { label: "Search All Players", href: "/players" },
     ],
@@ -588,8 +533,11 @@ export function bundleToRichProfile(
 
 // ─── Utils ───────────────────────────────────────────────────────
 
-function clamp(n: number, min = 0, max = 100): number {
-  return Math.max(min, Math.min(max, Math.round(n)));
+function parseDisplayHeightInches(value: string | undefined): number | null {
+  if (!value) return null;
+  const match = value.match(/^(\d+)\s*'\s*(\d+)\s*"?$/);
+  if (!match) return null;
+  return Number(match[1]) * 12 + Number(match[2]);
 }
 
 function per90(stat: number, minutes: number): number {

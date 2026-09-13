@@ -165,12 +165,7 @@ export function AboutPlayer({ player }: { player: RichPlayerProfile }) {
         </p>
       </header>
       <div className="p-6 space-y-3 text-xs text-muted-foreground leading-relaxed">
-        <p>
-          Standardized profile for <span className="font-bold text-foreground">{player.fullName}</span>, currently representing <span className="text-primary font-bold">{player.club}</span> in {player.league}.
-        </p>
-        <p>
-          Tactical role: <span className="text-foreground font-bold">{player.estimatedProfile}</span> with high physical ceiling and progressive action volume.
-        </p>
+        <p>{player.about}</p>
       </div>
     </section>
   );

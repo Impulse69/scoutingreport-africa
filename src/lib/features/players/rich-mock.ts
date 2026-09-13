@@ -11,13 +11,15 @@ export type RichPlayerProfile = {
   league: string;
   age: number;
   heightCm: number;
-  preferredFoot: "left" | "right" | "both";
+  preferredFoot: "left" | "right" | "both" | null;
   photoUrl: string | null;
   estimatedProfile: string;
   appearances: number;
   goals: number;
   assists: number;
   rating: number;
+  statsAvailable?: boolean;
+  liveSource?: "espn";
 
   keyStrengths: { label: string; value: number }[];
   perNinetyStats: { label: string; value: number; max: number; unit?: string }[];
