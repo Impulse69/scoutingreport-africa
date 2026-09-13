@@ -1,202 +1,192 @@
 import Link from "next/link";
-import {
-  FileText,
-  PlusCircle,
-  Users,
-  Shield,
-  ArrowRight,
-  Sparkles,
-  Award,
-  BookOpen,
-  SlidersHorizontal,
-  FolderOpen
-} from "lucide-react";
+import { FileText, PlusCircle, ArrowRight, Clock, CheckCircle2, UserPlus } from "lucide-react";
 import { getCurrentUser } from "@/lib/core/auth-helpers";
-import { listMyReports, listLatestPublishedReports, type ReportWithJoins } from "@/lib/features/reports/queries";
-import { listPublishedPlayers } from "@/lib/features/players/queries";
-import { PageHeader } from "@/components/shared/page-header";
+import { listMyReports } from "@/lib/features/reports/queries";
+import { listMyPlayers } from "@/lib/features/players/actions";
+import { PlayerPicker } from "@/components/features/reports/player-picker";
 
 export const metadata = {
-  title: "Scout Department Workspace · ScoutingReport Africa",
-  description: "Draft, verify, and publish standardized African football scouting dossiers.",
+  title: "Scout workspace",
+  description: "Draft and publish structured scouting reports.",
 };
 
 export default async function ScoutWorkspacePage() {
-  const user = await getCurrentUser();
-  const draftReports = user ? await listMyReports(user.id, "draft") : [];
-  const recentPublished: ReportWithJoins[] = await listLatestPublishedReports(10);
-  const players = await listPublishedPlayers(12);
+  const user = (await getCurrentUser())!; // the /scout layout already gates this
+
+  const [drafts, published, myPlayers] = await Promise.all([
+    listMyReports(user.id, "draft"),
+    listMyReports(user.id, "published"),
+    listMyPlayers(),
+  ]);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-7xl space-y-10 font-['Inter']">
-      {/* Workspace Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[rgba(224,192,178,0.12)]">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
-            <Award className="h-3.5 w-3.5 text-[#CC5500]" />
-            <span>Kinetic Archive Scout Department</span>
-          </div>
-          <h1 className="font-['Public_Sans'] text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
-            Scouting Operations & Dossiers
+    <div className="mx-auto w-full max-w-4xl space-y-8 px-6 py-8">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 border-b border-border pb-6 md:flex-row md:items-end">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Scout workspace
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
-            Evaluate, rate, and verify tactical abilities for prospects across all 54 African national associations.
+          <p className="mt-1.5 max-w-xl text-sm leading-6 text-muted-foreground">
+            Pick a player to start a report. Adding someone new? Create their
+            profile first.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/scout/reports/new"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <PlusCircle className="h-4 w-4" />
-            <span>New Report</span>
+            New report
           </Link>
           <Link
             href="/scout/players/new"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
           >
-            <span>Register Player</span>
+            <UserPlus className="h-4 w-4" />
+            New player
           </Link>
         </div>
       </div>
 
-      {/* 3 Steps Pipeline Guidance */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 space-y-2 shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs font-black text-[#CC5500]">PHASE 01</span>
-            <Users className="h-4 w-4 text-[#FFB693]" />
-          </div>
-          <h3 className="font-['Public_Sans'] text-sm font-extrabold text-white uppercase">
-            Register or Select Prospect
-          </h3>
-          <p className="text-xs text-slate-400">
-            Identify the talent, verify their CAF federation, date of birth, primary role, and club affiliation.
-          </p>
+      {/* Player picker */}
+      <section className="rounded-lg border border-border bg-card">
+        <header className="border-b border-border px-5 py-3.5">
+          <h2 className="text-sm font-semibold">Start a report</h2>
+        </header>
+        <div className="p-5">
+          <PlayerPicker />
         </div>
+      </section>
 
-        <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 space-y-2 shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs font-black text-[#CC5500]">PHASE 02</span>
-            <FileText className="h-4 w-4 text-[#FFB693]" />
-          </div>
-          <h3 className="font-['Public_Sans'] text-sm font-extrabold text-white uppercase">
-            Live Match Observation
-          </h3>
-          <p className="text-xs text-slate-400">
-            Record minutes watched, competitive match context, weather conditions, and opponent strength.
-          </p>
-        </div>
-
-        <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-5 space-y-2 shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs font-black text-[#CC5500]">PHASE 03</span>
-            <Award className="h-4 w-4 text-[#FFB693]" />
-          </div>
-          <h3 className="font-['Public_Sans'] text-sm font-extrabold text-white uppercase">
-            Standardized Grading
-          </h3>
-          <p className="text-xs text-slate-400">
-            Score technical, tactical, physical, and mentality sub-attributes to produce a verified recruitment score.
-          </p>
-        </div>
-      </div>
-
-      {/* Main Workspace Split: My Drafts & Published Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Quick Player Picker */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-['Public_Sans'] text-lg font-black uppercase text-white tracking-tight">
-              Start Evaluation on Prospect
-            </h2>
-            <Link
-              href="/players"
-              className="text-xs font-['Public_Sans'] font-bold text-[#FFB693] hover:text-white"
-            >
-              Browse All →
-            </Link>
-          </div>
-
-          <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] divide-y divide-[rgba(224,192,178,0.06)] max-h-[460px] overflow-y-auto">
-            {players.map((p) => (
-              <div
-                key={p.id}
-                className="p-3.5 flex items-center justify-between hover:bg-[#171B23] transition-colors group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[#0C0E12] border border-[rgba(224,192,178,0.1)] text-[#FFB693] font-mono text-xs font-black">
-                    {p.primaryPositionCode ?? "PL"}
-                  </div>
-                  <div>
-                    <div className="font-['Public_Sans'] text-xs font-bold text-white group-hover:text-[#FFB693] transition-colors">
-                      {p.fullName}
-                    </div>
-                    <div className="text-[10px] text-slate-400">
-                      {p.currentClub ?? "Free agent"} · {p.nationalityCode ?? "CAF"}
-                    </div>
-                  </div>
-                </div>
-
-                <Link
-                  href={`/scout/reports/new?player=${p.id}`}
-                  className="px-3 py-1 rounded-[4px] bg-[#CC5500]/20 hover:bg-[#CC5500]/30 text-[#FFB693] border border-[#CC5500]/40 font-['Public_Sans'] text-[11px] font-bold uppercase tracking-wider transition-all"
+      {/* My players */}
+      <Section
+        title="My players"
+        icon={UserPlus}
+        count={myPlayers.length}
+        empty="You haven't added any players yet."
+      >
+        {myPlayers.map((p) => (
+          <Link
+            key={p.id}
+            href={`/scout/players/${p.id}/edit`}
+            className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-muted/60"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-2">
+                <span className="truncate text-sm font-medium group-hover:text-primary">
+                  {p.fullName}
+                </span>
+                <span
+                  className={`rounded border px-1.5 py-0.5 text-[11px] font-medium capitalize ${
+                    p.status === "published"
+                      ? "border-border bg-muted text-muted-foreground"
+                      : "border-border bg-muted text-muted-foreground"
+                  }`}
                 >
-                  Write Report
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Column: Published Reports Feed */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-['Public_Sans'] text-lg font-black uppercase text-white tracking-tight">
-              Recently Published Evaluations
-            </h2>
-            <span className="font-mono text-xs text-slate-400">
-              {recentPublished.length} Reports Logged
+                  {p.status}
+                </span>
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                {p.primaryPositionCode ?? "—"} · {p.currentClub ?? "Free agent"}
+              </span>
             </span>
-          </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+          </Link>
+        ))}
+      </Section>
 
-          <div className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] divide-y divide-[rgba(224,192,178,0.06)] max-h-[460px] overflow-y-auto">
-            {recentPublished.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 space-y-2">
-                <FileText className="h-8 w-8 mx-auto text-slate-500 mb-2" />
-                <p className="font-['Public_Sans'] text-sm font-bold text-white">No published evaluations yet</p>
-                <p className="text-xs text-slate-400">
-                  Be the first scout to submit and publish an evaluation dossier.
-                </p>
-              </div>
-            ) : (
-              recentPublished.map((report: ReportWithJoins) => {
-                const totalRatings = report.ratings.map((r) => r.rating).filter(Boolean);
-                const avgRating = totalRatings.length > 0 ? (totalRatings.reduce((a, b) => a + b, 0) / totalRatings.length).toFixed(1) : "—";
-                return (
-                  <div key={report.id} className="p-4 hover:bg-[#171B23] transition-colors">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-[#FFB693] font-bold">
-                        {report.match_date ?? "Live Observation"}
-                      </span>
-                      <span className="text-xs font-mono font-black text-white bg-[#0C0E12] px-2 py-0.5 rounded-[3px] border border-[rgba(224,192,178,0.1)]">
-                        Grade: {avgRating}
-                      </span>
-                    </div>
-                    <h4 className="font-['Public_Sans'] text-sm font-bold text-white mt-1">
-                      {report.player?.full_name ?? "Prospect Dossier"}
-                    </h4>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
-                      {report.projection || report.recommendation_notes || "Comprehensive technical evaluation."}
-                    </p>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Drafts */}
+      <ReportSection
+        title="Drafts"
+        icon={Clock}
+        reports={drafts}
+        empty="No drafts. Start a report above."
+      />
+
+      {/* Published */}
+      <ReportSection
+        title="Published"
+        icon={CheckCircle2}
+        reports={published}
+        empty="Nothing published yet."
+      />
     </div>
+  );
+}
+
+function Section({
+  title,
+  icon: Icon,
+  count,
+  empty,
+  children,
+}: {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  count: number;
+  empty: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <div className="mb-3 flex items-center gap-2">
+        <Icon className="h-4 w-4 text-muted-foreground" />
+        <h2 className="text-sm font-semibold">
+          {title}{" "}
+          <span className="font-normal text-muted-foreground tabular-nums">
+            ({count})
+          </span>
+        </h2>
+      </div>
+
+      {count === 0 ? (
+        <p className="rounded-lg border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">
+          {empty}
+        </p>
+      ) : (
+        <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ReportSection({
+  title,
+  icon,
+  reports,
+  empty,
+}: {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  reports: Awaited<ReturnType<typeof listMyReports>>;
+  empty: string;
+}) {
+  return (
+    <Section title={title} icon={icon} count={reports.length} empty={empty}>
+      {reports.map((r) => (
+        <Link
+          key={r.id}
+          href={`/scout/reports/${r.id}/edit`}
+          className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-muted/60"
+        >
+          <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-medium group-hover:text-primary">
+              {r.player?.full_name ?? "Unknown player"}
+            </span>
+            <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+              {r.match_description ?? "No match context"} · {r.match_date ?? "—"}{" "}
+              · edited {new Date(r.updated_at).toLocaleDateString()}
+            </span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+        </Link>
+      ))}
+    </Section>
   );
 }

@@ -4,6 +4,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { updateMyProfile } from "@/lib/features/profile/actions";
 
 export function SettingsForm({
@@ -27,59 +30,50 @@ export function SettingsForm({
         toast.error(res.error);
         return;
       }
-      toast.success("Scout profile updated");
+      toast.success("Profile updated");
       router.refresh();
     });
 
   return (
     <div className="space-y-4">
-      <div>
-        <label
-          htmlFor="display-name"
-          className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400"
-        >
-          Scout Display Name
+      <div className="space-y-1.5">
+        <label htmlFor="display-name" className="block text-sm font-medium">
+          Display name
         </label>
-        <input
+        <Input
           id="display-name"
           value={displayName}
           maxLength={80}
           onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="e.g. Chief Scout - West Africa Desk"
-          className="w-full h-11 px-4 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+          placeholder="Shown as the author on your reports"
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="bio"
-          className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400"
-        >
-          Scouting Focus & Regions
+      <div className="space-y-1.5">
+        <label htmlFor="bio" className="block text-sm font-medium">
+          Bio
         </label>
-        <textarea
+        <Textarea
           id="bio"
           rows={3}
           value={bio}
           maxLength={500}
           onChange={(e) => setBio(e.target.value)}
-          placeholder="Describe your regional coverage (e.g. WAFU tournaments, Nigeria NPFL, Senegal Ligue 1, U20 tournaments)..."
-          className="w-full p-4 rounded-xl border border-white/10 bg-[#121921] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+          placeholder="Where you scout and which competitions you cover."
         />
-        <p className="mt-1 text-right text-[10px] text-slate-500 font-mono">
-          {bio.length} / 500 characters
+        <p className="text-right text-xs tabular-nums text-muted-foreground">
+          {bio.length}/500
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={submit}
-        disabled={pending || !dirty}
-        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 text-xs font-black uppercase tracking-wider shadow-md shadow-emerald-500/20 disabled:opacity-50 transition-all flex items-center gap-1.5"
-      >
-        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        <span>Save Changes</span>
-      </button>
+      <Button type="button" onClick={submit} disabled={pending || !dirty}>
+        {pending ? (
+          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+        ) : (
+          <Save className="mr-1.5 h-4 w-4" />
+        )}
+        Save changes
+      </Button>
     </div>
   );
 }

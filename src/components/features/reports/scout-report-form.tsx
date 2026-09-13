@@ -13,13 +13,13 @@ import {
   Sparkles,
   Activity,
   CalendarDays,
-  Clock,
   MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -41,6 +41,7 @@ import {
   type ObservationType,
 } from "@/lib/shared/constants";
 import { saveScoutReport } from "@/lib/features/reports/actions";
+import type { CompetitionOption } from "@/lib/features/reports/queries";
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -57,12 +58,18 @@ export type FormInitialState = {
   player_id: string;
   match_description?: string | null;
   match_date?: string | null;
+  competition_id?: string | null;
   role_observed_code?: string | null;
   minutes_observed?: number | null;
   observation_type?: ObservationType;
   ratings?: RatingState[];
+  technical_notes?: string | null;
+  tactical_notes?: string | null;
+  physical_notes?: string | null;
+  mentality_notes?: string | null;
   strengths?: Bullet[];
   improvements?: Bullet[];
+  improvements_notes?: string | null;
   projection?: string | null;
   role_fit?: string | null;
   recruitment_decision?: RecruitmentDecision | null;
@@ -74,6 +81,8 @@ export type FormInitialState = {
 type Props = {
   initial: FormInitialState;
   playerLabel: string;
+  /** §2 Match Context — competition options, from the `competitions` table. */
+  competitions?: CompetitionOption[];
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -101,13 +110,20 @@ function mergeRatings(initial: RatingState[] | undefined): RatingState[] {
 
 // ─── Component ───────────────────────────────────────────────────
 
-export function ScoutReportForm({ initial, playerLabel }: Props) {
+export function ScoutReportForm({
+  initial,
+  playerLabel,
+  competitions = [],
+}: Props) {
   const router = useRouter();
   const [pending, start] = useTransition();
 
   // Flat state for the whole form.
   const [matchDesc, setMatchDesc] = useState(initial.match_description ?? "");
   const [matchDate, setMatchDate] = useState(initial.match_date ?? "");
+  const [competitionId, setCompetitionId] = useState<string>(
+    initial.competition_id ?? "",
+  );
   const [role, setRole] = useState<string>(initial.role_observed_code ?? "");
   const [minutes, setMinutes] = useState<string>(
     initial.minutes_observed != null ? String(initial.minutes_observed) : "",
@@ -119,6 +135,17 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
   const [ratings, setRatings] = useState<RatingState[]>(
     mergeRatings(initial.ratings),
   );
+  // §3–§6 each get one Notes box, as the template specifies.
+  const [sectionNotes, setSectionNotes] = useState<Record<RatingCategory, string>>({
+    technical: initial.technical_notes ?? "",
+    tactical: initial.tactical_notes ?? "",
+    physical: initial.physical_notes ?? "",
+    mentality: initial.mentality_notes ?? "",
+  });
+  const [improvementsNotes, setImprovementsNotes] = useState(
+    initial.improvements_notes ?? "",
+  );
+
   const [strengths, setStrengths] = useState<Bullet[]>(
     initial.strengths?.length ? initial.strengths : [],
   );
@@ -143,8 +170,6 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
   const setRating = (idx: number, rating: number) =>
     setRatings((prev) => prev.map((r, i) => (i === idx ? { ...r, rating } : r)));
 
-  const setRatingNotes = (idx: number, notes: string) =>
-    setRatings((prev) => prev.map((r, i) => (i === idx ? { ...r, notes } : r)));
 
   const addBullet = (which: "s" | "i") =>
     (which === "s" ? setStrengths : setImprovements)((prev) =>
@@ -184,17 +209,22 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
         status,
         match_description: matchDesc.trim() || null,
         match_date: matchDate || null,
-        competition_id: null,
+        competition_id: competitionId || null,
         role_observed_code: role || null,
         minutes_observed: minutes ? Number.parseInt(minutes, 10) : null,
         observation_type: obsType,
         ratings: cleanedRatings,
+        technical_notes: sectionNotes.technical.trim() || null,
+        tactical_notes: sectionNotes.tactical.trim() || null,
+        physical_notes: sectionNotes.physical.trim() || null,
+        mentality_notes: sectionNotes.mentality.trim() || null,
         strengths: strengths
           .map((b) => ({ text: b.text.trim() }))
           .filter((b) => b.text.length > 0),
         improvements: improvements
           .map((b) => ({ text: b.text.trim() }))
           .filter((b) => b.text.length > 0),
+        improvements_notes: improvementsNotes.trim() || null,
         projection: projection.trim() || null,
         role_fit: roleFit.trim() || null,
         recruitment_decision: (decision || null) as RecruitmentDecision | null,
@@ -221,11 +251,9 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <header className="rounded-xl border border-white/5 bg-[#0E0E0E] px-6 py-5">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
-          Subject
-        </p>
-        <p className="mt-1 font-mono text-lg font-bold text-white">{playerLabel}</p>
+      <header className="rounded-lg border border-border bg-card px-5 py-4">
+        <p className="text-sm font-medium text-muted-foreground">Subject</p>
+        <p className="mt-1 text-lg font-semibold text-foreground">{playerLabel}</p>
       </header>
 
       {/* §2 Match Context */}
@@ -247,6 +275,23 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
             value={matchDate}
             onChange={(e) => setMatchDate(e.target.value)}
           />
+        </Field>
+        <Field label="Competition">
+          <Select
+            value={competitionId || undefined}
+            onValueChange={(v) => setCompetitionId(v ?? "")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select…" />
+            </SelectTrigger>
+            <SelectContent>
+              {competitions.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
         <Field label="Minutes observed">
           <Input
@@ -311,15 +356,15 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
                   key={sub.key}
                   className={`rounded-lg border ${
                     isOverall
-                      ? "border-orange-500/30 bg-orange-500/5"
-                      : "border-white/5 bg-[#0B0B0B]"
+                      ? "border-primary bg-muted"
+                      : "border-border bg-card"
                   } p-3`}
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <p className="font-mono text-xs font-medium text-white">
+                    <p className="text-sm font-medium text-foreground">
                       {sub.label}
                       {isOverall ? (
-                        <span className="ml-1.5 rounded border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-orange-300">
+                        <span className="ml-1.5 rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] font-medium text-primary">
                           required
                         </span>
                       ) : null}
@@ -329,16 +374,20 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
                       onChange={(v) => setRating(idx, v)}
                     />
                   </div>
-                  <Textarea
-                    rows={2}
-                    value={r?.notes ?? ""}
-                    onChange={(e) => setRatingNotes(idx, e.target.value)}
-                    placeholder="Notes (optional) — what stood out?"
-                    className="mt-2 text-xs"
-                  />
                 </div>
               );
             })}
+
+            <Field label="Notes" full>
+              <Textarea
+                rows={3}
+                value={sectionNotes[cat]}
+                onChange={(e) =>
+                  setSectionNotes((prev) => ({ ...prev, [cat]: e.target.value }))
+                }
+                placeholder="What stood out in this area?"
+              />
+            </Field>
           </div>
         </Section>
       ))}
@@ -371,20 +420,12 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
           onChange={(i, t) => updateBullet("i", i, t)}
           placeholder="e.g. Tendency to over-commit on the front foot"
         />
-        <Field label="Projection (12–24 months)" full>
+        <Field label="Notes" full>
           <Textarea
             rows={3}
-            value={projection}
-            onChange={(e) => setProjection(e.target.value)}
-            placeholder="Realistic ceiling and the path to get there."
-          />
-        </Field>
-        <Field label="Role fit" full>
-          <Textarea
-            rows={2}
-            value={roleFit}
-            onChange={(e) => setRoleFit(e.target.value)}
-            placeholder="Best system / role / club archetype."
+            value={improvementsNotes}
+            onChange={(e) => setImprovementsNotes(e.target.value)}
+            placeholder="Context around the risks — injury history, temperament, adaptation."
           />
         </Field>
       </Section>
@@ -427,7 +468,24 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
                 </SelectItem>
               ))}
             </SelectContent>
+            {/* Projection and Role fit live in §9 of the template. */}
           </Select>
+        </Field>
+        <Field label="Projection" full>
+          <Textarea
+            rows={3}
+            value={projection}
+            onChange={(e) => setProjection(e.target.value)}
+            placeholder="Realistic ceiling over the next 12–24 months, and the path to it."
+          />
+        </Field>
+        <Field label="Role fit" full>
+          <Textarea
+            rows={2}
+            value={roleFit}
+            onChange={(e) => setRoleFit(e.target.value)}
+            placeholder="Best system, role and club archetype."
+          />
         </Field>
         <Field label="Recommendation notes" full>
           <Textarea
@@ -456,8 +514,8 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
       </Section>
 
       {/* Action bar */}
-      <div className="sticky bottom-4 z-30 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-[#0E0E0E]/95 px-4 py-3 shadow-2xl backdrop-blur">
-        <p className="font-mono text-[11px] text-zinc-500">
+      <div className="sticky bottom-0 z-30 flex flex-wrap items-center gap-3 border-t border-border bg-background px-4 py-3">
+        <p className="text-xs text-muted-foreground">
           {initial.reportId ? "Editing existing report" : "New report"}
         </p>
         <div className="flex-1" />
@@ -474,7 +532,6 @@ export function ScoutReportForm({ initial, playerLabel }: Props) {
           type="button"
           disabled={pending}
           onClick={() => submit("published")}
-          className="bg-orange-600 hover:bg-orange-700"
         >
           <Send className="mr-1.5 h-3.5 w-3.5" />
           Publish
@@ -498,17 +555,17 @@ function Section({
   icon?: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="border-b border-white/5 px-6 py-4">
-        <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
+    <section className="rounded-lg border border-border bg-card">
+      <header className="border-b border-border px-5 py-3.5">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
           {Icon ? <Icon className="h-3 w-3" /> : null}
           {title}
-        </p>
+        </h2>
         {subtitle ? (
-          <p className="mt-1 font-mono text-[11px] text-zinc-500">{subtitle}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
         ) : null}
       </header>
-      <div className="grid gap-4 px-6 py-5 md:grid-cols-2">{children}</div>
+      <div className="grid gap-4 p-5 md:grid-cols-2">{children}</div>
     </section>
   );
 }
@@ -524,9 +581,9 @@ function Field({
 }) {
   return (
     <div className={full ? "md:col-span-2" : ""}>
-      <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+      <Label className="mb-1.5">
         {label}
-      </label>
+      </Label>
       {children}
     </div>
   );
@@ -546,14 +603,14 @@ function StarPicker({
           key={n}
           type="button"
           onClick={() => onChange(value === n ? 0 : n)}
-          className="rounded p-1 transition-colors hover:bg-white/5"
+          className="rounded-md p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           aria-label={`Rate ${n}`}
         >
           <Star
             className={`h-4 w-4 transition-colors ${
               n <= value
-                ? "fill-orange-500 text-orange-500"
-                : "fill-transparent text-zinc-700 hover:text-zinc-500"
+                ? "fill-primary text-primary"
+                : "fill-transparent text-muted-foreground hover:text-foreground"
             }`}
           />
         </button>
@@ -578,13 +635,13 @@ function BulletEditor({
   return (
     <div className="md:col-span-2 space-y-2">
       {items.length === 0 ? (
-        <p className="rounded-md border border-dashed border-white/10 bg-[#0B0B0B] p-3 text-center font-mono text-[11px] text-zinc-500">
+        <p className="rounded-md border border-dashed border-border bg-muted p-3 text-center text-xs text-muted-foreground">
           No bullets yet — add up to 6.
         </p>
       ) : null}
       {items.map((b, i) => (
         <div key={i} className="flex items-start gap-2">
-          <span className="mt-2.5 font-mono text-[10px] tabular-nums text-zinc-500">
+          <span className="mt-2.5 text-xs tabular-nums text-muted-foreground">
             {i + 1}.
           </span>
           <Textarea
@@ -594,14 +651,16 @@ function BulletEditor({
             placeholder={placeholder}
             className="min-h-9 flex-1 text-xs"
           />
-          <button
+          <Button
             type="button"
             onClick={() => onRemove(i)}
-            className="mt-1.5 rounded p-1 text-zinc-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+            variant="ghost"
+            size="icon-sm"
+            className="mt-1.5 text-muted-foreground hover:text-destructive"
             aria-label="Remove"
           >
             <X className="h-3.5 w-3.5" />
-          </button>
+          </Button>
         </div>
       ))}
       <Button

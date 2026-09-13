@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Trophy, Globe2, Shield, ArrowRight, Search, Sparkles, Flame, CheckCircle2 } from "lucide-react";
-import { getTeamRefBySlug } from "@/lib/features/teams/mock";
+import { ArrowRight, Trophy, Globe, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "African Football Competitions & Leagues Intelligence · ScoutingReport Africa",
+  title: "Competitions & Leagues",
   description:
     "Explore CAF continental tournaments, African domestic premier divisions, and elite European landing leagues.",
 };
@@ -12,11 +11,13 @@ export const metadata: Metadata = {
 type LeagueGroup = {
   category: string;
   badge: string;
+  icon: typeof Trophy;
   description: string;
   leagues: {
     name: string;
     region: string;
     nation: string;
+    natCode?: string;
     flag: string;
     featuredClubs: { name: string; slug: string }[];
     tacticalNote: string;
@@ -28,6 +29,7 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
   {
     category: "CAF Continental Showcases",
     badge: "Continental Apex",
+    icon: Trophy,
     description: "The highest standard of club competition in Africa, testing players in high-pressure tactical atmospheres.",
     leagues: [
       {
@@ -62,12 +64,14 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
   {
     category: "African Domestic Premier Divisions",
     badge: "Grassroots & Senior Pro",
+    icon: Globe,
     description: "Core scouting territories for direct transfers, academy graduates, and tactical physical testing.",
     leagues: [
       {
         name: "Nigeria Premier Football League (NPFL)",
         region: "West Africa",
         nation: "Nigeria",
+        natCode: "NG",
         flag: "🇳🇬",
         featuredClubs: [
           { name: "Enyimba FC", slug: "enyimba" },
@@ -82,6 +86,7 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
         name: "South African Premier Division (PSL)",
         region: "Southern Africa",
         nation: "South Africa",
+        natCode: "ZA",
         flag: "🇿🇦",
         featuredClubs: [
           { name: "Mamelodi Sundowns", slug: "mamelodi-sundowns" },
@@ -96,6 +101,7 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
         name: "Botola Pro 1",
         region: "North Africa",
         nation: "Morocco",
+        natCode: "MA",
         flag: "🇲🇦",
         featuredClubs: [
           { name: "Wydad AC", slug: "wydad" },
@@ -110,6 +116,7 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
         name: "Egyptian Premier League",
         region: "North Africa",
         nation: "Egypt",
+        natCode: "EG",
         flag: "🇪🇬",
         featuredClubs: [
           { name: "Al Ahly", slug: "al-ahly" },
@@ -124,6 +131,7 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
         name: "Ghana Premier League",
         region: "West Africa",
         nation: "Ghana",
+        natCode: "GH",
         flag: "🇬🇭",
         featuredClubs: [
           { name: "Asante Kotoko", slug: "asante-kotoko" },
@@ -138,7 +146,8 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
   {
     category: "European Landing & Pathway Leagues",
     badge: "Pathway Stepping Stones",
-    description: "Primary European landing grounds where African prodigies adapt to continental tactical demands.",
+    icon: Shield,
+    description: "Primary European landing grounds where African players most often develop before top-five moves.",
     leagues: [
       {
         name: "Belgian Pro League",
@@ -188,138 +197,126 @@ const LEAGUE_GROUPS: LeagueGroup[] = [
 
 export default function LeaguesPage() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-7xl space-y-12 font-['Inter']">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[rgba(224,192,178,0.12)]">
+    <div className="mx-auto w-full max-w-6xl space-y-10 px-6 py-10">
+      {/* Clean High-Contrast Header */}
+      <div className="flex flex-col justify-between gap-6 border-b border-border pb-8 md:flex-row md:items-end">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#171B23] border border-[rgba(224,192,178,0.15)] text-[#FFB693] text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest">
-            <Trophy className="h-3.5 w-3.5 text-[#CC5500]" />
-            <span>Continental & Pathway League Telemetry</span>
-          </div>
-          <h1 className="font-['Public_Sans'] text-3xl sm:text-4xl font-black text-white tracking-tight uppercase">
+          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl text-foreground">
             Competitions & Leagues
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
-            Intelligence hubs covering CAF continental showcases, domestic premier divisions across Africa, and top European development gateways.
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            CAF continental championships, domestic premier divisions across Africa, and primary European landing pathways.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/players"
-            className="px-4 py-2.5 rounded-[4px] bg-gradient-to-r from-[#9C3F00] to-[#CC5500] hover:opacity-95 text-white font-['Public_Sans'] font-black text-xs uppercase tracking-wider industrial-shadow transition-all"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
           >
             Browse Players
           </Link>
           <Link
             href="/scout"
-            className="px-4 py-2.5 rounded-[4px] bg-[#171B23] hover:bg-[#1E232D] text-white border border-[rgba(224,192,178,0.15)] font-['Public_Sans'] font-bold text-xs uppercase tracking-wider transition-all"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
           >
-            Scout Department
+            Scout Workspace
           </Link>
         </div>
       </div>
 
-      {/* League Categories */}
+      {/* League groups */}
       <div className="space-y-12">
-        {LEAGUE_GROUPS.map((group) => (
-          <section key={group.category} className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[rgba(224,192,178,0.1)]">
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h2 className="font-['Public_Sans'] text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
-                    {group.category}
-                  </h2>
-                  <span className="rounded-[3px] bg-[#CC5500]/20 px-2 py-0.5 text-[10px] font-mono font-bold text-[#FFB693] border border-[#CC5500]/30">
-                    {group.badge}
-                  </span>
+        {LEAGUE_GROUPS.map((group) => {
+          const Icon = group.icon;
+          return (
+            <section key={group.category} className="space-y-6">
+              <div className="flex items-center justify-between border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground">{group.category}</h2>
+                    <p className="text-xs text-muted-foreground sm:text-sm">
+                      {group.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">{group.description}</p>
+                <span className="hidden rounded-md bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground sm:inline-block">
+                  {group.badge}
+                </span>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {group.leagues.map((league) => (
-                <div
-                  key={league.name}
-                  className="rounded-[6px] border border-[rgba(224,192,178,0.12)] bg-[#12151C] p-6 hover:border-[#CC5500]/50 hover:bg-[#171B23] transition-all flex flex-col justify-between space-y-6 shadow-xl"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{league.flag}</span>
-                          <span className="text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-wider text-slate-400">
-                            {league.region}
-                          </span>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {group.leagues.map((league) => (
+                  <div
+                    key={league.name}
+                    className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:border-primary/50 hover:shadow-md"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                            <span className="text-lg leading-none">{league.flag}</span>
+                            <span>{league.region}</span>
+                          </div>
+                          <h3 className="mt-1.5 text-base font-bold text-foreground">{league.name}</h3>
                         </div>
-                        <h3 className="font-['Public_Sans'] text-base font-black text-white mt-1">
-                          {league.name}
-                        </h3>
-                      </div>
-
-                      <div className="rounded-[4px] bg-[#0C0E12] border border-[rgba(224,192,178,0.1)] px-2.5 py-1 text-center shrink-0">
-                        <div className="text-[9px] font-['Public_Sans'] font-bold uppercase text-slate-400">
-                          Index
-                        </div>
-                        <div className="font-mono text-xs font-black text-[#FFB693]">
+                        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
                           {league.talentIndex}
-                        </div>
+                        </span>
                       </div>
-                    </div>
 
-                    <div className="space-y-1.5 pt-2 border-t border-[rgba(224,192,178,0.06)]">
-                      <div className="text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest text-[#FFB693]">
-                        Tactical Environment
+                      <div className="border-t border-border/80 pt-3">
+                        <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                          {league.tacticalNote}
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        {league.tacticalNote}
-                      </p>
-                    </div>
 
-                    {/* Featured Clubs */}
-                    <div className="space-y-2 pt-2 border-t border-[rgba(224,192,178,0.06)]">
-                      <div className="text-[10px] font-['Public_Sans'] font-extrabold uppercase tracking-widest text-slate-400">
-                        Key Monitored Clubs
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {league.featuredClubs.map((club) =>
-                          // Only clubs in the team index have a page. Anything
-                          // else renders as a plain chip rather than a 404.
-                          getTeamRefBySlug(club.slug) ? (
+                      {/* Featured Clubs */}
+                      <div className="space-y-2 border-t border-border/80 pt-3">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Tracked Clubs & Academies
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {league.featuredClubs.map((club) => (
                             <Link
                               key={club.slug}
-                              href={`/teams/${club.slug}`}
-                              className="inline-flex items-center gap-1 rounded-[3px] bg-[#0C0E12] border border-[rgba(224,192,178,0.1)] px-2.5 py-1 text-[11px] font-['Public_Sans'] font-bold text-slate-200 hover:border-[#CC5500]/40 hover:text-[#FFB693] transition-colors"
+                              href={`/players?q=${encodeURIComponent(club.name)}`}
+                              className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/60 px-2.5 py-1 text-xs font-medium transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/40 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
                             >
                               <span>{club.name}</span>
                               <ArrowRight className="h-2.5 w-2.5 opacity-50" />
                             </Link>
-                          ) : (
-                            <span
-                              key={club.slug}
-                              className="inline-flex items-center gap-1 rounded-[3px] bg-[#0C0E12] border border-[rgba(224,192,178,0.06)] px-2.5 py-1 text-[11px] font-['Public_Sans'] font-bold text-slate-500"
-                            >
-                              {club.name}
-                            </span>
-                          ),
-                        )}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <Link
-                    href={`/players?q=${encodeURIComponent(league.nation)}`}
-                    className="flex items-center justify-between pt-3 border-t border-[rgba(224,192,178,0.08)] text-xs font-['Public_Sans'] font-bold text-[#FFB693] hover:text-white transition-colors"
-                  >
-                    <span>View Players from this Region</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-[#CC5500]" />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </section>
-        ))}
+                    <Link
+                      href={
+                        league.natCode
+                          ? `/players?nat=${league.natCode}`
+                          : league.nation === "Pan-African"
+                            ? "/players"
+                            : `/players?q=${encodeURIComponent(league.nation)}`
+                      }
+                      className="mt-5 flex items-center justify-between border-t border-border pt-3 text-xs sm:text-sm font-semibold text-primary hover:underline focus:outline-none focus-visible:outline-none"
+                    >
+                      <span>
+                        {league.nation === "Pan-African"
+                          ? "Browse all continental players"
+                          : `Filter players from ${league.nation}`}
+                      </span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );

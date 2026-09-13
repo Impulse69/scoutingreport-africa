@@ -33,6 +33,11 @@ export type ScoutReportRow = {
   recommended_level: RecommendedLevel | null;
   recommendation_notes: string | null;
   scout_notes: string | null;
+  technical_notes: string | null;
+  tactical_notes: string | null;
+  physical_notes: string | null;
+  mentality_notes: string | null;
+  improvements_notes: string | null;
   created_at: string;
   updated_at: string;
   published_at: string | null;
@@ -40,6 +45,7 @@ export type ScoutReportRow = {
 };
 
 export type ReportWithJoins = ScoutReportRow & {
+  competition: { id: string; name: string } | null;
   player: {
     id: string;
     slug: string;
@@ -62,6 +68,8 @@ const REPORT_SELECT = `
   strengths, improvements, projection, role_fit,
   recruitment_decision, recommended_level, recommendation_notes,
   scout_notes,
+  technical_notes, tactical_notes, physical_notes, mentality_notes,
+  improvements_notes,
   created_at, updated_at, published_at
 `;
 
@@ -73,10 +81,42 @@ const FULL_SELECT = `
   author:profiles!scout_reports_author_id_fkey (
     id, display_name, avatar_url
   ),
+  competition:competitions!scout_reports_competition_id_fkey (
+    id, name
+  ),
   ratings:scout_report_ratings (
     category, sub_area, rating, notes
   )
 `;
+
+export type CompetitionOption = {
+  id: string;
+  name: string;
+  type: string;
+  countryCode: string | null;
+};
+
+/**
+ * Competitions for the report's §2 Match Context "Competition" field.
+ *
+ * `scout_reports.competition_id` has existed since migration 0004 but nothing
+ * ever populated it — there was no picker on the form and no query to feed one.
+ */
+export async function listCompetitions(): Promise<CompetitionOption[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("competitions")
+    .select("id, name, type, country_code")
+    .order("type")
+    .order("name");
+
+  return (data ?? []).map((c) => ({
+    id: c.id as string,
+    name: c.name as string,
+    type: c.type as string,
+    countryCode: (c.country_code as string) ?? null,
+  }));
+}
 
 export async function getReportById(id: string): Promise<ReportWithJoins | null> {
   const supabase = await createClient();

@@ -53,27 +53,27 @@ export function DarkUserMenu({ email, displayName, role }: DarkUserMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1 pl-1 pr-2.5 text-xs text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+        className="flex items-center gap-2 rounded-full border border-border bg-background py-1 pl-1 pr-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-700 font-mono text-[10px] font-bold text-white">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
           {initials || "?"}
         </span>
         <span className="hidden font-mono uppercase tracking-wider text-[10px] sm:inline">
           {role}
         </span>
         <ChevronDown
-          className={`h-3.5 w-3.5 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-[#111]/97 shadow-2xl backdrop-blur-md">
-          <div className="border-b border-white/5 px-4 py-3">
-            <p className="font-mono text-xs font-semibold text-white truncate">
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-lg border border-border bg-popover shadow-sm">
+          <div className="border-b border-border px-4 py-3">
+            <p className="truncate text-sm font-medium">
               {displayName ?? email ?? "Signed in"}
             </p>
-            <p className="mt-0.5 font-mono text-[10px] text-zinc-500 truncate">{email}</p>
-            <span className="mt-2 inline-flex items-center gap-1 rounded border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-orange-400">
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">{email}</p>
+            <span className="mt-2 inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium capitalize text-muted-foreground">
               {role}
             </span>
           </div>
@@ -99,7 +99,7 @@ export function DarkUserMenu({ email, displayName, role }: DarkUserMenuProps) {
             />
           </ul>
 
-          <div className="border-t border-white/5 py-1.5">
+          <div className="border-t border-border py-1.5">
             <button
               type="button"
               onClick={onSignOut}
@@ -131,9 +131,9 @@ function MenuItem({
       <Link
         href={href}
         onClick={onClick}
-        className="flex items-center gap-2.5 px-4 py-2 font-mono text-[11px] text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
+        className="flex items-center gap-2.5 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
       >
-        <span className="text-zinc-500">{icon}</span>
+        <span className="text-muted-foreground">{icon}</span>
         {label}
       </Link>
     </li>

@@ -29,24 +29,24 @@ export function ScoutNotes({
 
   if (!signedIn) {
     return (
-      <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-        <header className="border-b border-white/5 px-6 py-4 flex items-center gap-2">
-          <Lock className="h-3.5 w-3.5 text-orange-500" />
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
+      <section className="rounded-xl border border-border bg-card">
+        <header className="border-b border-border px-6 py-4 flex items-center gap-2">
+          <Lock className="h-3.5 w-3.5 text-primary" />
+          <p className="text-xs font-medium text-muted-foreground">
             Scout Notes — sign in required
           </p>
         </header>
         <div className="relative px-6 py-10 text-center">
           {/* Faded mock textarea behind the gate */}
-          <div className="pointer-events-none mx-auto max-w-md select-none rounded-md border border-white/5 bg-[#0B0B0B] px-3 py-3 text-left font-mono text-xs text-zinc-700 blur-[1px] opacity-60">
+          <div className="pointer-events-none mx-auto max-w-md select-none rounded-md border border-border bg-muted px-3 py-3 text-left text-xs text-muted-foreground opacity-60">
             Add your private scouting notes — fitness flags, video links, agent
             contact, recruiter recommendations…
           </div>
           <div className="mt-6 space-y-3">
-            <p className="font-mono text-sm text-zinc-200">
+            <p className="text-sm text-muted-foreground">
               Private notes are locked to authenticated scouts.
             </p>
-            <p className="mx-auto max-w-md font-mono text-[11px] text-zinc-500">
+            <p className="mx-auto max-w-md text-sm text-muted-foreground">
               Create an account to keep personal observations on every player you
               scout. Your notes are visible only to you and stored in your
               private workspace.
@@ -54,13 +54,13 @@ export function ScoutNotes({
             <div className="mt-4 flex items-center justify-center gap-2">
               <Link
                 href={`/auth/sign-up?next=/players/${playerSlug}`}
-                className="rounded-md bg-orange-600 px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-white hover:bg-orange-700 transition-colors"
+                className="rounded-md bg-primary px-4 py-2 text-sm  tracking-normal text-primary-foreground hover:bg-accent transition-colors"
               >
                 Create account
               </Link>
               <Link
                 href={`/auth/sign-in?next=/players/${playerSlug}`}
-                className="rounded-md border border-white/10 bg-white/5 px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+                className="rounded-md border border-border bg-muted px-4 py-2 text-sm  tracking-normal text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
                 Sign in
               </Link>
@@ -101,14 +101,14 @@ export function ScoutNotes({
   };
 
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="flex items-center justify-between border-b border-white/5 px-6 py-4">
+    <section className="rounded-xl border border-border bg-card">
+      <header className="flex items-center justify-between border-b border-border px-6 py-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
+          <p className="text-xs font-medium text-muted-foreground">
             Scout Notes — private to you
           </p>
           {updatedAt ? (
-            <p className="mt-0.5 font-mono text-[10px] text-zinc-600">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Last saved {new Date(updatedAt).toLocaleString()}
             </p>
           ) : null}
@@ -118,7 +118,7 @@ export function ScoutNotes({
             type="button"
             disabled={pending}
             onClick={onDelete}
-            className="rounded border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[10px] uppercase text-zinc-300 hover:bg-white/10 transition-colors disabled:opacity-40"
+            className="rounded border border-border bg-muted px-2.5 py-1 text-xs  text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40"
           >
             <Trash2 className="mr-1 inline h-3 w-3" />
             Delete
@@ -127,7 +127,7 @@ export function ScoutNotes({
             type="button"
             disabled={pending || value === initialNotes}
             onClick={onSave}
-            className="rounded border border-cyan-500/40 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] uppercase text-cyan-300 hover:bg-cyan-500/20 transition-colors disabled:opacity-40"
+            className="rounded border border-border bg-muted px-2.5 py-1 text-xs  text-primary hover:bg-primary/20 transition-colors disabled:opacity-40"
           >
             {savedFlash ? (
               <>
@@ -152,9 +152,9 @@ export function ScoutNotes({
           onChange={(e) => setValue(e.target.value)}
           placeholder="Add your private scouting notes — fitness flags, video links, agent contact, recruiter recommendations…"
           maxLength={2000}
-          className="w-full resize-none rounded-md border border-white/5 bg-[#0B0B0B] px-3 py-2 font-mono text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-cyan-500/40 focus:outline-none"
+          className="w-full resize-none rounded-md border border-border bg-muted px-3 py-2 text-sm text-muted-foreground placeholder:text-muted-foreground focus:border-border focus:outline-none"
         />
-        <div className="mt-1 flex items-center justify-between font-mono text-[10px] text-zinc-600">
+        <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
           <span>Private — only visible to you.</span>
           <span>{value.length} / 2000</span>
         </div>

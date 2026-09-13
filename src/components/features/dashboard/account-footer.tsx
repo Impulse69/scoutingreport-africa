@@ -29,25 +29,25 @@ export function AccountFooter({
 
   return (
     <section className="mt-12">
-      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
+      <p className="mb-3 text-xs font-medium text-muted-foreground">
         Account
       </p>
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs text-zinc-400">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
         {email ? (
-          <span className="flex items-center gap-1.5 text-zinc-500">
+          <span className="flex items-center gap-1.5 text-muted-foreground">
             <Mail className="h-3.5 w-3.5" />
             {email}
           </span>
         ) : null}
         {role ? (
-          <span className="flex items-center gap-1.5 capitalize text-zinc-500">
+          <span className="flex items-center gap-1.5 capitalize text-muted-foreground">
             <ShieldCheck className="h-3.5 w-3.5" />
             {role}
           </span>
         ) : null}
         <Link
           href="/settings"
-          className="flex items-center gap-1.5 transition-colors hover:text-white"
+          className="flex items-center gap-1.5 transition-colors hover:text-foreground"
         >
           <Settings className="h-3.5 w-3.5" />
           Account settings

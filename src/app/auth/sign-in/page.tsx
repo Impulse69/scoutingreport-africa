@@ -3,32 +3,24 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { SignInForm } from "./sign-in-form";
 import { DevQuickLogin } from "../dev-quick-login";
-import { Shield } from "lucide-react";
 
-export const metadata = { title: "Sign In · ScoutingReport Africa" };
+export const metadata = { title: "Sign in" };
 
 export default async function SignInPage() {
   const t = await getTranslations("auth.signIn");
+
   return (
-    <div className="mx-auto w-full">
-      <div className="mb-6 space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider">
-          <Shield className="h-3 w-3" />
-          <span>{t("eyebrow")}</span>
-        </div>
-        <h1 className="text-3xl font-black tracking-tight text-white">
-          {t("title")}
-        </h1>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          {t("subtitle")}
-        </p>
+    <div className="w-full">
+      <div className="mb-6 space-y-1.5">
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="text-sm leading-6 text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <Suspense
         fallback={
           <div className="space-y-3">
-            <div className="h-12 animate-pulse rounded-2xl bg-white/5" />
-            <div className="h-12 animate-pulse rounded-2xl bg-white/5" />
+            <div className="h-10 rounded-md bg-muted" />
+            <div className="h-10 rounded-md bg-muted" />
           </div>
         }
       >
@@ -39,11 +31,11 @@ export default async function SignInPage() {
         <DevQuickLogin />
       </Suspense>
 
-      <p className="mt-8 text-center text-xs text-slate-400">
+      <p className="mt-8 text-center text-sm text-muted-foreground">
         {t("noAccount")}{" "}
         <Link
           href="/auth/sign-up"
-          className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+          className="font-medium text-primary hover:underline"
         >
           {t("createOne")}
         </Link>

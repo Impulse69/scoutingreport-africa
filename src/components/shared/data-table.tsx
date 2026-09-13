@@ -54,18 +54,18 @@ export function DataTable<TRow>({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border/60 bg-card/40 overflow-hidden",
+        "overflow-hidden rounded-lg border border-border bg-card",
         className,
       )}
     >
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/30 hover:bg-muted/30">
+          <TableRow className="bg-muted hover:bg-muted">
             {columns.map((col) => (
               <TableHead
                 key={col.key}
                 className={cn(
-                  "text-[11px] font-bold uppercase tracking-wider text-muted-foreground",
+                  "text-xs font-medium text-muted-foreground",
                   col.align ? alignClasses[col.align] : alignClasses.left,
                   col.className,
                 )}

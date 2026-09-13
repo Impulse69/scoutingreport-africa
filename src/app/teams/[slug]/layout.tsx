@@ -21,17 +21,17 @@ export default async function TeamLayout({
     league: ref!.league,
     leagueSlug: ref!.league.toLowerCase().replace(/\s+/g, "-"),
     crestUrl: "",
-    primaryColor: "#10b981",
+    primaryColor: "var(--primary)",
   };
 
   return (
-    <div className="flex min-h-screen bg-[#080B0E] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+    <div className="flex min-h-screen bg-background text-foreground selection:bg-primary/15 selection:text-primary">
       <TeamSidebar
         team={team}
         season="2025/2026"
         seasons={["2025/2026", "2024/2025", "2023/2024", "2022/2023"]}
       />
-      <main className="flex-1 min-w-0 px-4 py-8 sm:px-8 md:px-10 overflow-x-hidden">{children}</main>
+      <main className="min-w-0 flex-1 overflow-x-hidden px-6 py-8">{children}</main>
     </div>
   );
 }

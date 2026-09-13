@@ -18,10 +18,10 @@ function TeamCell({ row, me }: { row: StandingRow; me: boolean }) {
   const crest = row.crestUrl ? (
     <Image src={row.crestUrl} alt="" width={16} height={16} className="rounded-sm" />
   ) : (
-    <span className="h-4 w-4 rounded-sm bg-zinc-800" />
+    <span className="h-4 w-4 rounded-sm bg-muted" />
   );
 
-  const tone = me ? "font-semibold text-cyan-300" : "text-zinc-200";
+  const tone = me ? "font-medium text-foreground" : "text-foreground";
 
   if (!getTeamRefBySlug(row.teamSlug)) {
     return (
@@ -36,7 +36,7 @@ function TeamCell({ row, me }: { row: StandingRow; me: boolean }) {
     <Link
       href={`/teams/${row.teamSlug}`}
       className={`flex items-center gap-2 transition-colors ${tone} ${
-        me ? "" : "hover:text-white"
+        me ? "" : "hover:text-primary"
       }`}
     >
       {crest}
@@ -61,24 +61,20 @@ const ordinalSuffix = (n: number) => {
 
 export function LeagueStanding({ standing, myPosition, mySlug, totalRecord }: Props) {
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E]">
-      <header className="border-b border-white/5 px-6 py-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
-          League Standing
-        </p>
+    <section className="rounded-lg border border-border bg-card">
+      <header className="border-b border-border px-5 py-3.5">
+        <p className="text-sm font-semibold">League standing</p>
       </header>
 
-      <div className="border-b border-white/5 px-6 py-5">
+      <div className="border-b border-border px-5 py-5">
         <div className="flex items-end gap-3">
-          <span className="font-mono text-4xl font-black tabular-nums text-cyan-400">
+          <span className="text-4xl font-semibold tabular-nums text-primary">
             {myPosition}
-            <span className="text-base text-cyan-300/70">{ordinalSuffix(myPosition)}</span>
+            <span className="text-base text-primary/70">{ordinalSuffix(myPosition)}</span>
           </span>
           <div className="pb-1">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500">
-              League position
-            </p>
-            <p className="mt-1 font-mono text-xs text-zinc-300 tabular-nums">
+            <p className="text-xs font-medium text-muted-foreground">League position</p>
+            <p className="mt-1 text-xs tabular-nums text-muted-foreground">
               {totalRecord.won}W {totalRecord.drawn}D {totalRecord.lost}L · {totalRecord.gf} GF{" "}
               {totalRecord.ga} GA
             </p>
@@ -86,18 +82,18 @@ export function LeagueStanding({ standing, myPosition, mySlug, totalRecord }: Pr
         </div>
       </div>
 
-      <div className="px-2 py-2">
-        <table className="w-full text-xs">
+      <div className="p-2">
+        <table className="w-full text-sm">
           <thead>
-            <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-zinc-500">
-              <th className="px-3 py-2 font-semibold">#</th>
-              <th className="px-3 py-2 font-semibold">Team</th>
-              <th className="px-3 py-2 text-right font-semibold">P</th>
-              <th className="px-3 py-2 text-right font-semibold">W</th>
-              <th className="px-3 py-2 text-right font-semibold">D</th>
-              <th className="px-3 py-2 text-right font-semibold">L</th>
-              <th className="px-3 py-2 text-right font-semibold">GD</th>
-              <th className="px-3 py-2 text-right font-semibold">PTS</th>
+            <tr className="bg-muted text-left text-xs font-medium text-muted-foreground">
+              <th className="px-3 py-2 font-medium">#</th>
+              <th className="px-3 py-2 font-medium">Team</th>
+              <th className="px-3 py-2 text-right font-medium">P</th>
+              <th className="px-3 py-2 text-right font-medium">W</th>
+              <th className="px-3 py-2 text-right font-medium">D</th>
+              <th className="px-3 py-2 text-right font-medium">L</th>
+              <th className="px-3 py-2 text-right font-medium">GD</th>
+              <th className="px-3 py-2 text-right font-medium">PTS</th>
             </tr>
           </thead>
           <tbody>
@@ -106,26 +102,26 @@ export function LeagueStanding({ standing, myPosition, mySlug, totalRecord }: Pr
               return (
                 <tr
                   key={row.teamSlug}
-                  className={`border-t border-white/5 font-mono ${
-                    me ? "bg-cyan-500/5" : ""
+                  className={`border-t border-border hover:bg-muted/60 ${
+                    me ? "bg-primary/5 font-medium" : ""
                   }`}
                 >
-                  <td className={`px-3 py-2.5 ${me ? "text-cyan-300" : "text-zinc-400"}`}>
+                  <td className="px-3 py-2.5 tabular-nums text-muted-foreground">
                     {row.rank}
                   </td>
                   <td className="px-3 py-2.5">
                     <TeamCell row={row} me={me} />
                   </td>
-                  <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">{row.played}</td>
-                  <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">{row.won}</td>
-                  <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">{row.drawn}</td>
-                  <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">{row.lost}</td>
-                  <td className="px-3 py-2.5 text-right text-zinc-400 tabular-nums">
+                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{row.played}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{row.won}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{row.drawn}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{row.lost}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">
                     {row.gd > 0 ? `+${row.gd}` : row.gd}
                   </td>
                   <td
-                    className={`px-3 py-2.5 text-right font-bold tabular-nums ${
-                      me ? "text-cyan-300" : "text-cyan-400"
+                    className={`px-3 py-2.5 text-right font-semibold tabular-nums ${
+                      me ? "text-primary" : "text-foreground"
                     }`}
                   >
                     {row.points}

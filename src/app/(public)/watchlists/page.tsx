@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bookmark, Plus, Users, ArrowRight, Sparkles, FolderPlus } from "lucide-react";
+import { Bookmark, Users, ArrowRight } from "lucide-react";
 import { getCurrentUser } from "@/lib/core/auth-helpers";
 import { listWatchlistsForUser } from "@/lib/features/watchlists/queries";
 import { EmptyState } from "@/components/shared/empty-state";
 import { CreateWatchlistForm } from "./create-form";
 
-export const metadata: Metadata = { title: "Talent Watchlists & Recruitment Pipelines" };
+export const metadata: Metadata = { title: "Watchlists" };
 
 export default async function WatchlistsPage() {
   const user = await getCurrentUser();
@@ -16,70 +16,65 @@ export default async function WatchlistsPage() {
   const watchlists = await listWatchlistsForUser(user.id);
 
   return (
-    <div className="container mx-auto px-4 lg:px-8 py-10 max-w-5xl space-y-8">
+    <div className="mx-auto w-full max-w-4xl space-y-8 px-6 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-end">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-wider mb-2">
-            <Bookmark className="h-3.5 w-3.5" /> Pipeline Management
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            My Talent Watchlists
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Watchlists
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-            Organize scouted African footballers into recruitment pipelines, target brackets, and private shortlists.
+          <p className="mt-1.5 max-w-xl text-sm leading-6 text-muted-foreground">
+            Group players you want to come back to. Each list is private to you.
           </p>
         </div>
 
         <Link
           href="/players"
-          className="px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-xs uppercase tracking-wider transition-all self-start sm:self-auto"
+          className="self-start rounded-md border border-border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent sm:self-auto"
         >
-          Browse Players to Add →
+          Browse players
         </Link>
       </div>
 
-      {/* Create Watchlist Container */}
-      <div className="rounded-3xl border border-white/10 bg-[#0c1218] p-6 space-y-3 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
-          <FolderPlus className="h-4 w-4" />
-          <span>New Recruitment Pipeline</span>
+      {/* Create */}
+      <section className="rounded-lg border border-border bg-card">
+        <header className="border-b border-border px-5 py-3.5">
+          <h2 className="text-sm font-semibold">New watchlist</h2>
+        </header>
+        <div className="p-5">
+          <CreateWatchlistForm />
         </div>
-        <CreateWatchlistForm />
-      </div>
+      </section>
 
-      {/* Watchlist Collections */}
+      {/* Lists */}
       {watchlists.length === 0 ? (
         <EmptyState
           icon={Bookmark}
-          title="No watchlists created yet"
-          description="Create your first watchlist above to start organizing and monitoring rising African prospects."
+          title="No watchlists yet"
+          description="Create one above, then add players from their profile."
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {watchlists.map((w) => (
             <Link
               key={w.id}
               href={`/watchlists/${w.id}`}
-              className="group flex items-center justify-between gap-4 rounded-3xl border border-white/10 bg-[#0c1218] p-6 hover:border-amber-500/40 hover:bg-[#121921] transition-all shadow-lg"
+              className="group flex items-center justify-between gap-4 rounded-lg border border-border bg-card p-5 transition-colors hover:bg-muted/60"
             >
               <div className="min-w-0 space-y-1">
-                <h3 className="font-bold text-base text-white group-hover:text-amber-300 transition-colors truncate">
+                <h3 className="truncate text-sm font-semibold group-hover:text-primary">
                   {w.name}
                 </h3>
-                <p className="flex items-center gap-2 text-xs text-slate-400">
-                  <Users className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="font-semibold text-slate-200">
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Users className="h-3.5 w-3.5" />
+                  <span className="tabular-nums">
                     {w.playerCount} player{w.playerCount === 1 ? "" : "s"}
                   </span>
-                  <span>•</span>
-                  <span>Created {new Date(w.createdAt).toLocaleDateString()}</span>
+                  <span aria-hidden>·</span>
+                  <span>{new Date(w.createdAt).toLocaleDateString()}</span>
                 </p>
               </div>
-
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/5 group-hover:bg-amber-500/15 group-hover:text-amber-400 transition-colors">
-                <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-amber-400" />
-              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
             </Link>
           ))}
         </div>

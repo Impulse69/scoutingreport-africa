@@ -148,6 +148,8 @@ function emptyRatingAverages(): CategoryAverage[] {
   }));
 }
 
+import { getPlayerPhoto } from "./photos";
+
 function mapPlayer(row: PlayerRow): Omit<PlayerProfile, "ratings" | "publishedReportCount"> {
   return {
     id: row.id,
@@ -161,7 +163,7 @@ function mapPlayer(row: PlayerRow): Omit<PlayerProfile, "ratings" | "publishedRe
     heightCm: row.height_cm,
     weightKg: row.weight_kg,
     currentClub: row.current_club,
-    photoUrl: row.photo_url,
+    photoUrl: getPlayerPhoto(row.slug, row.photo_url),
     bio: row.bio,
     dateOfBirth: row.date_of_birth,
     status: row.status,
@@ -226,7 +228,7 @@ export async function listPublishedPlayers(limit = 60): Promise<PlayerListItem[]
     primaryPositionCode: (p.primary_position_code as string) ?? null,
     nationalityCode: (p.nationality_code as string) ?? null,
     currentClub: (p.current_club as string) ?? null,
-    photoUrl: (p.photo_url as string) ?? null,
+    photoUrl: getPlayerPhoto(p.slug as string, (p.photo_url as string) ?? null),
   }));
 }
 
@@ -251,6 +253,41 @@ export async function filterExistingPlayerSlugs(
     .in("slug", unique);
 
   return new Set((data ?? []).map((p) => p.slug as string));
+}
+
+export type PlatformCounts = {
+  publishedPlayers: number;
+  publishedReports: number;
+  countriesIndexed: number;
+};
+
+/**
+ * Real headline counts for the marketing page.
+ *
+ * The landing page previously advertised invented figures ("2,400+ scouted
+ * dossiers", "€180M+ tracked transfer value"). Numbers shown to the public have
+ * to come from the database.
+ */
+export async function getPlatformCounts(): Promise<PlatformCounts> {
+  const supabase = await createClient();
+
+  const [players, reports, countries] = await Promise.all([
+    supabase
+      .from("players")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published"),
+    supabase
+      .from("scout_reports")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published"),
+    supabase.from("countries").select("code", { count: "exact", head: true }),
+  ]);
+
+  return {
+    publishedPlayers: players.count ?? 0,
+    publishedReports: reports.count ?? 0,
+    countriesIndexed: countries.count ?? 0,
+  };
 }
 
 /** Every published slug — used by the sitemap. */

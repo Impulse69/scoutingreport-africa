@@ -53,12 +53,12 @@ export function AddToWatchlist({
   if (watchlists.length === 0) {
     return (
       <Shell>
-        <p className="font-mono text-[11px] text-zinc-500">
+        <p className="font-mono text-[11px] text-muted-foreground">
           You don&apos;t have a watchlist yet.
         </p>
         <Link
           href="/watchlists"
-          className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-[11px] text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-3 py-2 font-mono text-[11px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <Plus className="h-3 w-3" />
           Create one
@@ -70,13 +70,13 @@ export function AddToWatchlist({
   if (remaining.length === 0) {
     return (
       <Shell>
-        <p className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-400">
+        <p className="flex items-center gap-1.5 font-mono text-[11px] text-primary">
           <Check className="h-3 w-3" />
           On all of your watchlists.
         </p>
         <Link
           href="/watchlists"
-          className="font-mono text-[11px] text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline"
+          className="font-mono text-[11px] text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
         >
           Manage
         </Link>
@@ -104,7 +104,7 @@ export function AddToWatchlist({
         type="button"
         onClick={submit}
         disabled={pending || !selected}
-        className="bg-orange-600 hover:bg-orange-700"
+        className="bg-primary hover:bg-accent"
       >
         <Bookmark className="mr-1.5 h-3.5 w-3.5" />
         Add
@@ -115,8 +115,8 @@ export function AddToWatchlist({
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-white/5 bg-[#0E0E0E] px-6 py-5">
-      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
+    <section className="rounded-xl border border-border bg-card px-6 py-5">
+      <p className="mb-3 font-mono text-[10px]  tracking-wide text-primary">
         Watchlist
       </p>
       <div className="flex flex-wrap items-center gap-3">{children}</div>

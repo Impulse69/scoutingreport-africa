@@ -23,7 +23,7 @@ export function LanguagePicker({ tone = "default" }: LanguagePickerProps) {
   const current: Locale = isSupportedLocale(locale) ? locale : DEFAULT_LOCALE;
   const triggerClass =
     tone === "dark"
-      ? "flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+      ? "flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       : "flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
 
   useEffect(() => {
@@ -56,12 +56,12 @@ export function LanguagePicker({ tone = "default" }: LanguagePickerProps) {
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-[#111]/95 shadow-2xl backdrop-blur-md">
-          <div className="border-b border-white/5 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500">
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-lg border border-border bg-popover shadow-sm">
+          <div className="border-b border-border px-4 py-3">
+            <p className="text-xs font-medium text-muted-foreground">
               {t("label")}
             </p>
-            <p className="mt-1 text-[11px] text-zinc-500">{t("tip")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("tip")}</p>
           </div>
           <ul className="max-h-80 overflow-y-auto py-1.5">
             {LOCALE_OPTIONS.map((lang) => {
@@ -73,26 +73,26 @@ export function LanguagePicker({ tone = "default" }: LanguagePickerProps) {
                     onClick={() => choose(lang.code)}
                     className={`flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm transition-colors ${
                       isActive
-                        ? "bg-orange-500/10 text-white"
-                        : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                        ? "bg-muted text-primary"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     <span className="flex flex-col">
                       <span dir={lang.dir}>{lang.native}</span>
-                      <span className="text-[10px] text-zinc-500">{lang.label}</span>
+                      <span className="text-xs text-muted-foreground">{lang.label}</span>
                     </span>
                     <span className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] uppercase text-zinc-500">
+                      <span className="text-xs uppercase text-muted-foreground">
                         {lang.code}
                       </span>
-                      {isActive ? <Check className="h-3.5 w-3.5 text-orange-500" /> : null}
+                      {isActive ? <Check className="h-3.5 w-3.5 text-primary" /> : null}
                     </span>
                   </button>
                 </li>
               );
             })}
           </ul>
-          <div className="border-t border-white/5 px-4 py-2.5 text-[10px] text-zinc-500">
+          <div className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
             {t("footerTip")}
           </div>
         </div>

@@ -3,7 +3,6 @@ import {
   OBSERVATION_TYPES,
   POSITION_CODES,
   RATING_CATEGORIES,
-  RATING_SUB_AREAS_BY_CATEGORY,
   RECOMMENDED_LEVELS,
   RECRUITMENT_DECISIONS,
   REPORT_STATUSES,
@@ -42,11 +41,18 @@ export const scoutReportSchema = z
     // §3–§6 Ratings (array of { category, sub_area, rating, notes })
     ratings: z.array(ratingSchema),
 
+    // §3–§6 each carry one free-text Notes box for the section as a whole.
+    technical_notes: z.string().max(2000).optional().nullable(),
+    tactical_notes: z.string().max(2000).optional().nullable(),
+    physical_notes: z.string().max(2000).optional().nullable(),
+    mentality_notes: z.string().max(2000).optional().nullable(),
+
     // §7 Strengths — 2-4 bullets
     strengths: z.array(bulletSchema).min(0).max(6).default([]),
 
     // §8 Improvements & Risks
     improvements: z.array(bulletSchema).min(0).max(6).default([]),
+    improvements_notes: z.string().max(2000).optional().nullable(),
     projection: z.string().max(2000).optional().nullable(),
     role_fit: z.string().max(500).optional().nullable(),
 
@@ -66,6 +72,16 @@ export const scoutReportSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.status === "published" || data.status === "pending_review") {
+      // §7 of the template asks for 2–4 strengths.
+      const strengths = data.strengths.filter((b) => b.text.trim().length > 0);
+      if (strengths.length < 2) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["strengths"],
+          message: "The template asks for at least 2 strengths",
+        });
+      }
+
       // Require minimum content before submitting for review or publishing
       for (const category of RATING_CATEGORIES) {
         const overall = data.ratings.find(

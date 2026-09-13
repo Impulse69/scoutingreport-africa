@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Public_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
-import { ThemeProvider } from "@/components/shared/theme-provider";
 import { TranslationSweeper } from "@/components/shared/i18n/translation-sweeper";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -69,21 +68,13 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${publicSans.variable} ${jetbrainsMono.variable} h-full antialiased font-sans`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-[#CC5500] selection:text-white">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <TranslationSweeper />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            forcedTheme="dark"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <TooltipProvider delay={200}>
-              {children}
-              <Toaster richColors closeButton />
-            </TooltipProvider>
-          </ThemeProvider>
+          <TooltipProvider delay={200}>
+            {children}
+            <Toaster richColors closeButton />
+          </TooltipProvider>
         </NextIntlClientProvider>
       </body>
     </html>

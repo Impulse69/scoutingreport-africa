@@ -53,19 +53,16 @@ export default async function EditPlayerPage({
     <div className="container mx-auto max-w-3xl space-y-6 px-6 py-10">
       <Link
         href="/scout"
-        className="inline-flex items-center gap-1.5 font-mono text-[11px] text-zinc-500 transition-colors hover:text-white"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-3 w-3" />
         Back to scout workspace
       </Link>
       <header>
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-orange-500">
-          Edit player
-        </p>
-        <h1 className="mt-2 font-mono text-3xl font-bold tracking-tight text-white">
+                <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
           {initial.full_name}
         </h1>
-        <p className="mt-1.5 font-mono text-xs text-zinc-500">
+        <p className="mt-1.5 text-sm text-muted-foreground">
           {initial.status === "published"
             ? "Live on the public roster."
             : "Draft — publish to put this player on the public roster."}

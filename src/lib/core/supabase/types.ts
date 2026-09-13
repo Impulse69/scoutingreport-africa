@@ -377,6 +377,11 @@ export type Database = {
           role_fit: string | null
           role_observed_code: string | null
           scout_notes: string | null
+          technical_notes: string | null
+          tactical_notes: string | null
+          physical_notes: string | null
+          mentality_notes: string | null
+          improvements_notes: string | null
           status: Database["public"]["Enums"]["report_status"]
           strengths: Json
           updated_at: string
@@ -404,6 +409,11 @@ export type Database = {
           role_fit?: string | null
           role_observed_code?: string | null
           scout_notes?: string | null
+          technical_notes?: string | null
+          tactical_notes?: string | null
+          physical_notes?: string | null
+          mentality_notes?: string | null
+          improvements_notes?: string | null
           status?: Database["public"]["Enums"]["report_status"]
           strengths?: Json
           updated_at?: string
@@ -431,6 +441,11 @@ export type Database = {
           role_fit?: string | null
           role_observed_code?: string | null
           scout_notes?: string | null
+          technical_notes?: string | null
+          tactical_notes?: string | null
+          physical_notes?: string | null
+          mentality_notes?: string | null
+          improvements_notes?: string | null
           status?: Database["public"]["Enums"]["report_status"]
           strengths?: Json
           updated_at?: string
@@ -680,6 +695,10 @@ export type Database = {
       }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       refresh_player_category_ratings: { Args: never; Returns: undefined }
+      replace_scout_report_ratings: {
+        Args: { p_ratings: Json; p_report_id: string }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

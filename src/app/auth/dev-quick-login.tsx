@@ -2,24 +2,22 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Wrench, ShieldCheck, Loader2, Sparkles } from "lucide-react";
+import { ShieldCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/core/supabase/client";
 
-const PRESETS: { label: string; email: string; password: string; role: "scout" | "admin"; tone: string }[] = [
+const PRESETS: { label: string; email: string; password: string; role: "scout" | "admin" }[] = [
   {
     label: "Quick Sign-In as Scout",
     email: "scout@dev.local",
     password: "devpass123",
     role: "scout",
-    tone: "border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25",
   },
   {
     label: "Quick Sign-In as Admin",
     email: "admin@dev.local",
     password: "devpass123",
     role: "admin",
-    tone: "border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25",
   },
 ];
 
@@ -68,15 +66,10 @@ export function DevQuickLogin() {
   };
 
   return (
-    <div className="mt-6 rounded-2xl border border-dashed border-emerald-500/40 bg-[#0c161d] p-4">
-      <div className="mb-2.5 flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-emerald-400" />
-        <p className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
-          Dev Environment Instant Access
-        </p>
-      </div>
-      <p className="mb-3 text-[11px] text-slate-400">
-        One-click testing bypass with pre-seeded credentials.
+    <div className="mt-6 rounded-lg border border-dashed border-border bg-muted p-4">
+      <p className="mb-1 text-sm font-medium">Development sign-in</p>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Pre-seeded accounts, available only when the dev auth bypass is enabled.
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
         {PRESETS.map((p) => (
@@ -85,7 +78,7 @@ export function DevQuickLogin() {
             type="button"
             disabled={pending}
             onClick={() => run(p)}
-            className={`flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition-all disabled:opacity-50 ${p.tone}`}
+            className="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
           >
             {pending && active === p.label ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

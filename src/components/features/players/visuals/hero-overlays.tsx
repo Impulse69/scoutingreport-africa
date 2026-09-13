@@ -40,8 +40,8 @@ export function HeroOverlays() {
   return (
     <>
       {/* CONTINENTAL INTELLIGENCE pill — always-on */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full border border-white/10 bg-[#111]/80 px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-300 shadow-2xl backdrop-blur-md">
-        <Activity className="h-3.5 w-3.5 text-cyan-500" />
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-[11px] font-bold  tracking-wide text-muted-foreground">
+        <Activity className="h-3.5 w-3.5 text-primary" />
         Continental Intelligence
       </div>
 
@@ -49,24 +49,24 @@ export function HeroOverlays() {
       <div className="absolute bottom-6 right-2 sm:right-6 w-[220px] z-10">
         <div
           key={`hubs-${hubIdx}`}
-          className="hero-fade rounded-xl border border-white/10 bg-white/95 p-4 text-stone-950 shadow-2xl backdrop-blur-md"
+          className="hero-fade rounded-xl border border-border bg-card p-4 text-muted-foreground"
         >
           <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-600">
-              <Compass className="h-3.5 w-3.5 text-orange-600" />
+            <div className="flex items-center gap-2 text-[10px] font-bold  tracking-[0.2em] text-muted-foreground">
+              <Compass className="h-3.5 w-3.5 text-primary" />
               Active Hubs
             </div>
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.9)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(6,182,212,0.9)]" />
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             {hubs.hubs.map((hub) => (
               <div
                 key={hub}
-                className="rounded-md border border-stone-200 bg-stone-100/60 px-2.5 py-1.5"
+                className="rounded-md border border-border bg-muted/60 px-2.5 py-1.5"
               >
-                <div className="text-[10px] font-semibold text-stone-800">{hub}</div>
-                <div className="mt-1 h-0.5 overflow-hidden rounded-full bg-stone-300/60">
-                  <div className="h-full w-3/4 rounded-full bg-cyan-500" />
+                <div className="text-[10px] font-semibold text-muted-foreground">{hub}</div>
+                <div className="mt-1 h-0.5 overflow-hidden rounded-full bg-border">
+                  <div className="h-full w-3/4 rounded-full bg-primary" />
                 </div>
               </div>
             ))}
@@ -78,21 +78,21 @@ export function HeroOverlays() {
       <div className="absolute top-1/2 -translate-y-1/2 left-0 sm:left-2 w-[200px] z-10">
         <div
           key={`sig-${sigIdx}`}
-          className="hero-fade rounded-xl border border-white/10 bg-white/95 p-4 text-stone-950 shadow-2xl backdrop-blur-md"
+          className="hero-fade rounded-xl border border-border bg-card p-4 text-muted-foreground"
         >
           <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
-              <SigIcon className="h-3.5 w-3.5 text-cyan-600" />
+            <div className="flex items-center gap-1.5 text-[10px] font-bold  tracking-[0.18em] text-muted-foreground">
+              <SigIcon className="h-3.5 w-3.5 text-primary" />
               {sig.label}
             </div>
-            <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">
+            <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-bold text-primary">
               {sig.delta}
             </span>
           </div>
-          <div className="font-mono text-2xl font-black tabular-nums text-orange-700">
+          <div className="font-mono text-2xl font-semibold tabular-nums text-primary">
             {sig.value}
           </div>
-          <div className="mt-1 text-[10px] font-medium text-stone-500">{sig.detail}</div>
+          <div className="mt-1 text-[10px] font-medium text-muted-foreground">{sig.detail}</div>
         </div>
       </div>
 
