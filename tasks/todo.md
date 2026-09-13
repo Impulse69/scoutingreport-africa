@@ -1,3 +1,28 @@
+# Apply production database migrations and verify tooling (2026-09-13)
+
+## Plan
+
+- [x] Identify the live Supabase project and compare remote migration history.
+- [x] Confirm migration 0011 is already present and apply migration 0012.
+- [x] Remove anonymous execution access from the new ratings RPC.
+- [x] Verify the deployed schema, privileges, and migration history.
+- [x] Refresh and verify the Vercel CLI installation; identify stale authentication.
+- [x] Commit and push the migration follow-up to the feature branch.
+
+## Review
+
+The live `scoutingreport-africa` project already contained migration 0011.
+Migration 0012 was applied and verified, followed by migration 0013 to remove
+anonymous execution access from the replacement-ratings RPC. Remote checks
+confirm the function is security-invoker, uses `search_path=public`, permits the
+authenticated role, and rejects the anon role.
+
+Vercel CLI was repaired and updated from 54.20.1 to 59.16.0. The installation
+works, but the saved Vercel token is invalid and requires a fresh interactive
+`vercel login` before authenticated commands can run.
+
+---
+
 # Integrate current main into feature branch (2026-09-13)
 
 ## Plan
