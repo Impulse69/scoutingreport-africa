@@ -1,3 +1,23 @@
+# Integrate current main into feature branch (2026-09-13)
+
+## Plan
+
+- [x] Fetch and inspect the exact branch divergence.
+- [x] Simulate the merge and identify true conflict files.
+- [ ] Preserve the updated repository workflow lesson and commit the plan.
+- [ ] Merge `origin/main` into `feature/scouting-experience-refresh`.
+- [ ] Resolve team conflicts around the newer Supabase-backed architecture.
+- [ ] Resolve navigation/search conflicts while retaining both behavior sets.
+- [ ] Review all automatic merges for semantic regressions.
+- [ ] Run lint, typecheck, production build, and production-route smoke checks.
+- [ ] Commit the resolution with the repository owner's identity and push normally.
+
+## Review
+
+Pending.
+
+---
+
 # Pre-production local-work review (2026-09-13)
 
 ## Plan
