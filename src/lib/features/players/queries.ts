@@ -232,6 +232,53 @@ export async function listPublishedPlayers(limit = 60): Promise<PlayerListItem[]
   }));
 }
 
+/** Search the public catalogue without loading every published player. */
+export async function searchPublishedPlayers(
+  query: string,
+  limit = 8,
+): Promise<PlayerListItem[]> {
+  const term = query.trim();
+  if (term.length < 2) return [];
+
+  const supabase = await createClient();
+  const columns =
+    "id, slug, full_name, primary_position_code, nationality_code, current_club, photo_url";
+  const baseQuery = () =>
+    supabase
+      .from("players")
+      .select(columns)
+      .eq("status", "published")
+      .order("full_name")
+      .limit(limit);
+
+  const [nameResult, clubResult, nationalityResult] = await Promise.all([
+    baseQuery().ilike("full_name", `%${term}%`),
+    baseQuery().ilike("current_club", `%${term}%`),
+    term.length === 2
+      ? baseQuery().eq("nationality_code", term.toUpperCase())
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const unique = new Map<string, (typeof nameResult.data extends (infer Row)[] | null ? Row : never)>();
+  for (const player of [
+    ...(nameResult.data ?? []),
+    ...(clubResult.data ?? []),
+    ...(nationalityResult.data ?? []),
+  ]) {
+    unique.set(player.id as string, player);
+  }
+
+  return [...unique.values()].slice(0, limit).map((p) => ({
+    id: p.id as string,
+    slug: p.slug as string,
+    fullName: p.full_name as string,
+    primaryPositionCode: (p.primary_position_code as string) ?? null,
+    nationalityCode: (p.nationality_code as string) ?? null,
+    currentClub: (p.current_club as string) ?? null,
+    photoUrl: (p.photo_url as string) ?? null,
+  }));
+}
+
 /**
  * Of the given slugs, which ones have a published player page.
  *

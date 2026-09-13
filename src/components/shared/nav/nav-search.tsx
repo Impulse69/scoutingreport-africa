@@ -18,7 +18,10 @@ export function NavSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [filterType, setFilterType] = useState<"all" | "player" | "club">("all");
-  const [results, setResults] = useState<OmniSearchResult[]>([]);
+  const [searchResult, setSearchResult] = useState<{
+    query: string;
+    items: OmniSearchResult[];
+  }>({ query: "", items: [] });
   const [isSearching, startSearching] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,14 +55,15 @@ export function NavSearch() {
 
   // Debounced search
   useEffect(() => {
-    if (!query.trim()) return;
+    const normalizedQuery = query.trim();
+    if (!normalizedQuery) return;
 
     let cancelled = false;
 
     const timer = setTimeout(() => {
       startSearching(async () => {
-        const res = await searchGlobalOmni(query);
-        if (!cancelled) setResults(res);
+        const items = await searchGlobalOmni(normalizedQuery);
+        if (!cancelled) setSearchResult({ query: normalizedQuery, items });
       });
     }, 150);
 
@@ -71,8 +75,9 @@ export function NavSearch() {
 
   const updateQuery = (value: string) => {
     setQuery(value);
-    if (!value.trim()) setResults([]);
   };
+
+  const results = searchResult.query === query.trim() ? searchResult.items : [];
 
   const displayedResults = results.filter((r) => {
     if (filterType === "player") return r.type === "player";

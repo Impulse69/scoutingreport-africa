@@ -16,6 +16,7 @@ export const LIVE_ROUTES = [
   "/",
   "/about",
   "/cookies",
+  "/compare",
   "/dashboard",
   "/fpl",
   "/leagues",

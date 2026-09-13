@@ -55,6 +55,7 @@ scout creates a player  →  writes a report  →  publishes it
   publishing is what puts them on the public roster
 - `/scout/reports/new`, `/scout/reports/[id]/edit` — the report form
 - `/players`, `/players/[slug]` — public roster and profile
+- `/compare` — compare two published dossiers and their published-report ratings
 - `/players/[slug]/reports/[reportId]` — a published report
 
 A player must be **published** to appear publicly. A report must be **published**
@@ -142,7 +143,7 @@ segments — a prefix match would make `/scout` also capture `/scouting`.
 ## What isn't built yet
 
 The navigation and dashboard describe a wider product than exists: predictions,
-FPL sub-tools, per-league pages, player compare, fixtures. Those routes have no
+FPL sub-tools, per-league pages, fixtures. Those routes have no
 page, so **`src/lib/shared/routes.ts` is the single source of truth** for what's
 live. `isLiveRoute()` drives the disabled "Soon" state in the nav and on
 dashboard cards, so an unbuilt feature is never a 404.
@@ -150,9 +151,16 @@ dashboard cards, so an unbuilt feature is never a 404.
 When you ship one of them: add the path to `LIVE_ROUTES` and it starts linking.
 Nothing else needs to change.
 
-Some data is still mock — `src/lib/features/teams/mock.ts` (team pages) and
-`src/lib/features/players/rich-mock.ts` (one demo profile). Global search hits
-the live ESPN endpoint, and `espn-*` slugs render an ESPN-backed profile.
+Team pages now load published player dossiers from Supabase by exact current-club
+name. They never show invented formations, standings, or performance numbers;
+empty and unavailable states say exactly what is missing. The existing
+`src/lib/features/teams/mock.ts` file remains only as a legacy source for
+curated search/navigation metadata; team pages do not consume its mock squad.
+One player demo remains in
+`src/lib/features/players/rich-mock.ts`. Global search
+combines published, RLS-visible Supabase dossiers with live ESPN discovery; it
+never substitutes made-up players when the external endpoint is unavailable.
+`espn-*` slugs render an ESPN-backed profile.
 
 ---
 

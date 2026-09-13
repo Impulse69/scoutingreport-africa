@@ -16,8 +16,7 @@ import type { TeamRef } from "@/lib/features/teams/mock";
 
 type TeamSidebarProps = {
   team: TeamRef;
-  season: string;
-  seasons: string[];
+  contextLabel: string;
 };
 
 const NAV = [
@@ -28,7 +27,7 @@ const NAV = [
   { href: "trends", label: "Trends", icon: LineChart },
 ] as const;
 
-export function TeamSidebar({ team, season }: TeamSidebarProps) {
+export function TeamSidebar({ team, contextLabel }: TeamSidebarProps) {
   const pathname = usePathname();
   const base = `/teams/${team.slug}`;
 
@@ -58,7 +57,7 @@ export function TeamSidebar({ team, season }: TeamSidebarProps) {
       {/* Season badge */}
       <div className="mt-6 mb-4">
         <div className="flex w-full items-center justify-between rounded-md border border-border bg-muted px-3.5 py-2 text-xs font-medium text-muted-foreground">
-          <span>Season {season}</span>
+          <span>{contextLabel}</span>
           <Trophy className="h-3.5 w-3.5 text-primary" />
         </div>
       </div>

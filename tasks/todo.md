@@ -4,17 +4,24 @@
 
 - [x] Fetch and inspect the exact branch divergence.
 - [x] Simulate the merge and identify true conflict files.
-- [ ] Preserve the updated repository workflow lesson and commit the plan.
-- [ ] Merge `origin/main` into `feature/scouting-experience-refresh`.
-- [ ] Resolve team conflicts around the newer Supabase-backed architecture.
-- [ ] Resolve navigation/search conflicts while retaining both behavior sets.
-- [ ] Review all automatic merges for semantic regressions.
-- [ ] Run lint, typecheck, production build, and production-route smoke checks.
-- [ ] Commit the resolution with the repository owner's identity and push normally.
+- [x] Preserve the updated repository workflow lesson and commit the plan.
+- [x] Merge `origin/main` into `feature/scouting-experience-refresh`.
+- [x] Resolve team conflicts around the newer Supabase-backed architecture.
+- [x] Resolve navigation/search conflicts while retaining both behavior sets.
+- [x] Review all automatic merges for semantic regressions.
+- [x] Run lint, typecheck, production build, and production-route smoke checks.
+- [x] Commit the resolution with the repository owner's identity and push normally.
 
 ## Review
 
-Pending.
+Merged `origin/main` into the feature branch without reviving the deleted mock
+team widgets. The team pages now use the Supabase-backed published-player flow,
+the search keeps stale-result protection and the accessible responsive UI, and
+the new comparison entry point uses the shared light design tokens.
+
+Validation passed: ESLint, TypeScript, production build, and production smoke
+checks for `/`, `/players`, `/compare`, `/teams/arsenal`, and
+`/teams/arsenal/squad` (all HTTP 200).
 
 ---
 

@@ -1,6 +1,23 @@
 import { notFound } from "next/navigation";
-import { getTeamBySlug, getTeamRefBySlug } from "@/lib/features/teams/mock";
+import type { Metadata } from "next";
+import { getTeamRefBySlug } from "@/lib/features/teams/mock";
 import { TeamSidebar } from "@/components/features/teams/team-sidebar";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const team = getTeamRefBySlug(slug);
+
+  return team
+    ? {
+        title: `${team.name} scouting dossiers`,
+        description: `Published player dossiers linked to ${team.name} on ScoutingReport Africa.`,
+      }
+    : {};
+}
 
 export default async function TeamLayout({
   children,
@@ -10,16 +27,15 @@ export default async function TeamLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = getTeamBySlug(slug);
   const ref = getTeamRefBySlug(slug);
-  if (!data && !ref) notFound();
+  if (!ref) notFound();
 
-  const team = data?.team ?? {
-    slug: ref!.slug,
-    name: ref!.name,
-    shortName: ref!.name,
-    league: ref!.league,
-    leagueSlug: ref!.league.toLowerCase().replace(/\s+/g, "-"),
+  const team = {
+    slug: ref.slug,
+    name: ref.name,
+    shortName: ref.name,
+    league: ref.league,
+    leagueSlug: ref.league.toLowerCase().replace(/\s+/g, "-"),
     crestUrl: "",
     primaryColor: "var(--primary)",
   };
@@ -28,8 +44,7 @@ export default async function TeamLayout({
     <div className="flex min-h-screen bg-background text-foreground selection:bg-primary/15 selection:text-primary">
       <TeamSidebar
         team={team}
-        season="2025/2026"
-        seasons={["2025/2026", "2024/2025", "2023/2024", "2022/2023"]}
+        contextLabel="Published dossiers"
       />
       <main className="min-w-0 flex-1 overflow-x-hidden px-6 py-8">{children}</main>
     </div>

@@ -159,6 +159,12 @@ export default async function PlayersPage({
 
         <div className="flex items-center gap-3">
           <Link
+            href="/compare"
+            className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-card px-4 text-xs font-semibold text-foreground shadow-xs transition-colors hover:bg-muted focus:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
+          >
+            Compare Players
+          </Link>
+          <Link
             href="/scout/reports/new"
             className="inline-flex h-10 items-center justify-center px-4 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-xs transition-colors hover:bg-primary/90 focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40"
           >

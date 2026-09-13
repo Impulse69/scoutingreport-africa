@@ -1,7 +1,7 @@
 "use server";
 
 import { searchTeams, type TeamSearchHit } from "@/lib/features/teams/mock";
-import { listPublishedPlayers } from "@/lib/features/players/queries";
+import { searchPublishedPlayers } from "@/lib/features/players/queries";
 import { CAF_COUNTRIES } from "@/lib/shared/constants";
 
 export type GlobalSearchPlayer = {
@@ -114,25 +114,26 @@ export async function globalSearch(query: string): Promise<GlobalSearchResult> {
   const q = query.trim();
   if (q.length < 2) return { players: [], teams: [] };
 
-  const [livePlayers, teamResults] = await Promise.all([
+  const [scoutedPlayers, livePlayers, teamResults] = await Promise.all([
+    searchPublishedPlayers(q, 6).catch(() => []),
     searchEspnPlayers(q),
     Promise.resolve(searchTeams(q, 6)),
   ]);
 
-  let players = livePlayers;
-
-  if (players.length === 0) {
-    const demo: GlobalSearchPlayer[] = [
-      { id: "arnau-tenas", slug: "arnau-tenas", name: "Arnau Tenas", position: "GK", team: "Villarreal", league: "La Liga", photo: null },
-      { id: "lamine-yamal", slug: "lamine-yamal", name: "Lamine Yamal", position: "RW", team: "Barcelona", league: "La Liga", photo: null },
-      { id: "michael-olise", slug: "michael-olise", name: "Michael Olise", position: "RW", team: "Bayern Munich", league: "Bundesliga", photo: null },
-      { id: "nico-paz", slug: "nico-paz", name: "Nico Paz", position: "AM", team: "Como", league: "Serie A", photo: null },
-      { id: "valentin-barco", slug: "valentin-barco", name: "Valentín Barco", position: "LB", team: "Brighton", league: "Premier League", photo: null },
-      { id: "yunus-akgun", slug: "yunus-akgun", name: "Yunus Akgün", position: "RW", team: "Galatasaray", league: "Süper Lig", photo: null },
-    ];
-    const ql = q.toLowerCase();
-    players = demo.filter((d) => d.name.toLowerCase().includes(ql)).slice(0, 6);
-  }
+  const verified: GlobalSearchPlayer[] = scoutedPlayers.map((player) => ({
+    id: player.id,
+    slug: player.slug,
+    name: player.fullName,
+    position: player.primaryPositionCode,
+    team: player.currentClub,
+    league: null,
+    photo: player.photoUrl,
+  }));
+  const verifiedNames = new Set(verified.map((player) => player.name.toLowerCase()));
+  const players = [
+    ...verified,
+    ...livePlayers.filter((player) => !verifiedNames.has(player.name.toLowerCase())),
+  ].slice(0, 8);
 
   return { players, teams: teamResults };
 }
@@ -141,21 +142,13 @@ export async function searchGlobalOmni(query: string): Promise<OmniSearchResult[
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
-  const [allDbPlayers, espnRes, teams] = await Promise.all([
-    listPublishedPlayers(100).catch(() => []),
+  const [matchedDb, espnRes, teams] = await Promise.all([
+    searchPublishedPlayers(q, 6).catch(() => []),
     searchEspnPlayers(q).catch(() => []),
     Promise.resolve(searchTeams(q, 4)),
   ]);
 
   const results: OmniSearchResult[] = [];
-
-  // Filter DB Players
-  const matchedDb = allDbPlayers.filter(
-    (p) =>
-      p.fullName.toLowerCase().includes(q) ||
-      (p.currentClub && p.currentClub.toLowerCase().includes(q)) ||
-      (p.nationalityCode && p.nationalityCode.toLowerCase().includes(q)),
-  ).slice(0, 6);
 
   for (const p of matchedDb) {
     const flag = CAF_COUNTRIES.find((c) => c.code === p.nationalityCode)?.flagEmoji;
