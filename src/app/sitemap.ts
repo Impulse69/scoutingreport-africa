@@ -8,8 +8,7 @@ const SITE_URL =
     : "https://scoutingreportafrica.com");
 
 /**
- * Only routes that actually resolve. The previous version advertised `/compare`
- * and `/about` to crawlers while neither had a page.
+ * Only routes that actually resolve.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -17,6 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/players`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/compare`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE_URL}/leagues`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/scouting`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
