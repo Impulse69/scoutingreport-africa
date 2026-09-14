@@ -52,7 +52,8 @@ scout creates a player  →  writes a report  →  publishes it
 - `/scout` — the scout workspace: player picker, your players, draft and
   published reports
 - `/scout/players/new`, `/scout/players/[id]/edit` — create/edit a player;
-  publishing is what puts them on the public roster
+  assign their current verified competition; publishing is what puts them on
+  the public roster
 - `/scout/reports/new`, `/scout/reports/[id]/edit` — the report form
 - `/players`, `/players/[slug]` — public roster and profile
 - `/compare` — compare two published dossiers and their published-report ratings

@@ -31,6 +31,7 @@ export type PlayerProfile = {
   heightCm: number | null;
   weightKg: number | null;
   currentClub: string | null;
+  currentCompetition: { id: string; name: string } | null;
   photoUrl: string | null;
   bio: string | null;
   dateOfBirth: string | null;
@@ -53,7 +54,9 @@ export type PlayerListItem = {
 const PLAYER_SELECT = `
   id, slug, full_name, common_name, nationality_code,
   primary_position_code, secondary_position_codes, preferred_foot,
-  height_cm, weight_kg, current_club, photo_url, bio, date_of_birth,
+  height_cm, weight_kg, current_club,
+  current_competition:competitions!players_current_competition_id_fkey(id, name),
+  photo_url, bio, date_of_birth,
   status, created_by
 `;
 
@@ -69,6 +72,7 @@ type PlayerRow = {
   height_cm: number | null;
   weight_kg: number | null;
   current_club: string | null;
+  current_competition: { id: string; name: string } | null;
   photo_url: string | null;
   bio: string | null;
   date_of_birth: string | null;
@@ -163,6 +167,7 @@ function mapPlayer(row: PlayerRow): Omit<PlayerProfile, "ratings" | "publishedRe
     heightCm: row.height_cm,
     weightKg: row.weight_kg,
     currentClub: row.current_club,
+    currentCompetition: row.current_competition,
     photoUrl: getPlayerPhoto(row.slug, row.photo_url),
     bio: row.bio,
     dateOfBirth: row.date_of_birth,
