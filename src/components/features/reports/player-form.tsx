@@ -27,6 +27,7 @@ import {
   updatePlayer,
   setPlayerStatus,
 } from "@/lib/features/players/actions";
+import type { CompetitionOption } from "@/lib/features/reports/queries";
 
 export type PlayerFormValues = {
   id: string;
@@ -41,12 +42,16 @@ export type PlayerFormValues = {
   height_cm: number | null;
   weight_kg: number | null;
   current_club: string | null;
+  current_competition_id: string | null;
+  secondary_position_codes: string[];
+  photo_url: string | null;
   bio: string | null;
 };
 
-type Props =
+type Props = (
   | { mode: "create"; defaultName?: string; initial?: undefined }
-  | { mode: "edit"; initial: PlayerFormValues; defaultName?: undefined };
+  | { mode: "edit"; initial: PlayerFormValues; defaultName?: undefined }
+) & { competitions: CompetitionOption[] };
 
 /**
  * Single form for both creating and editing a player. Edit mode adds
@@ -68,6 +73,9 @@ export function PlayerForm(props: Props) {
   const [height, setHeight] = useState(init?.height_cm ? String(init.height_cm) : "");
   const [weight, setWeight] = useState(init?.weight_kg ? String(init.weight_kg) : "");
   const [club, setClub] = useState(init?.current_club ?? "");
+  const [competitionId, setCompetitionId] = useState(
+    init?.current_competition_id ?? "",
+  );
   const [bio, setBio] = useState(init?.bio ?? "");
   const [status, setStatusLocal] = useState<PlayerStatus>(init?.status ?? "draft");
 
@@ -79,13 +87,13 @@ export function PlayerForm(props: Props) {
     date_of_birth: dob,
     nationality_code: nat as never, // zod enforces enum membership server-side
     primary_position_code: pos as never,
-    secondary_position_codes: [],
+    secondary_position_codes: init?.secondary_position_codes ?? [],
     preferred_foot: foot,
     height_cm: height ? Number.parseInt(height, 10) : null,
     weight_kg: weight ? Number.parseInt(weight, 10) : null,
     current_club: club.trim() || null,
-    current_competition_id: null,
-    photo_url: null,
+    current_competition_id: competitionId || null,
+    photo_url: init?.photo_url ?? null,
     bio: bio.trim() || null,
     status: nextStatus,
   });
@@ -235,6 +243,31 @@ export function PlayerForm(props: Props) {
             onChange={(e) => setClub(e.target.value)}
             placeholder="e.g. Al Ahly · Egyptian Premier League"
           />
+        </Field>
+        <Field label="Current competition" full>
+          <Select
+            value={competitionId || "unassigned"}
+            onValueChange={(value) =>
+              setCompetitionId(value === "unassigned" ? "" : (value ?? ""))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a verified competition" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="unassigned">Not assigned</SelectItem>
+              {props.competitions.map((competition) => (
+                <SelectItem key={competition.id} value={competition.id}>
+                  {competition.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {props.competitions.length === 0 && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              No verified competition records are available.
+            </p>
+          )}
         </Field>
         <Field label="Short bio (optional)" full>
           <Textarea

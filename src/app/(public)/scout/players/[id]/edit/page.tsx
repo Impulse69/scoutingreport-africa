@@ -8,6 +8,7 @@ import {
   type PlayerFormValues,
 } from "@/components/features/reports/player-form";
 import type { PlayerStatus, PreferredFoot } from "@/lib/shared/constants";
+import { listCompetitions } from "@/lib/features/reports/queries";
 
 export const metadata = { title: "Edit player" };
 
@@ -25,13 +26,16 @@ export default async function EditPlayerPage({
     .select(
       `id, slug, status, full_name, common_name, date_of_birth, nationality_code,
        primary_position_code, preferred_foot, height_cm, weight_kg,
-       current_club, bio, created_by`,
+       secondary_position_codes, current_club, current_competition_id,
+       photo_url, bio, created_by`,
     )
     .eq("id", id)
     .maybeSingle();
 
   if (!data) notFound();
   if (data.created_by !== me.id && me.role !== "admin") notFound();
+
+  const competitions = await listCompetitions();
 
   const initial: PlayerFormValues = {
     id: data.id as string,
@@ -45,7 +49,10 @@ export default async function EditPlayerPage({
     preferred_foot: data.preferred_foot as PreferredFoot,
     height_cm: (data.height_cm as number) ?? null,
     weight_kg: (data.weight_kg as number) ?? null,
+    secondary_position_codes: (data.secondary_position_codes as string[]) ?? [],
     current_club: (data.current_club as string) ?? null,
+    current_competition_id: (data.current_competition_id as string) ?? null,
+    photo_url: (data.photo_url as string) ?? null,
     bio: (data.bio as string) ?? null,
   };
 
@@ -68,7 +75,7 @@ export default async function EditPlayerPage({
             : "Draft — publish to put this player on the public roster."}
         </p>
       </header>
-      <PlayerForm mode="edit" initial={initial} />
+      <PlayerForm mode="edit" initial={initial} competitions={competitions} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PlayerForm } from "@/components/features/reports/player-form";
+import { listCompetitions } from "@/lib/features/reports/queries";
 
 export const metadata = { title: "New player" };
 
@@ -10,6 +11,7 @@ export default async function NewPlayerPage({
   searchParams: Promise<{ name?: string }>;
 }) {
   const sp = await searchParams;
+  const competitions = await listCompetitions();
 
   return (
     <div className="container mx-auto max-w-3xl px-6 py-10 space-y-6">
@@ -29,7 +31,11 @@ export default async function NewPlayerPage({
           report you write on them surfaces on their profile.
         </p>
       </header>
-      <PlayerForm mode="create" defaultName={sp.name ?? ""} />
+      <PlayerForm
+        mode="create"
+        defaultName={sp.name ?? ""}
+        competitions={competitions}
+      />
     </div>
   );
 }
