@@ -46,6 +46,8 @@ export function isLiveRoute(href: string): boolean {
   if (!href.startsWith("/")) return true; // external / mailto — not ours to check
   const path = href.split(/[?#]/)[0] || "/";
   if (LIVE.has(path)) return true;
+  // Competition pages use catalogue UUIDs, not the old planned league slugs.
+  if (/^\/leagues\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(path)) return true;
   return LIVE_PREFIXES.some((p) => path.startsWith(p) && path.length > p.length);
 }
 
