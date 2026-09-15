@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listPublishedPlayerSlugs } from "@/lib/features/players/queries";
+import { listCompetitions } from "@/lib/features/competitions/queries";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -40,5 +41,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Database unreachable at build time — still emit the static routes.
   }
 
-  return [...staticRoutes, ...playerRoutes];
+  const { competitions } = await listCompetitions();
+  const competitionRoutes: MetadataRoute.Sitemap = competitions.map((competition) => ({
+    url: `${SITE_URL}/leagues/${competition.id}`,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+  return [...staticRoutes, ...playerRoutes, ...competitionRoutes];
 }
