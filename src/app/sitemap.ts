@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { unstable_rethrow } from "next/navigation";
 import { listPublishedPlayerSlugs } from "@/lib/features/players/queries";
 import { listCompetitions } from "@/lib/features/competitions/queries";
 
@@ -37,7 +38,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.8,
     }));
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
     // Database unreachable at build time — still emit the static routes.
   }
 

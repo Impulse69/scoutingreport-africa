@@ -1,4 +1,5 @@
 import type { Database } from "@/lib/core/supabase/types";
+import { unstable_rethrow } from "next/navigation";
 import { createClient } from "@/lib/core/supabase/server";
 
 export type CompetitionType =
@@ -60,7 +61,8 @@ export async function listCompetitions(): Promise<CompetitionListResult> {
         flagEmoji: competition.countries?.flag_emoji ?? null,
       })),
     };
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
     return { competitions: [], unavailable: true };
   }
 }

@@ -11,6 +11,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 const id = "11111111-1111-1111-1111-111111111111";
 const competition = { id, name: "Test competition", type: "domestic", countries: null };
 const source = readFileSync(new URL("../src/lib/features/competitions/detail.ts", import.meta.url), "utf8");
+const listSource = readFileSync(new URL("../src/lib/features/competitions/queries.ts", import.meta.url), "utf8");
 
 function load(fixtures = {}, failures = {}, clientError) {
   const calls = [];
@@ -107,6 +108,37 @@ test("coverage is bounded with exact totals, and a section failure preserves the
 test("Next.js framework control-flow errors are rethrown", async () => {
   const signal = { frameworkSignal: true };
   await assert.rejects(load({}, {}, signal).get(id), (error) => error === signal);
+});
+
+function loadCompetitionList(clientError) {
+  const compiled = { exports: {} };
+  const code = ts.transpileModule(listSource, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  runInNewContext(code, {
+    exports: compiled.exports,
+    require(name) {
+      if (name === "next/navigation") {
+        return { unstable_rethrow: (error) => { if (error?.frameworkSignal) throw error; } };
+      }
+      if (name === "@/lib/core/supabase/server") {
+        return { createClient: async () => { throw clientError; } };
+      }
+      throw new Error(`Unexpected competition list import: ${name}`);
+    },
+  });
+  return compiled.exports.listCompetitions;
+}
+
+test("competition list reports ordinary database failures as unavailable", async () => {
+  const result = await loadCompetitionList(new Error("offline"))();
+  assert.equal(result.unavailable, true);
+  assert.equal(result.competitions.length, 0);
+});
+
+test("competition list preserves Next.js framework control-flow errors", async () => {
+  const signal = { frameworkSignal: true };
+  await assert.rejects(loadCompetitionList(signal)(), (error) => error === signal);
 });
 
 function loadPage(result) {
