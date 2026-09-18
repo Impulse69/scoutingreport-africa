@@ -64,7 +64,7 @@ export default async function TeamOverviewPage({
         <StatusPanel
           icon={Users}
           title="No published dossiers linked to this club"
-          detail={`Scouts can add a player with “${team.name}” as the current club. Draft players stay private until published.`}
+          detail={`Scouts can link a player to the verified “${team.name}” club record. Draft players stay private until published.`}
         />
       ) : (
         <section className="rounded-lg border border-border bg-card">

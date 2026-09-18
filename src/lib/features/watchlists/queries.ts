@@ -52,6 +52,7 @@ type WatchlistPlayerRow = {
     primary_position_code: string | null;
     nationality_code: string | null;
     current_club: string | null;
+    current_club_record: { name: string } | null;
     photo_url: string | null;
   } | null;
 };
@@ -66,7 +67,9 @@ export async function listWatchlistPlayers(
       added_at,
       players!inner (
         id, slug, full_name, primary_position_code,
-        nationality_code, current_club, photo_url
+        nationality_code, current_club,
+        current_club_record:clubs!players_current_club_id_fkey(name),
+        photo_url
       )
     `)
     .eq("watchlist_id", watchlistId)
@@ -80,7 +83,8 @@ export async function listWatchlistPlayers(
       fullName: row.players!.full_name,
       primaryPositionCode: row.players!.primary_position_code,
       nationalityCode: row.players!.nationality_code,
-      currentClub: row.players!.current_club,
+      currentClub:
+        row.players!.current_club_record?.name ?? row.players!.current_club,
       photoUrl: row.players!.photo_url,
       addedAt: row.added_at,
     }));

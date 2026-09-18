@@ -52,8 +52,8 @@ scout creates a player  →  writes a report  →  publishes it
 - `/scout` — the scout workspace: player picker, your players, draft and
   published reports
 - `/scout/players/new`, `/scout/players/[id]/edit` — create/edit a player;
-  assign their current verified competition; publishing is what puts them on
-  the public roster
+  assign their current verified club and competition; publishing is what puts
+  them on the public roster
 - `/scout/reports/new`, `/scout/reports/[id]/edit` — the report form
 - `/players`, `/players/[slug]` — public roster and profile
 - `/compare` — compare two published dossiers and their published-report ratings
@@ -131,7 +131,7 @@ src/
     features/        queries + server actions, one folder per domain
     shared/          constants, zod schemas, route registry
 supabase/
-  migrations/        ordered SQL, 0001 → 0010
+  migrations/        ordered SQL, 0001 → 0014
   scripts/           one-off operational SQL
 ```
 
@@ -152,8 +152,8 @@ dashboard cards, so an unbuilt feature is never a 404.
 When you ship one of them: add the path to `LIVE_ROUTES` and it starts linking.
 Nothing else needs to change.
 
-Team pages now load published player dossiers from Supabase by exact current-club
-name. They never show invented formations, standings, or performance numbers;
+Team pages now load published player dossiers through normalized Supabase club
+relationships. They never show invented formations, standings, or performance numbers;
 empty and unavailable states say exactly what is missing. The existing
 `src/lib/features/teams/mock.ts` file remains only as a legacy source for
 curated search/navigation metadata; team pages do not consume its mock squad.
