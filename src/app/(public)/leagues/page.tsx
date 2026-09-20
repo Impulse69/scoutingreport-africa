@@ -173,7 +173,9 @@ export default async function LeaguesPage() {
                             {competition.countryName ?? "Pan-African"}
                           </p>
                           <h3 className="mt-2 text-sm font-semibold leading-snug text-foreground">
-                            {competition.name}
+                            <Link href={`/leagues/${competition.id}`} className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                              {competition.name}
+                            </Link>
                           </h3>
                         </div>
                         <span

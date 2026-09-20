@@ -143,7 +143,7 @@ segments — a prefix match would make `/scout` also capture `/scouting`.
 ## What isn't built yet
 
 The navigation and dashboard describe a wider product than exists: predictions,
-FPL sub-tools, per-league pages, fixtures. Those routes have no
+FPL sub-tools, fixtures. Those routes have no
 page, so **`src/lib/shared/routes.ts` is the single source of truth** for what's
 live. `isLiveRoute()` drives the disabled "Soon" state in the nav and on
 dashboard cards, so an unbuilt feature is never a 404.
@@ -159,6 +159,15 @@ curated search/navigation metadata; team pages do not consume its mock squad.
 The `/leagues` directory reads the public Supabase competition catalogue and
 groups those reference records by type. It does not publish editorial rankings,
 unverified tactical claims, or implied player and fixture coverage.
+Each catalogue entry links to `/leagues/[id]` (the competition UUID). These
+pages show up to 24 current published player dossiers and the latest 24
+published match reports, with exact totals when available. Players use
+`current_competition_id`; historical reports use `competition_id` and require
+a published parent player. No membership is inferred from nationality or club.
+Empty coverage and failed queries have distinct states; fixtures and standings
+remain unbuilt. These pages work independently of the player-assignment form.
+Run their focused query/visibility checks with
+`node --test tests/competition-detail.test.mjs`.
 One player demo remains in
 `src/lib/features/players/rich-mock.ts`. Global search
 combines published, RLS-visible Supabase dossiers with live ESPN discovery; it
