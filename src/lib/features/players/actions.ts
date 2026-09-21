@@ -81,6 +81,7 @@ export async function createPlayer(
     .from("players")
     .insert({
       ...parsed.data,
+      current_club: null,
       slug: finalSlug,
       created_by: user!.id,
     })
@@ -112,7 +113,7 @@ export async function updatePlayer(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("players")
-    .update(parsed.data)
+    .update({ ...parsed.data, current_club: null })
     .eq("id", id)
     .select("slug")
     .maybeSingle();
@@ -174,16 +175,29 @@ export async function listMyPlayers(): Promise<
   const supabase = await createClient();
   const { data } = await supabase
     .from("players")
-    .select("id, slug, full_name, status, primary_position_code, current_club")
+    .select(
+      `id, slug, full_name, status, primary_position_code, current_club,
+       current_club_record:clubs!players_current_club_id_fkey(name)`,
+    )
     .eq("created_by", user.id)
     .order("updated_at", { ascending: false });
 
-  return (data ?? []).map((p) => ({
-    id: p.id as string,
-    slug: p.slug as string,
-    fullName: p.full_name as string,
-    status: p.status as PlayerStatus,
-    primaryPositionCode: (p.primary_position_code as string) ?? null,
-    currentClub: (p.current_club as string) ?? null,
+  const rows = (data ?? []) as unknown as Array<{
+    id: string;
+    slug: string;
+    full_name: string;
+    status: PlayerStatus;
+    primary_position_code: string | null;
+    current_club: string | null;
+    current_club_record: { name: string } | null;
+  }>;
+
+  return rows.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    fullName: p.full_name,
+    status: p.status,
+    primaryPositionCode: p.primary_position_code,
+    currentClub: p.current_club_record?.name ?? p.current_club,
   }));
 }

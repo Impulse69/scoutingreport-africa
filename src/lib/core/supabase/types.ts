@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      clubs: {
+        Row: {
+          competition_id: string | null
+          country_code: string | null
+          created_at: string
+          external_id: string | null
+          external_provider: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          competition_id?: string | null
+          country_code?: string | null
+          created_at?: string
+          external_id?: string | null
+          external_provider?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          competition_id?: string | null
+          country_code?: string | null
+          created_at?: string
+          external_id?: string | null
+          external_provider?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clubs_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clubs_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       competitions: {
         Row: {
           country_code: string | null
@@ -95,6 +149,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           current_club: string | null
+          current_club_id: string | null
           current_competition_id: string | null
           date_of_birth: string
           full_name: string
@@ -116,6 +171,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           current_club?: string | null
+          current_club_id?: string | null
           current_competition_id?: string | null
           date_of_birth: string
           full_name: string
@@ -137,6 +193,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           current_club?: string | null
+          current_club_id?: string | null
           current_competition_id?: string | null
           date_of_birth?: string
           full_name?: string
@@ -158,6 +215,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "players_current_club_id_fkey"
+            columns: ["current_club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
             referencedColumns: ["id"]
           },
           {

@@ -47,7 +47,10 @@ export default async function NewReportPage({
   const supabase = await createClient();
   const { data: player } = await supabase
     .from("players")
-    .select("id, full_name, common_name, primary_position_code, current_club, slug")
+    .select(
+      `id, full_name, common_name, primary_position_code, current_club, slug,
+       current_club_record:clubs!players_current_club_id_fkey(name)`,
+    )
     .eq("id", playerId)
     .maybeSingle();
 
@@ -55,9 +58,12 @@ export default async function NewReportPage({
 
   const competitions = await listCompetitions();
 
+  const currentClub = (
+    player.current_club_record as { name: string } | null
+  )?.name ?? (player.current_club as string | null);
   const label = `${(player.common_name as string) || (player.full_name as string)} · ${
     (player.primary_position_code as string) ?? "—"
-  } · ${(player.current_club as string) ?? "Free agent"}`;
+  } · ${currentClub ?? "Free agent"}`;
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6 px-6 py-8">

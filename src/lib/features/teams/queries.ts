@@ -18,23 +18,36 @@ export type TeamSquadResult = {
 /**
  * Load the public roster represented by ScoutingReport dossiers.
  *
- * Club membership is currently stored as the player's free-text
- * `current_club`, so matching is deliberately exact. This avoids silently
- * merging similarly named clubs. The explicit published filter mirrors the
- * public RLS policy and prevents an authenticated scout's own drafts appearing
- * on a public team page.
+ * Resolve the curated display name to one verified club id, then query that
+ * relationship. The explicit published filter mirrors the public RLS policy
+ * and prevents an authenticated scout's own drafts appearing on a public team
+ * page.
  */
 export async function listPublishedTeamPlayers(
   clubName: string,
 ): Promise<TeamSquadResult> {
   const supabase = await createClient();
+  const { data: club, error: clubError } = await supabase
+    .from("clubs")
+    .select("id")
+    .eq("name", clubName)
+    .maybeSingle();
+
+  if (clubError) {
+    return { players: [], unavailable: true };
+  }
+
+  if (!club) {
+    return { players: [], unavailable: false };
+  }
+
   const { data, error } = await supabase
     .from("players")
     .select(
       "id, slug, full_name, common_name, primary_position_code, nationality_code, photo_url",
     )
     .eq("status", "published")
-    .eq("current_club", clubName)
+    .eq("current_club_id", club.id)
     .order("primary_position_code")
     .order("full_name");
 

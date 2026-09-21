@@ -55,6 +55,10 @@ export function PlayerProfileHero({
     },
     { label: "Current Club", value: player.currentClub ?? "Free agent" },
     {
+      label: "Competition",
+      value: player.currentCompetition?.name ?? "Not assigned",
+    },
+    {
       label: "Preferred Foot",
       value: player.preferredFoot && player.preferredFoot !== "unknown"
         ? player.preferredFoot
@@ -150,7 +154,7 @@ export function PlayerProfileHero({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 sm:grid-cols-3 lg:grid-cols-4">
         {facts.map((f) => (
           <div key={f.label} className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
