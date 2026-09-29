@@ -31,6 +31,7 @@ export type PlayerProfile = {
   heightCm: number | null;
   weightKg: number | null;
   currentClub: string | null;
+  currentCompetition: { id: string; name: string } | null;
   photoUrl: string | null;
   bio: string | null;
   dateOfBirth: string | null;
@@ -53,7 +54,10 @@ export type PlayerListItem = {
 const PLAYER_SELECT = `
   id, slug, full_name, common_name, nationality_code,
   primary_position_code, secondary_position_codes, preferred_foot,
-  height_cm, weight_kg, current_club, photo_url, bio, date_of_birth,
+  height_cm, weight_kg, current_club,
+  current_club_record:clubs!players_current_club_id_fkey(id, name, slug),
+  current_competition:competitions!players_current_competition_id_fkey(id, name),
+  photo_url, bio, date_of_birth,
   status, created_by
 `;
 
@@ -69,6 +73,8 @@ type PlayerRow = {
   height_cm: number | null;
   weight_kg: number | null;
   current_club: string | null;
+  current_club_record: { id: string; name: string; slug: string } | null;
+  current_competition: { id: string; name: string } | null;
   photo_url: string | null;
   bio: string | null;
   date_of_birth: string | null;
@@ -162,7 +168,8 @@ function mapPlayer(row: PlayerRow): Omit<PlayerProfile, "ratings" | "publishedRe
     preferredFoot: row.preferred_foot,
     heightCm: row.height_cm,
     weightKg: row.weight_kg,
-    currentClub: row.current_club,
+    currentClub: row.current_club_record?.name ?? row.current_club,
+    currentCompetition: row.current_competition,
     photoUrl: getPlayerPhoto(row.slug, row.photo_url),
     bio: row.bio,
     dateOfBirth: row.date_of_birth,
@@ -216,19 +223,34 @@ export async function listPublishedPlayers(limit = 60): Promise<PlayerListItem[]
   const supabase = await createClient();
   const { data } = await supabase
     .from("players")
-    .select("id, slug, full_name, primary_position_code, nationality_code, current_club, photo_url")
+    .select(
+      `id, slug, full_name, primary_position_code, nationality_code,
+       current_club, current_club_record:clubs!players_current_club_id_fkey(name),
+       photo_url`,
+    )
     .eq("status", "published")
     .order("full_name")
     .limit(limit);
 
-  return (data ?? []).map((p) => ({
-    id: p.id as string,
-    slug: p.slug as string,
-    fullName: p.full_name as string,
-    primaryPositionCode: (p.primary_position_code as string) ?? null,
-    nationalityCode: (p.nationality_code as string) ?? null,
-    currentClub: (p.current_club as string) ?? null,
-    photoUrl: getPlayerPhoto(p.slug as string, (p.photo_url as string) ?? null),
+  const rows = (data ?? []) as unknown as Array<{
+    id: string;
+    slug: string;
+    full_name: string;
+    primary_position_code: string | null;
+    nationality_code: string | null;
+    current_club: string | null;
+    current_club_record: { name: string } | null;
+    photo_url: string | null;
+  }>;
+
+  return rows.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    fullName: p.full_name,
+    primaryPositionCode: p.primary_position_code,
+    nationalityCode: p.nationality_code,
+    currentClub: p.current_club_record?.name ?? p.current_club,
+    photoUrl: getPlayerPhoto(p.slug, p.photo_url),
   }));
 }
 
@@ -241,8 +263,8 @@ export async function searchPublishedPlayers(
   if (term.length < 2) return [];
 
   const supabase = await createClient();
-  const columns =
-    "id, slug, full_name, primary_position_code, nationality_code, current_club, photo_url";
+  const columns = `id, slug, full_name, primary_position_code, nationality_code,
+    current_club, current_club_record:clubs!players_current_club_id_fkey(name), photo_url`;
   const baseQuery = () =>
     supabase
       .from("players")
@@ -251,32 +273,53 @@ export async function searchPublishedPlayers(
       .order("full_name")
       .limit(limit);
 
-  const [nameResult, clubResult, nationalityResult] = await Promise.all([
+  const [nameResult, legacyClubResult, nationalityResult, clubLookup] = await Promise.all([
     baseQuery().ilike("full_name", `%${term}%`),
     baseQuery().ilike("current_club", `%${term}%`),
     term.length === 2
       ? baseQuery().eq("nationality_code", term.toUpperCase())
       : Promise.resolve({ data: [] }),
+    supabase.from("clubs").select("id").ilike("name", `%${term}%`).limit(limit),
   ]);
+
+  const clubIds = (clubLookup.data ?? []).map((club) => club.id);
+  const linkedClubResult =
+    clubIds.length > 0
+      ? await baseQuery().in("current_club_id", clubIds)
+      : { data: [] };
 
   const unique = new Map<string, (typeof nameResult.data extends (infer Row)[] | null ? Row : never)>();
   for (const player of [
     ...(nameResult.data ?? []),
-    ...(clubResult.data ?? []),
+    ...(legacyClubResult.data ?? []),
+    ...(linkedClubResult.data ?? []),
     ...(nationalityResult.data ?? []),
   ]) {
     unique.set(player.id as string, player);
   }
 
-  return [...unique.values()].slice(0, limit).map((p) => ({
-    id: p.id as string,
-    slug: p.slug as string,
-    fullName: p.full_name as string,
-    primaryPositionCode: (p.primary_position_code as string) ?? null,
-    nationalityCode: (p.nationality_code as string) ?? null,
-    currentClub: (p.current_club as string) ?? null,
-    photoUrl: (p.photo_url as string) ?? null,
-  }));
+  return [...unique.values()].slice(0, limit).map((player) => {
+    const p = player as unknown as {
+      id: string;
+      slug: string;
+      full_name: string;
+      primary_position_code: string | null;
+      nationality_code: string | null;
+      current_club: string | null;
+      current_club_record: { name: string } | null;
+      photo_url: string | null;
+    };
+
+    return {
+      id: p.id,
+      slug: p.slug,
+      fullName: p.full_name,
+      primaryPositionCode: p.primary_position_code,
+      nationalityCode: p.nationality_code,
+      currentClub: p.current_club_record?.name ?? p.current_club,
+      photoUrl: p.photo_url,
+    };
+  });
 }
 
 /**

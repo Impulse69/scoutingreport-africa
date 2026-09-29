@@ -29,7 +29,7 @@ export const playerSchema = z.object({
   preferred_foot: z.enum(PREFERRED_FEET).default("unknown"),
   height_cm: z.coerce.number().int().min(140).max(220).optional().nullable(),
   weight_kg: z.coerce.number().int().min(40).max(120).optional().nullable(),
-  current_club: z.string().max(200).optional().nullable(),
+  current_club_id: z.string().uuid().optional().nullable(),
   current_competition_id: z.string().uuid().optional().nullable(),
   photo_url: z.url().max(500).optional().nullable(),
   bio: z.string().max(5000).optional().nullable(),

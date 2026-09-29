@@ -108,6 +108,7 @@ export async function generateMetadata({
       positionLabel(player.primaryPositionCode),
       age !== null ? `${age}y` : null,
       player.currentClub,
+      player.currentCompetition?.name,
       country?.name,
     ].filter(Boolean);
 
